@@ -496,9 +496,8 @@ def run_for_examples(
 
 
 description = """
-This is currently a demo of OmniGen2. Contents to be added.
-
-Start with 1.5 and increase it if you need more consistency with the reference image. For image editing task, we recommend to set it between 1.3 and 2.0; for in-context generateion task, a higher image_guidance_scale will maintian more details in input images, and we recommend to set it between 2.5 and 3.0.
+The model mainly supports English, with slight support for Chinese.
+Increase the `image_guidance_scale` if you need more consistency with the reference image. For image editing task, we recommend to set it between 1.3 and 2.0; for in-context generateion task, a higher image_guidance_scale will maintian more details in input images, and we recommend to set it between 2.0 and 3.0.
 
 """
 
