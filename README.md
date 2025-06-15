@@ -29,7 +29,7 @@
 - [ ] Model checkpoint.
 - [ ] Training data and pipeline scripts.
 - [ ] In-context generation benchmark: OmniContext.
-- [ ] ComfyUI and Replicate Demo~(commuity support will be appreciated!).
+- [ ] ComfyUI and Replicate Demo (**commuity support will be greatly appreciated!**).
 
 ## 🚀 Quick Start
 
