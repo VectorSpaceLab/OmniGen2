@@ -19,6 +19,20 @@
     <p>
 </h4>
 
+OmniGen2 is a powerful and efficient unified multimodal model. Its architecture is composed of two key components: a 3B Vision-Language Model (VLM) and a 4B diffusion model. In this design, the frozen 3B VLM (Qwen-VL-2.5) is responsible for interpreting both visual signals and user instructions, while the 4B diffusion model leverages this understanding to perform high-quality image generation.
+
+This dual-component architecture enables strong performance across four primary capabilities:
+
+- Visual Understanding: Inherits the robust ability to interpret and analyze image content from its Qwen-VL-2.5 foundation.
+- Text-to-Image Generation: Creates high-fidelity and aesthetically pleasing images from textual prompts.
+- Instruction-guided Image Editing: Executes complex, instruction-based image modifications with high precision, achieving state-of-the-art performance among open-source models.
+- In-context Generation: A versatile capability to process and flexibly combine diverse inputs—including tasks, reference objects, and scenes—to produce novel and coherent visual outputs.
+As an open-source project, OmniGen2 provides a powerful yet resource-efficient foundation for researchers and developers exploring the frontiers of controllable and personalized generative AI.
+
+
+as its frozen vision-language backbone, ensuring robust understanding capabilities while optimizing for generative performance.
+
+
 <p align="center"><img src="assets/teaser.png" width="95%"></p>
 
 ## 🔥 News
@@ -88,7 +102,8 @@ bash example_subject_driven_edit.sh
 
 ### 🌐 Gradio Demo
 
-* **Online Demo**: [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2)
+* **Online Demo**: Coming soon.
+<!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
 * **Run Locally**:
 
