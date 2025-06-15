@@ -25,7 +25,6 @@ def load_pipeline(accelerator, weight_dtype):
         "OmniGen2/OmniGen2",
         torch_dtype=weight_dtype,
         trust_remote_code=True,
-        token=os.getenv("HF_TOKEN"),
     )
     pipeline = pipeline.to(accelerator.device, dtype=weight_dtype)
     return pipeline

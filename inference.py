@@ -113,7 +113,6 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         args.model_path,
         torch_dtype=weight_dtype,
         trust_remote_code=True,
-        token=os.getenv("HF_TOKEN"),
     )
     pipeline = pipeline.to(accelerator.device, dtype=weight_dtype)
     return pipeline
