@@ -19,7 +19,7 @@
     <p>
 </h4>
 
-OmniGen2 is a powerful and efficient unified multimodal model. Its architecture is composed of two key components: a 3B Vision-Language Model (VLM) and a 4B diffusion model. In this design, the frozen 3B VLM (Qwen-VL-2.5) is responsible for interpreting both visual signals and user instructions, while the 4B diffusion model leverages this understanding to perform high-quality image generation.
+**OmniGen2** is a powerful and efficient unified multimodal model. Its architecture is composed of two key components: a 3B Vision-Language Model (VLM) and a 4B diffusion model. In this design, the frozen 3B VLM ([Qwen-VL-2.5](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct)) is responsible for interpreting both visual signals and user instructions, while the 4B diffusion model leverages this understanding to perform high-quality image generation.
 
 This dual-component architecture enables strong performance across four primary capabilities:
 
