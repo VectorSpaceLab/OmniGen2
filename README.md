@@ -133,10 +133,8 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
     - **Example**: blurry, low quality, text, watermark
     - **Tip**: For the best results, try experimenting with different negative prompts. If you're not sure, just leave it blank.
 
-## 💻 Resources Requirement
-OmniGen2 require around 21G GPU memory for BF16 inference. For users do not have such GPU memory, may try:
-
-
+<!-- ## 💻 Resources Requirement
+OmniGen2 require around 21G GPU memory for BF16 inference. For users do not have such GPU memory, may try: -->
 
 ## :heart: Citing Us
 If you find this repository or our work useful, please consider giving a star :star: and citation :t-rex:, which would be greatly appreciated (OmniGen2 report will be available as soon as possible):
