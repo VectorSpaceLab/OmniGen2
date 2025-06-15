@@ -141,7 +141,7 @@ OmniGen2 require around 21G GPU memory for BF16 inference. For users do not have
 
 
 ## :heart: Citing Us
-If you find this repository or our work useful, please consider giving a star :star: and citation :t-rex:, which would be greatly appreciated:
+If you find this repository or our work useful, please consider giving a star :star: and citation :t-rex:, which would be greatly appreciated (OmniGen2 report will be available as soon as possible):
 
 ```bibtex
 @article{xiao2024omnigen,
