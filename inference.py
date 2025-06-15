@@ -196,10 +196,16 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
 
     # Generate and save image
     results = run(args, accelerator, pipeline, args.instruction, args.negative_prompt, input_images)
+    os.makedirs(os.path.dirname(args.output_image_path), exist_ok=True)
+
+    if len(results.images) > 1:
+        for i, image in enumerate(results.images):
+            image_name, ext = os.path.splitext(args.output_image_path)
+            image.save(f"{image_name}_{i}{ext}")
+
     vis_images = [to_tensor(image) * 2 - 1 for image in results.images]
     output_image = create_collage(vis_images)
 
-    os.makedirs(os.path.dirname(args.output_image_path), exist_ok=True)
     output_image.save(args.output_image_path)
     print(f"Image saved to {args.output_image_path}")
 

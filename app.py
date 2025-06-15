@@ -20,7 +20,7 @@ NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigu
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_pipeline(args, accelerator, weight_dtype):
+def load_pipeline(accelerator, weight_dtype):
     pipeline = OmniGen2Pipeline.from_pretrained(
         "OmniGen2/OmniGen2",
         torch_dtype=weight_dtype,
@@ -566,7 +566,7 @@ with gr.Blocks() as demo:
                 value=1,
                 step=1,
             )
-            
+
             seed_input = gr.Slider(
                 label="Seed", minimum=-1, maximum=2147483647, value=0, step=1
             )
@@ -588,7 +588,7 @@ with gr.Blocks() as demo:
     accelerator = Accelerator(mixed_precision="bf16" if bf16 else "no")
     weight_dtype = torch.bfloat16 if bf16 else torch.float32
 
-    pipeline = load_pipeline(args, accelerator, weight_dtype)
+    pipeline = load_pipeline(accelerator, weight_dtype)
 
     # click
     generate_button.click(

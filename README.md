@@ -21,8 +21,8 @@
 
 
 ## 🔥 News
-- **2025-06-16**: Gradio and Jupyter demo is available.
-- **2025-06-16**: We release OmniGen2, a multimodal generation model. 
+- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) demo is available.
+- **2025-06-16**: We release OmniGen2, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2).
 
 ## 📌 TODO
 - [ ] Technical report.
@@ -71,6 +71,9 @@ pip install flash-attn --no-build-isolation -i https://pypi.tuna.tsinghua.edu.cn
 ### 🧪 Run Examples
 
 ```bash
+# Visual Understanding
+bash example_understanding.sh
+
 # Text-to-image generation
 bash example_t2i.sh
 
