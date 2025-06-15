@@ -646,4 +646,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # launch
-    demo.launch(share=args.share, server_port=args.port)
+    demo.launch(share=args.share, server_port=args.port, allowed_paths=[ROOT_DIR])
