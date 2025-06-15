@@ -19,6 +19,7 @@
     <p>
 </h4>
 
+<p align="center"><img src="assets/teaser.png" width="95%"></p>
 
 ## 🔥 News
 - **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) demo is available.
