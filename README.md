@@ -22,13 +22,12 @@
 
 ## 🔥 News
 - **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) demo is available.
-- **2025-06-16**: We release OmniGen2, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2).
+- **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2).
 
 ## 📌 TODO
 - [ ] Technical report.
-- [ ] Model checkpoint.
 - [ ] Training data and pipeline scripts.
-- [ ] In-context generation benchmark: OmniContext.
+- [ ] In-context generation benchmark: **OmniContext**.
 - [ ] ComfyUI and Replicate Demo (**commuity support will be greatly appreciated!**).
 
 ## 🚀 Quick Start
