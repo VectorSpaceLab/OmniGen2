@@ -122,9 +122,9 @@ bash example_subject_driven_edit.sh
 * **Online Demo**:
 We are temporarily providing 8 GPUs to support the online demos. If you notice a long queue for a particular link, please try other links:
 
-[Demo1](), [Demo2](), [Demo3](), [Demo4]()
+    [Demo1](), [Demo2](), [Demo3](), [Demo4]()
 
-[Chat-Demo1](), [Chat-Demo2](), [Chat-Demo3](), [Chat-Demo4]()
+    [Chat-Demo1](), [Chat-Demo2](), [Chat-Demo3](), [Chat-Demo4]()
 
 <!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
