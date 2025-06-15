@@ -33,7 +33,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 <p align="center">
   <img src="assets/teaser.png" width="95%">
   <br>
-  <em>图 1：我们的方法在各种图像编辑任务上表现出色。</em>
+  <em>Demonstration of OmniGen2's capabilities.</em>
 </p>
 
 ## 🔥 News
