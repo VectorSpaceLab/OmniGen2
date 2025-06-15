@@ -15,8 +15,8 @@
 <h4 align="center">
     <p>
         <a href=#-news>News</a> |
-        <a href=#-quick-start>Quick Start</a>
-        <a href=#-usage-tips>Usage Tips</a>
+        <a href=#-quick-start>Quick Start</a> |
+        <a href=#-usage-tips>Usage Tips</a> |
         <a href="#heart-citing-us">Citation</a> |
         <a href="#license">License</a>
     <p>
