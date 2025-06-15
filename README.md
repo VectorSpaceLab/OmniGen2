@@ -46,6 +46,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 ## 📌 TODO
 - [ ] Technical report.
 - [ ] In-context generation benchmark: **OmniContext**.
+- [ ] Support CPU offload and improve inference efficiency.
 - [ ] Training data and scripts.
 - [ ] ComfyUI and Replicate Demo (**commuity support will be greatly appreciated!**).
 
@@ -126,7 +127,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
     - **For Editing/Composition**: A moderate value around 4-5 is recommended.
 - `image_guidance_scale`: This controls how much the final image should resemble the input reference image.
     - **The Trade-off**: A higher value (~2.0) makes the output more faithful to the reference image's structure and style, but it might ignore parts of your text prompt. A lower value (~1.5) gives the text prompt more influence.
-    - **Tip**: Start with 1.5 and increase it if you need more consistency with the reference image.
+    - **Tip**: Start with 1.5 and increase it if you need more consistency with the reference image. For image editing task, we recommend to set it between 1.3 and 2.0; for in-context generateion task, a higher image_guidance_scale will maintian more details in input images, and we recommend to set it between 2.5 and 3.0.
 - `max_input_image_pixels`: To manage processing speed and memory consumption, reference images exceeding this total pixel count will be automatically resized.
 - `negative_prompt`: Tell the model what you don't want to see in the image.
     - **Example**: blurry, low quality, text, watermark
