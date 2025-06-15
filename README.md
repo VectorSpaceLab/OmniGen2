@@ -34,6 +34,8 @@ This dual-component architecture enables strong performance across four primary 
 
 As an open-source project, OmniGen2 provides a powerful yet resource-efficient foundation for researchers and developers exploring the frontiers of controllable and personalized generative AI.
 
+**We will release the training code, dataset, and data construction pipeline soon. Stay tuned!**
+
 <p align="center">
   <img src="assets/teaser.png" width="95%">
   <br>
@@ -61,6 +63,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 - [ ] In-context generation benchmark: **OmniContext**.
 - [ ] Support CPU offload and improve inference efficiency.
 - [ ] Training data and scripts.
+- [ ] Data construction pipeline.
 - [ ] ComfyUI Demo (**commuity support will be greatly appreciated!**).
 
 ## 🚀 Quick Start
