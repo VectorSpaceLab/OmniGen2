@@ -7,7 +7,9 @@
   <a href="https://github.com/VectorSpaceLab/OmniGen2"><img src="https://img.shields.io/badge/Project%20Page-OmniGen2-yellow" alt="project page"></a>
   <a href=""><img src="https://img.shields.io/badge/arXiv%20paper-2409.11340-b31b1b.svg" alt="arxiv"></a>
   <a href=""><img src="https://img.shields.io/badge/HF%20Demo-🤗-lightblue" alt="demo"></a>
-  <a href=""><img src="https://img.shields.io/badge/HF%20Model-🤗-yellow" alt="model"></a>
+  <a href="https://huggingface.co/OmniGen2/OmniGen2"><img src="https://img.shields.io/badge/Model-🤗-yellow" alt="model"></a>
+  <a href=""><img src="https://img.shields.io/badge/Benchmark-🤗-yellow" alt="model"></a>
+  <a href=""><img src="https://img.shields.io/badge/Dataset-🤗-yellow" alt="model"></a>
 </p>
 
 <h4 align="center">
@@ -45,7 +47,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 
 ## 📌 TODO
 - [ ] Technical report.
-- [ ] Training data and pipeline scripts.
+- [ ] Training data and scripts.
 - [ ] In-context generation benchmark: **OmniContext**.
 - [ ] ComfyUI and Replicate Demo (**commuity support will be greatly appreciated!**).
 
