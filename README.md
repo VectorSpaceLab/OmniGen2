@@ -1,6 +1,6 @@
 <!-- <h1 align="center">OmniGen2</h1> -->
 <p align="center">
-  <img src="assets/brand.png" width="95%">
+  <img src="assets/brand.png" width="65%">
 </p>
 
 <p align="center">
