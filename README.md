@@ -27,11 +27,8 @@ This dual-component architecture enables strong performance across four primary 
 - Text-to-Image Generation: Creates high-fidelity and aesthetically pleasing images from textual prompts.
 - Instruction-guided Image Editing: Executes complex, instruction-based image modifications with high precision, achieving state-of-the-art performance among open-source models.
 - In-context Generation: A versatile capability to process and flexibly combine diverse inputs—including tasks, reference objects, and scenes—to produce novel and coherent visual outputs.
+
 As an open-source project, OmniGen2 provides a powerful yet resource-efficient foundation for researchers and developers exploring the frontiers of controllable and personalized generative AI.
-
-
-as its frozen vision-language backbone, ensuring robust understanding capabilities while optimizing for generative performance.
-
 
 <p align="center"><img src="assets/teaser.png" width="95%"></p>
 
