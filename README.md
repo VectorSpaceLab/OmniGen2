@@ -22,7 +22,7 @@
 
 ## 🔥 News
 - **2025-06-16**: Gradio and Jupyter demo is available.
-- **2025-06-16**: We release OmniGen2-preview, a multimodal generation model. 
+- **2025-06-16**: We release OmniGen2, a multimodal generation model. 
 
 ## 📌 TODO
 - [ ] Technical report.
