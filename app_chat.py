@@ -106,9 +106,9 @@ def run(
         if save_images:
             from datetime import datetime
 
-            os.makedirs("outputs_yrr", exist_ok=True)
+            os.makedirs("outputs_gradio", exist_ok=True)
             timestamp = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
-            output_path = os.path.join("outputs_yrr", f"{timestamp}.png")
+            output_path = os.path.join("outputs_gradio", f"{timestamp}.png")
             output_image.save(output_path)
 
         return output_image, None

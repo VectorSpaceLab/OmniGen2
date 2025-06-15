@@ -107,10 +107,10 @@ def run(
         from datetime import datetime
 
         # Create outputs directory if it doesn't exist
-        os.makedirs("outputs_yrr", exist_ok=True)
+        os.makedirs("outputs_gradio", exist_ok=True)
         # Generate unique filename with timestamp
         timestamp = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
-        output_path = os.path.join("outputs_yrr", f"{timestamp}.png")
+        output_path = os.path.join("outputs_gradio", f"{timestamp}.png")
         # Save the image
         output_image.save(output_path)
 
