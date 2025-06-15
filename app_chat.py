@@ -1,35 +1,28 @@
 import dotenv
+
 dotenv.load_dotenv(override=True)
 
 import gradio as gr
 
-from typing import List, Tuple
-from PIL import Image
 import os
 import argparse
 import random
-import numpy as np
-
-from PIL import Image
 
 import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
-from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 
 from accelerate import Accelerator
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2_chat import OmniGen2ChatPipeline
-from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
 from omnigen2.utils.img_util import resize_image
 
-# MODEL_PATH = "OmniGen2/OmniGen2-preview"
-MODEL_PATH = "/share_2/luoxin/projects/OmniGen2/pretrained_models/omnigen2_pipe_model_fuse_v17"
 NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar"
-# NEGATIVE_PROMPT = "low quality, blurry, out of focus, distorted, bad anatomy, poorly drawn, pixelated, grainy, artifacts, watermark, text, signature, deformed, extra limbs, cropped, jpeg artifacts, ugly"
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def load_pipeline(accelerator, weight_dtype):
     pipeline = OmniGen2ChatPipeline.from_pretrained(
-        args.model_path,
+        "OmniGen2/OmniGen2",
         torch_dtype=weight_dtype,
         trust_remote_code=True,
         token=os.getenv("HF_TOKEN"),
@@ -37,21 +30,40 @@ def load_pipeline(accelerator, weight_dtype):
     pipeline = pipeline.to(accelerator.device, dtype=weight_dtype)
     return pipeline
 
-def run(instruction, width_input, height_input, num_inference_steps, image_input_1, image_input_2, image_input_3,
-        negative_prompt, guidance_scale_input, img_guidance_scale_input,  num_images_per_prompt, max_input_image_size, seed_input, progress=gr.Progress()):
 
+def run(
+    instruction,
+    width_input,
+    height_input,
+    num_inference_steps,
+    image_input_1,
+    image_input_2,
+    image_input_3,
+    negative_prompt,
+    guidance_scale_input,
+    img_guidance_scale_input,
+    num_images_per_prompt,
+    max_input_image_size,
+    seed_input,
+    progress=gr.Progress(),
+):
     input_images = [image_input_1, image_input_2, image_input_3]
     input_images = [img for img in input_images if img is not None]
-    if len(input_images) == 0: input_images = None
+    if len(input_images) == 0:
+        input_images = None
 
     if input_images is not None:
         # input_images = [crop_arr(x, max_input_image_size, 16) for x in input_images]
-        input_images = [resize_image(x, max_input_image_size * max_input_image_size, 16) for x in input_images]
+        input_images = [
+            resize_image(x, max_input_image_size * max_input_image_size, 16)
+            for x in input_images
+        ]
 
-    if input_images is not None and len(input_images) == 1: width_input, height_input = input_images[0].size
+    if input_images is not None and len(input_images) == 1:
+        width_input, height_input = input_images[0].size
 
     if seed_input == -1:
-        seed_input = random.randint(0, 2**16-1)
+        seed_input = random.randint(0, 2**16 - 1)
     generator = torch.Generator(device=accelerator.device).manual_seed(seed_input)
 
     def progress_callback(cur_step, timesteps):
@@ -73,8 +85,6 @@ def run(instruction, width_input, height_input, num_inference_steps, image_input
         output_type="pil",
         step_func=progress_callback,
     )
-
-    print(results)
 
     progress(1.0)
 
@@ -104,16 +114,17 @@ def run(instruction, width_input, height_input, num_inference_steps, image_input
 
         return output_image, None
     else:
-        return None, results.text.replace("<|im_end|>", "")
+        return None, results.text
+
 
 def get_example():
     case = [
         [
-            "A winter elf kneeling in heavy snow while wearing a battered and bruised armor, holding an ice blade and a shield, designed as a study for a D&D character, with ultra detail and cinematic resolution of 8k.",
+            "Please briefly describe this image.",
             1024,
             1024,
             50,
-            None,
+            "example_images/1e5953ff5e029bfc81bb0a1d4792d26d.jpg",
             None,
             None,
             NEGATIVE_PROMPT,
@@ -121,14 +132,208 @@ def get_example():
             2.0,
             1,
             1024,
-            998244353,
-        ],  
+            0,
+        ],
+        [
+            "A dark wizard conjuring spells in an ancient cave",
+            1024,
+            1024,
+            50,
+            None,
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            3.5,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "The sun rises slightly, the dew on the rose petals in the garden is clear, a crystal ladybug is crawling to the dew, the background is the early morning garden, macro lens.",
+            1024,
+            1024,
+            50,
+            None,
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            3.5,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "A snow maiden with pale translucent skin, frosty white lashes, and a soft expression of longing",
+            1024,
+            1024,
+            50,
+            None,
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            3.5,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "Add a fisherman hat to the woman's head",
+            1024,
+            1024,
+            50,
+            os.path.join(ROOT_DIR, "example_images/flux5.png"),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "replace the sword with a hammer.",
+            1024,
+            1024,
+            50,
+            os.path.join(
+                ROOT_DIR,
+                "example_images/d8f8f44c64106e7715c61b5dfa9d9ca0974314c5d4a4a50418acf7ff373432bb.png",
+            ),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "Extract the character from the picture and fill the rest of the background with white.",
+            # "Transform the sculpture into jade",
+            1024,
+            1024,
+            50,
+            os.path.join(
+                ROOT_DIR, "example_images/46e79704-c88e-4e68-97b4-b4c40cd29826.png"
+            ),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "Make he smile",
+            1024,
+            1024,
+            50,
+            os.path.join(
+                ROOT_DIR, "example_images/vicky-hladynets-C8Ta0gwPbQg-unsplash.jpg"
+            ),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "Change the background to classroom",
+            1024,
+            1024,
+            50,
+            os.path.join(ROOT_DIR, "example_images/ComfyUI_temp_mllvz_00071_.png"),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "Raise his hand",
+            1024,
+            1024,
+            50,
+            os.path.join(
+                ROOT_DIR,
+                "example_images/289089159-a6d7abc142419e63cab0a566eb38e0fb6acb217b340f054c6172139b316f6596.png",
+            ),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "Generate a photo of an anime-style figurine placed on a desk. The figurine model should be based on the character photo provided in the attachment, accurately replicating the full-body pose, facial expression, and clothing style of the character in the photo, ensuring the entire figurine is fully presented. The overall design should be exquisite and detailed, soft gradient colors and a delicate texture, leaning towards a Japanese anime style, rich in details, with a realistic quality and beautiful visual appeal.",
+            1024,
+            1024,
+            50,
+            os.path.join(ROOT_DIR, "example_images/RAL_0315.JPG"),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "Change the dress to blue.",
+            1024,
+            1024,
+            50,
+            os.path.join(ROOT_DIR, "example_images/1.png"),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
+        [
+            "Remove the cat",
+            1024,
+            1024,
+            50,
+            os.path.join(
+                ROOT_DIR,
+                "example_images/386724677-589d19050d4ea0603aee6831459aede29a24f4d8668c62c049f413db31508a54.png",
+            ),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            1,
+            1024,
+            0,
+        ],
         [
             "In a cozy café, the anime figure is sitting in front of a laptop, smiling confidently.",
             1024,
             1024,
             50,
-            "/share_2/chenyuan/data/Omnigen/anime/man/1e5953ff5e029bfc81bb0a1d4792d26d.jpg",
+            os.path.join(ROOT_DIR, "example_images/ComfyUI_00254_.png"),
             None,
             None,
             NEGATIVE_PROMPT,
@@ -136,173 +341,172 @@ def get_example():
             2.0,
             1,
             1024,
-            998244353,
+            0,
         ],
         [
-            "Let the girl from the first image and the man from the second image get married in the church.",
+            "Create a wedding figure based on the girl in the first image and the man in the second image. Set the background as a wedding hall, with the man dressed in a suit and the girl in a white wedding dress. Ensure that the original faces remain unchanged and are accurately preserved. The man should adopt a realistic style, whereas the girl should maintain their classic anime style.",
             1024,
             1024,
             50,
-            "/share_2/chenyuan/data/Flux_subject/anime/init_data/imgs/1girl/74ad3e79-e44b-420c-acfd-61711dca2353.png",
-            "/share/shitao/wyz/datasets/Images/folder1/images/00043/000431857.jpg",
+            os.path.join(ROOT_DIR, "example_images/1_20241127203215.png"),
+            os.path.join(ROOT_DIR, "example_images/000050281.jpg"),
             None,
             NEGATIVE_PROMPT,
             5.0,
             3.0,
             1,
             1024,
-            998244353,
+            0,
+        ],
+        [
+            "Let the girl and the boy get married in the church.",
+            1024,
+            1024,
+            50,
+            os.path.join(ROOT_DIR, "example_images/8FtFUxRzXqaguVRGzkHvN.png"),
+            os.path.join(ROOT_DIR, "example_images/01194-20240127001056_1024x1536.png"),
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            3.0,
+            1,
+            1024,
+            0,
         ],
         [
             "Let the man form image1 and the woman from image2 kiss and hug",
             1024,
             1024,
             50,
-            "/share/shitao/wyz/datasets/Images/folder5/images/00831/008316586.jpg",
-            "/share/shitao/wyz/datasets/Images/folder1/images/00007/000077066.jpg",
+            os.path.join(ROOT_DIR, "example_images/1280X1280.png"),
+            os.path.join(ROOT_DIR, "example_images/000077066.jpg"),
             None,
             NEGATIVE_PROMPT,
             5.0,
             2.0,
             1,
             1024,
-            998244353,
+            0,
         ],
         [
-            "Please let the person in image 2 examine the vintage green alarm clock from the firt image.",
+            "Please let the person in image 2 hold the toy from the first image in a parking lot.",
             1024,
             1024,
             50,
-            "/share/shitao/wyz/datasets/Images/folder1/images/00029/000298127.jpg",
-            "/share/shitao/wyz/datasets/Images/folder2/images/00052/000523889.jpg",
+            os.path.join(ROOT_DIR, "example_images/04.jpg"),
+            os.path.join(ROOT_DIR, "example_images/000365954.jpg"),
             None,
             NEGATIVE_PROMPT,
             5.0,
             2.0,
             1,
             1024,
-            998244353,
+            0,
         ],
         [
             "Make the girl pray in the second image.",
             1024,
             682,
             50,
-            "/share/shitao/wyz/datasets/Images/folder2/images/00044/000440817.jpg",
-            "/share/shitao/wyz/datasets/Images/folder2/images/00011/000119733.jpg",
+            os.path.join(ROOT_DIR, "example_images/000440817.jpg"),
+            os.path.join(ROOT_DIR, "example_images/000119733.jpg"),
             None,
             NEGATIVE_PROMPT,
             5.0,
             2.0,
             1,
             1024,
-            998244353,
+            0,
         ],
         [
             "Add the bird from image 1 to the desk in image 2",
             1024,
             682,
             50,
-            "/share_2/chenyuan/data/Flux_subject/object/imgs/996e2cf6-daa5-48c4-9ad7-0719af640c17_1748848108409.png",
-            "/share_2/pengfei/NEW_FOLDER3/Model_fuse/Data/3.jpg",
+            os.path.join(
+                ROOT_DIR,
+                "example_images/996e2cf6-daa5-48c4-9ad7-0719af640c17_1748848108409.png",
+            ),
+            os.path.join(ROOT_DIR, "example_images/00066-10350085.png"),
             None,
             NEGATIVE_PROMPT,
             5.0,
             2.0,
             1,
             1024,
-            998244353,
+            0,
         ],
         [
             "Replace the apple in the first image with the cat from the second image",
             1024,
-            682,
+            780,
             50,
-            "/share_2/chenyuan/data/Flux_subject/object/imgs/427800b2-9391-43c2-b22a-9517e5ae0893_1748846513998.png",
-            "/share_2/chenyuan/data/Flux_subject/object/imgs/2afb2870-9ca1-489f-8a66-b488efb9ab64_1748850623425.png",
+            os.path.join(ROOT_DIR, "example_images/apple.png"),
+            os.path.join(
+                ROOT_DIR,
+                "example_images/468404374-d52ec1a44aa7e0dc9c2807ce09d303a111c78f34da3da2401b83ce10815ff872.png",
+            ),
             None,
             NEGATIVE_PROMPT,
             5.0,
             2.0,
             1,
             1024,
-            998244353,
+            0,
         ],
         [
-            "Replace the woman in the second image with the man from the first image",
+            "Replace the woman in the second image with the woman from the first image",
             1024,
-            682,
+            747,
             50,
-            "/share/shitao/wyz/datasets/Images/folder2/images/00007/000073764.jpg",
-            "/share_2/chenyuan/data/Omnigen/subject_after_filter_train/imgs_flux_0dot1_cool_adaptv1/f4546e15-d54a-448a-ae80-cb33e9f0d44b.png",
+            os.path.join(
+                ROOT_DIR, "example_images/byward-outfitters-B97YFrsITyo-unsplash.jpg"
+            ),
+            os.path.join(
+                ROOT_DIR, "example_images/6652baf6-4096-40ef-a475-425e4c072daf.png"
+            ),
             None,
             NEGATIVE_PROMPT,
             5.0,
             2.0,
             1,
             1024,
-            998244353,
+            0,
         ],
-        [
-            "Remove the bird",
-            1024,
-            1024,
-            50,
-            "/share_2/pengfei/NEW_FOLDER3/Model_fuse/all_image/f167fca0-f991-4f08-972f-b5819bcc424d_1748850154973.png",
-            None,
-            None,
-            NEGATIVE_PROMPT,
-            5.0,
-            2.0,
-            1,
-            1024,
-            998244353,
-        ],
-        [
-            "Change the man's blue jacket to a maroon one.",
-            1024,
-            1024,
-            50,
-            "/share_2/luoxin/datasets/Distilled/flux_edit_pro/RefEdit/output_images/1842.png",
-            None,
-            None,
-            NEGATIVE_PROMPT,
-            5.0,
-            2.0,
-            1,
-            1024,
-            998244353,
-        ],
-        [
-            "Replace the white toy airplane on the right with a wooden toy train.",
-            1024,
-            1024,
-            50,
-            "/share_2/luoxin/datasets/Distilled/flux_edit_pro/RefEdit/output_images/3220.png",
-            None,
-            None,
-            NEGATIVE_PROMPT,
-            5.0,
-            2.0,
-            1,
-            1024,
-            998244353,
-        ],
-        
     ]
     return case
 
 
-def run_for_examples(instruction,
-                     width_input, height_input,
-                     num_inference_steps,
-                     image_input_1, image_input_2, image_input_3,
-                     negative_prompt,
-                     text_guidance_scale_input, image_guidance_scale_input,
-                     num_images_per_prompt,
-                     max_input_image_size,
-                     seed_input):
-     return run(instruction, width_input, height_input, num_inference_steps, image_input_1, image_input_2, image_input_3, negative_prompt, text_guidance_scale_input, image_guidance_scale_input, num_images_per_prompt, max_input_image_size, seed_input)
+def run_for_examples(
+    instruction,
+    width_input,
+    height_input,
+    num_inference_steps,
+    image_input_1,
+    image_input_2,
+    image_input_3,
+    negative_prompt,
+    text_guidance_scale_input,
+    image_guidance_scale_input,
+    num_images_per_prompt,
+    max_input_image_size,
+    seed_input,
+):
+    return run(
+        instruction,
+        width_input,
+        height_input,
+        num_inference_steps,
+        image_input_1,
+        image_input_2,
+        image_input_3,
+        negative_prompt,
+        text_guidance_scale_input,
+        image_guidance_scale_input,
+        num_images_per_prompt,
+        max_input_image_size,
+        seed_input,
+    )
 
 
 description = """
@@ -313,15 +517,18 @@ article = """
 citation to be added
 """
 
-# Gradio 
+# Gradio
 with gr.Blocks() as demo:
-    gr.Markdown("# OmniGen2: Unified Image Generation [paper](https://arxiv.org/abs/2409.11340) [code](https://github.com/VectorSpaceLab/OmniGen2)")
+    gr.Markdown(
+        "# OmniGen2: Unified Image Generation [paper](https://arxiv.org/abs/2409.11340) [code](https://github.com/VectorSpaceLab/OmniGen2)"
+    )
     gr.Markdown(description)
     with gr.Row():
         with gr.Column():
             # text prompt
             instruction = gr.Textbox(
-                label='Enter your prompt. Use "first/second image" or “第一张图/第二张图” as reference.', placeholder="Type your prompt here..."
+                label='Enter your prompt. Use "first/second image" or “第一张图/第二张图” as reference.',
+                placeholder="Type your prompt here...",
             )
 
             with gr.Row(equal_height=True):
@@ -329,11 +536,13 @@ with gr.Blocks() as demo:
                 image_input_1 = gr.Image(label="First Image", type="pil")
                 image_input_2 = gr.Image(label="Second Image", type="pil")
                 image_input_3 = gr.Image(label="Third Image", type="pil")
-            
+
             generate_button = gr.Button("Generate")
 
             negative_prompt = gr.Textbox(
-                label="Enter your negative prompt", placeholder="Type your negative prompt here...", value=NEGATIVE_PROMPT,
+                label="Enter your negative prompt",
+                placeholder="Type your negative prompt here...",
+                value=NEGATIVE_PROMPT,
             )
 
             # slider
@@ -345,11 +554,19 @@ with gr.Blocks() as demo:
             )
 
             text_guidance_scale_input = gr.Slider(
-                label="Text Guidance Scale", minimum=1.0, maximum=8.0, value=5.0, step=0.1
+                label="Text Guidance Scale",
+                minimum=1.0,
+                maximum=8.0,
+                value=5.0,
+                step=0.1,
             )
 
             image_guidance_scale_input = gr.Slider(
-                label="Image Guidance Scale", minimum=1.0, maximum=3.0, value=2.0, step=0.1
+                label="Image Guidance Scale",
+                minimum=1.0,
+                maximum=3.0,
+                value=2.0,
+                step=0.1,
             )
 
             num_inference_steps = gr.Slider(
@@ -357,34 +574,24 @@ with gr.Blocks() as demo:
             )
 
             num_images_per_prompt = gr.Slider(
-                label="Number of images per prompt", minimum=1, maximum=4, value=1, step=1
+                label="Number of images per prompt",
+                minimum=1,
+                maximum=4,
+                value=1,
+                step=1,
             )
-
-            # bf16 = gr.Checkbox(
-            #     label="bf16", value=True, info="Whether to use bf16."
-            # )
 
             seed_input = gr.Slider(
                 label="Seed", minimum=-1, maximum=2147483647, value=0, step=1
             )
-            # randomize_seed = gr.Checkbox(label="Randomize seed", value=False)
-
             max_input_image_size = gr.Slider(
-                label="max_input_image_size", minimum=256, maximum=1024, value=1024, step=256
+                label="max_input_image_size",
+                minimum=256,
+                maximum=1024,
+                value=1024,
+                step=256,
             )
 
-            # separate_cfg_infer = gr.Checkbox(
-            #     label="separate_cfg_infer", info="Whether to use separate inference process for different guidance. This will reduce the memory cost.", value=True,
-            # )
-            # offload_model = gr.Checkbox(
-            #     label="offload_model", info="Offload model to CPU, which will significantly reduce the memory cost but slow down the generation speed. You can cancel separate_cfg_infer and set offload_model=True. If both separate_cfg_infer and offload_model are True, further reduce the memory, but slowest generation", value=False,
-            # )
-            # use_input_image_size_as_output = gr.Checkbox(
-            #     label="use_input_image_size_as_output", info="Automatically adjust the output image size to be same as input image size. For editing and controlnet task, it can make sure the output image has the same size as input image leading to better performance", value=False,
-            # )
-
-            # generate
-            
         with gr.Column():
             with gr.Column():
                 # output image
@@ -392,15 +599,15 @@ with gr.Blocks() as demo:
                 output_image = gr.Image(label="Output Image")
                 # output text
                 output_text = gr.Textbox(
-                    label="Model Response", 
-                    placeholder="Text responses will appear here...", 
+                    label="Model Response",
+                    placeholder="Text responses will appear here...",
                     lines=5,
                     visible=True,
-                    interactive=False
+                    interactive=False,
                 )
 
     bf16 = True
-    accelerator = Accelerator(mixed_precision="bf16" if bf16 else 'no')
+    accelerator = Accelerator(mixed_precision="bf16" if bf16 else "no")
     weight_dtype = torch.bfloat16 if bf16 else torch.float32
 
     pipeline = load_pipeline(accelerator, weight_dtype)
@@ -410,14 +617,14 @@ with gr.Blocks() as demo:
         run,
         inputs=[
             instruction,
-            width_input, 
-            height_input, 
-            num_inference_steps, 
-            image_input_1, 
-            image_input_2, 
+            width_input,
+            height_input,
+            num_inference_steps,
+            image_input_1,
+            image_input_2,
             image_input_3,
-            negative_prompt, 
-            text_guidance_scale_input, 
+            negative_prompt,
+            text_guidance_scale_input,
             image_guidance_scale_input,
             num_images_per_prompt,
             max_input_image_size,
@@ -431,14 +638,14 @@ with gr.Blocks() as demo:
         fn=run_for_examples,
         inputs=[
             instruction,
-            width_input, 
-            height_input, 
-            num_inference_steps, 
-            image_input_1, 
-            image_input_2, 
+            width_input,
+            height_input,
+            num_inference_steps,
+            image_input_1,
+            image_input_2,
             image_input_3,
-            negative_prompt, 
-            text_guidance_scale_input, 
+            negative_prompt,
+            text_guidance_scale_input,
             image_guidance_scale_input,
             num_images_per_prompt,
             max_input_image_size,
@@ -450,21 +657,13 @@ with gr.Blocks() as demo:
     gr.Markdown(article)
 
 
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run the OmniGen')
-    parser.add_argument('--share', action='store_true', help='Share the Gradio app')
-    parser.add_argument('--port', type=int, default=7860, help='Port to use for the Gradio app')
+    parser = argparse.ArgumentParser(description="Run the OmniGen")
+    parser.add_argument("--share", action="store_true", help="Share the Gradio app")
+    parser.add_argument(
+        "--port", type=int, default=7860, help="Port to use for the Gradio app"
+    )
     args = parser.parse_args()
 
     # launch
-    demo.launch(
-        share=args.share, server_port=args.port, allowed_paths=["/share_2", "/share"]
-    )
-
-"""
-CUDA_VISIBLE_DEVICES=0 python shitao_app.py --share
-
-CUDA_VISIBLE_DEVICES=1 python shitao_app.py --share
-
-"""
+    demo.launch(share=args.share, server_port=args.port)

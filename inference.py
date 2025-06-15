@@ -13,16 +13,9 @@ from torchvision.transforms.functional import to_pil_image, to_tensor
 
 from accelerate import Accelerator
 
-from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
-
-# from omnigen2.pipelines.omnigen2.pipeline_omnigen2_chat import OmniGen2ChatPipeline
-# from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
 from omnigen2.utils.img_util import resize_image
 
-
-print(f"{os.environ['HF_TOKEN']=}")
-print(f"{os.environ['HF_ENDPOINT']=}")
 
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
@@ -36,13 +29,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--num_inference_step",
         type=int,
-        default=28,
+        default=50,
         help="Number of inference steps."
     )
     parser.add_argument(
         "--seed",
         type=int,
-        default=998244353,
+        default=0,
         help="Random seed for generation."
     )
     parser.add_argument(
@@ -205,6 +198,8 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
     results = run(args, accelerator, pipeline, args.instruction, args.negative_prompt, input_images)
     vis_images = [to_tensor(image) * 2 - 1 for image in results.images]
     output_image = create_collage(vis_images)
+
+    os.makedirs(os.path.dirname(args.output_image_path), exist_ok=True)
     output_image.save(args.output_image_path)
     print(f"Image saved to {args.output_image_path}")
 

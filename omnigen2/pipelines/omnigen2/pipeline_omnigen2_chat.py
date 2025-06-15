@@ -383,7 +383,6 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
             batch_size = len(prompt)
         else:
             batch_size = prompt_embeds.shape[0]
-        print(prompt)
         if prompt_embeds is None:
             prompt_embeds, prompt_attention_mask = self._get_qwen2_prompt_embeds(
                 prompt=prompt,
@@ -457,7 +456,6 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         return self._image_guidance_scale
     
     def prepare_inputs_for_text_generation(self, prompts, input_images, device):
-        print(f"{prompts=}", flush=True)
         if isinstance(prompts, str):
             prompts = [prompts]
 
@@ -695,6 +693,8 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
                 verbose=verbose,
                 step_func=step_func,
             )
+
+        generated_text = generated_text.replace("<|im_end|>", "")
         if not return_dict:
             return generated_text, images
         else:

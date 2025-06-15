@@ -17,9 +17,6 @@ from omnigen2.pipelines.omnigen2.pipeline_omnigen2_chat import OmniGen2ChatPipel
 from omnigen2.utils.img_util import resize_image
 
 
-print(f"{os.environ['HF_TOKEN']=}")
-print(f"{os.environ['HF_ENDPOINT']=}")
-
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="OmniGen2 image generation script.")
@@ -32,13 +29,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--num_inference_step",
         type=int,
-        default=28,
+        default=50,
         help="Number of inference steps."
     )
     parser.add_argument(
         "--seed",
         type=int,
-        default=998244353,
+        default=0,
         help="Random seed for generation."
     )
     parser.add_argument(
@@ -199,14 +196,15 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
 
     # Generate and save image
     results = run(args, accelerator, pipeline, args.instruction, args.negative_prompt, input_images)
-    print(f"{results=}", flush=True)
     if results.images is not None:
         vis_images = [to_tensor(image) * 2 - 1 for image in results.images]
         output_image = create_collage(vis_images)
+
+        os.makedirs(os.path.dirname(args.output_image_path), exist_ok=True)
         output_image.save(args.output_image_path)
         print(f"Image saved to {args.output_image_path}")
 
-    print(f"Text: {results.text=}", flush=True)
+    print(f"Text: {results.text}")
 
 if __name__ == "__main__":
     root_dir = os.path.abspath(os.path.join(__file__, os.path.pardir))
