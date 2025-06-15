@@ -110,13 +110,12 @@ bash example_subject_driven_edit.sh
 <!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
 * **Run Locally**:
-
-```bash
-pip install gradio
-python app.py
-# Optional: Share demo with public link
-python app.py --share
-```
+    ```bash
+    pip install gradio
+    python app.py
+    # Optional: Share demo with public link
+    python app.py --share
+    ```
 
 ## 💡 Usage Tips
 To achieve optimal results with OmniGen2, you can adjust the following key hyperparameters based on your specific use case.
