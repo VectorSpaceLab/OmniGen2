@@ -30,7 +30,11 @@ This dual-component architecture enables strong performance across four primary 
 
 As an open-source project, OmniGen2 provides a powerful yet resource-efficient foundation for researchers and developers exploring the frontiers of controllable and personalized generative AI.
 
-<p align="center"><img src="assets/teaser.png" width="95%"></p>
+<p align="center">
+  <img src="assets/teaser.png" width="95%">
+  <br>
+  <em>图 1：我们的方法在各种图像编辑任务上表现出色。</em>
+</p>
 
 ## 🔥 News
 - **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) demo is available.
