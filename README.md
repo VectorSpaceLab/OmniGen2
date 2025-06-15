@@ -1,4 +1,7 @@
-<h1 align="center">OmniGen2</h1>
+<!-- <h1 align="center">OmniGen2</h1> -->
+<p align="center">
+  <img src="assets/brand.png" width="95%">
+</p>
 
 <p align="center">
   <a href="https://github.com/VectorSpaceLab/OmniGen2"><img src="https://img.shields.io/badge/Project%20Page-OmniGen2-yellow" alt="project page"></a>
