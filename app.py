@@ -196,7 +196,7 @@ def get_example():
             0,
         ],
         [
-            "Make he smile",
+            "Make him smile",
             1024,
             1024,
             50,
