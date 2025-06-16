@@ -150,7 +150,8 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `image_guidance_scale`: This controls how much the final image should resemble the input reference image.
     - **The Trade-off**: A higher value (~2.0) makes the output more faithful to the reference image's structure and style, but it might ignore parts of your text prompt. A lower value (~1.5) gives the text prompt more influence.
     - **Tip**: Start with 1.5 and increase it if you need more consistency with the reference image. For image editing task, we recommend to set it between 1.3 and 2.0; for in-context generateion task, a higher image_guidance_scale will maintian more details in input images, and we recommend to set it between 2.5 and 3.0.
-- `max_input_image_pixels`: To manage processing speed and memory consumption, reference images exceeding this total pixel count will be automatically resized.
+- `max_pixels`: Automatically resizes images when their total pixel count (width × height) exceeds this limit, while maintaining its aspect ratio. This helps manage performance and memory usage.
+- `max_input_image_side_length`: Maximum side length for input images.
 - `negative_prompt`: Tell the model what you don't want to see in the image.
     - **Example**: blurry, low quality, text, watermark
     - **Tip**: For the best results, try experimenting with different negative prompts. If you're not sure, just leave it blank.
@@ -158,7 +159,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 <!-- ## 💻 Resources Requirement
 OmniGen2 require around 21G GPU memory for BF16 inference. For users do not have such GPU memory, may try: -->
 
-## :heart: Citing Us
+## ❤️ Citing Us
 If you find this repository or our work useful, please consider giving a star :star: and citation :t-rex:, which would be greatly appreciated (OmniGen2 report will be available as soon as possible):
 
 ```bibtex

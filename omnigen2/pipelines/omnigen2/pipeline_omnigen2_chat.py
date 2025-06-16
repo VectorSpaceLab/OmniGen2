@@ -28,8 +28,6 @@ import torch.nn.functional as F
 
 from transformers import Qwen2_5_VLForConditionalGeneration
 
-# from diffusers.image_processor import PipelineImageInput, VaeImageProcessor
-from omnigen2.pipelines.image_processor import OmniGen2ImageProcessor
 from diffusers.models.autoencoders import AutoencoderKL
 from ...models.transformers import OmniGen2Transformer2DModel
 from ...models.transformers.repo import OmniGen2RotaryPosEmbed
@@ -46,6 +44,8 @@ from dataclasses import dataclass
 import PIL.Image
 
 from diffusers.utils import BaseOutput
+
+from omnigen2.pipelines.image_processor import OmniGen2ImageProcessor
 
 if is_torch_xla_available():
     import torch_xla.core.xla_model as xm
@@ -166,8 +166,8 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         self.vae_scale_factor = (
             2 ** (len(self.vae.config.block_out_channels) - 1) if hasattr(self, "vae") and self.vae is not None else 8
         )
-        self.image_processor = OmniGen2ImageProcessor(vae_scale_factor=self.vae_scale_factor, do_resize=True)
-        self.default_sample_size = 64
+        self.image_processor = OmniGen2ImageProcessor(vae_scale_factor=self.vae_scale_factor * 2, do_resize=True)
+        self.default_sample_size = 128
 
     def prepare_latents(
         self,
@@ -231,6 +231,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         batch_size: int,
         num_images_per_prompt: int,
         max_pixels: int,
+        max_side_length: int,
         device: torch.device,
         dtype: torch.dtype,
     ) -> List[Optional[torch.FloatTensor]]:
@@ -254,7 +255,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
             if img is not None and len(img) > 0:
                 ref_latents = []
                 for j, img_j in enumerate(img):
-                    img_j = self.image_processor.preprocess(img_j, max_pixels=max_pixels)
+                    img_j = self.image_processor.preprocess(img_j, max_pixels=max_pixels, max_side_length=max_side_length)
                     ref_latents.append(self.encode_vae(img_j.to(device=device)).squeeze(0))
             else:
                 ref_latents = None
@@ -493,8 +494,6 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         )
         return output_texts
     
-
-    @torch.no_grad()
     def generate_image(
         self,
         prompt: Optional[Union[str, List[str]]] = None,
@@ -508,9 +507,10 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         callback_on_step_end_tensor_inputs: Optional[List[str]] = None,
         input_images: Optional[List[PIL.Image.Image]] = None,
         num_images_per_prompt: int = 1,
-        height: Optional[int] = 1024,
-        width: Optional[int] = 1024,
-        max_pixels: Optional[int] = 1024 * 1024,
+        height: Optional[int] = None,
+        width: Optional[int] = None,
+        max_pixels: int = 1024 * 1024,
+        max_input_image_side_length: int = 1024,
         align_res: bool = True,
         num_inference_steps: int = 28,
         text_guidance_scale: float = 4.0,
@@ -526,9 +526,6 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
     ):
         height = height or self.default_sample_size * self.vae_scale_factor
         width = width or self.default_sample_size * self.vae_scale_factor
-
-        ori_height = height
-        ori_width = width
 
         self._text_guidance_scale = text_guidance_scale
         self._image_guidance_scale = image_guidance_scale
@@ -572,6 +569,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
             batch_size=batch_size,
             num_images_per_prompt=num_images_per_prompt,
             max_pixels=max_pixels,
+            max_side_length=max_input_image_side_length,
             device=device,
             dtype=dtype,
         )
@@ -581,7 +579,10 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         
         if len(input_images) == 1 and align_res:
             width, height = ref_latents[0][0].shape[-1] * self.vae_scale_factor, ref_latents[0][0].shape[-2] * self.vae_scale_factor
+            ori_width, ori_height = width, height
         else:
+            ori_width, ori_height = width, height
+
             cur_pixels = height * width
             ratio = (max_pixels / cur_pixels) ** 0.5
             ratio = min(ratio, 1.0)
@@ -651,6 +652,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         height: Optional[int] = 1024,
         width: Optional[int] = 1024,
         max_pixels: Optional[int] = 1024 * 1024,
+        max_input_image_side_length: int = 1024,
         align_res: bool = True,
         num_inference_steps: int = 28,
         text_guidance_scale: float = 4.0,
@@ -682,6 +684,8 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
                 num_images_per_prompt=num_images_per_prompt,
                 height=height,
                 width=width,
+                max_pixels=max_pixels,
+                max_input_image_side_length=max_input_image_side_length,
                 align_res=align_res,
                 num_inference_steps=num_inference_steps,
                 text_guidance_scale=text_guidance_scale,
@@ -716,8 +720,6 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         verbose,
         step_func=None
     ):
-        self.set_progress_bar_config(disable=not verbose)
-
         batch_size = latents.shape[0]
 
         timesteps, num_inference_steps = retrieve_timesteps(

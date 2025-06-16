@@ -6,7 +6,7 @@ import argparse
 import os
 from typing import List, Tuple
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
@@ -128,10 +128,12 @@ def preprocess(input_image_path: List[str] = []) -> Tuple[str, str, List[Image.I
             input_image_path = [input_image_path]
 
         if len(input_image_path) == 1 and os.path.isdir(input_image_path[0]):
-            input_images = [Image.open(os.path.join(input_image_path[0], f)) 
+            input_images = [Image.open(os.path.join(input_image_path[0], f)).convert("RGB")
                           for f in os.listdir(input_image_path[0])]
         else:
-            input_images = [Image.open(path) for path in input_image_path]
+            input_images = [Image.open(path).convert("RGB") for path in input_image_path]
+
+        input_images = [ImageOps.exif_transpose(img) for img in input_images]
 
         for input_image in input_images:
             input_image = resize_image(input_image, args.max_input_image_pixels, 16)

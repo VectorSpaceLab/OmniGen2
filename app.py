@@ -14,7 +14,6 @@ from torchvision.transforms.functional import to_pil_image, to_tensor
 from accelerate import Accelerator
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
-from omnigen2.utils.img_util import resize_image
 
 NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -42,27 +41,20 @@ def run(
     guidance_scale_input,
     img_guidance_scale_input,
     num_images_per_prompt,
-    max_input_image_size,
+    max_input_image_side_length,
+    max_pixels,
     seed_input,
     progress=gr.Progress(),
 ):
     input_images = [image_input_1, image_input_2, image_input_3]
     input_images = [img for img in input_images if img is not None]
+
     if len(input_images) == 0:
         input_images = None
 
-    if input_images is not None:
-        # input_images = [crop_arr(x, max_input_image_size, 16) for x in input_images]
-        input_images = [
-            resize_image(x, max_input_image_size * max_input_image_size, 16)
-            for x in input_images
-        ]
-
-    if input_images is not None and len(input_images) == 1:
-        width_input, height_input = input_images[0].size
-
     if seed_input == -1:
         seed_input = random.randint(0, 2**16 - 1)
+
     generator = torch.Generator(device=accelerator.device).manual_seed(seed_input)
 
     def progress_callback(cur_step, timesteps):
@@ -74,6 +66,8 @@ def run(
         input_images=input_images,
         width=width_input,
         height=height_input,
+        max_input_image_side_length=max_input_image_side_length,
+        max_pixels=max_pixels,
         num_inference_steps=num_inference_steps,
         max_sequence_length=1024,
         text_guidance_scale=guidance_scale_input,
@@ -121,21 +115,6 @@ def run(
 def get_example():
     case = [
         [
-            "A dark wizard conjuring spells in an ancient cave",
-            1024,
-            1024,
-            50,
-            None,
-            None,
-            None,
-            NEGATIVE_PROMPT,
-            3.5,
-            2.0,
-            1,
-            1024,
-            0,
-        ],
-        [
             "The sun rises slightly, the dew on the rose petals in the garden is clear, a crystal ladybug is crawling to the dew, the background is the early morning garden, macro lens.",
             1024,
             1024,
@@ -145,9 +124,10 @@ def get_example():
             None,
             NEGATIVE_PROMPT,
             3.5,
-            2.0,
+            1.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -160,9 +140,10 @@ def get_example():
             None,
             NEGATIVE_PROMPT,
             3.5,
-            2.0,
+            1.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -177,11 +158,12 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
-            "replace the sword with a hammer.",
+            " replace the sword with a hammer.",
             1024,
             1024,
             50,
@@ -195,7 +177,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -213,7 +196,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -230,7 +214,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -245,7 +230,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -263,7 +249,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -278,7 +265,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -293,7 +281,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -311,7 +300,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -326,7 +316,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -341,11 +332,12 @@ def get_example():
             5.0,
             3.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
-            "Let the girl and the boy get married in the church.",
+            "Let the girl  and the boy get married in the church. ",
             1024,
             1024,
             50,
@@ -356,7 +348,8 @@ def get_example():
             5.0,
             3.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -371,7 +364,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -386,7 +380,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -401,7 +396,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -419,7 +415,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -437,7 +434,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
         [
@@ -456,7 +454,8 @@ def get_example():
             5.0,
             2.0,
             1,
-            1024,
+            2048,
+            1024 * 1024,
             0,
         ],
     ]
@@ -475,7 +474,8 @@ def run_for_examples(
     text_guidance_scale_input,
     image_guidance_scale_input,
     num_images_per_prompt,
-    max_input_image_size,
+    max_input_image_side_length,
+    max_pixels,
     seed_input,
 ):
     return run(
@@ -490,7 +490,8 @@ def run_for_examples(
         text_guidance_scale_input,
         image_guidance_scale_input,
         num_images_per_prompt,
-        max_input_image_size,
+        max_input_image_side_length,
+        max_pixels,
         seed_input,
     )
 
@@ -572,12 +573,20 @@ with gr.Blocks() as demo:
             seed_input = gr.Slider(
                 label="Seed", minimum=-1, maximum=2147483647, value=0, step=1
             )
-            max_input_image_size = gr.Slider(
-                label="max_input_image_size",
+
+            max_input_image_side_length = gr.Slider(
+                label="max_input_image_side_length",
                 minimum=256,
-                maximum=1024,
-                value=1024,
+                maximum=2048,
+                value=2048,
                 step=256,
+            )
+            max_pixels = gr.Slider(
+                label="max_pixels",
+                minimum=256 * 256,
+                maximum=1536 * 1536,
+                value=1024 * 1024,
+                step=256 * 256,
             )
 
         with gr.Column():
@@ -607,7 +616,8 @@ with gr.Blocks() as demo:
             text_guidance_scale_input,
             image_guidance_scale_input,
             num_images_per_prompt,
-            max_input_image_size,
+            max_input_image_side_length,
+            max_pixels,
             seed_input,
         ],
         outputs=output_image,
@@ -628,7 +638,8 @@ with gr.Blocks() as demo:
             text_guidance_scale_input,
             image_guidance_scale_input,
             num_images_per_prompt,
-            max_input_image_size,
+            max_input_image_side_length,
+            max_pixels,
             seed_input,
         ],
         outputs=output_image,

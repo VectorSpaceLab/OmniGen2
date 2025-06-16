@@ -6,8 +6,6 @@ model_path="OmniGen2/OmniGen2"
 python inference.py \
 --model_path $model_path \
 --num_inference_step 50 \
---height 1536 \
---width 1024 \
 --text_guidance_scale 5.0 \
 --image_guidance_scale 2.0 \
 --instruction "Change the background to classroom." \
