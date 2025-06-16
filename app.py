@@ -7,6 +7,7 @@ import gradio as gr
 import os
 import argparse
 import random
+from datetime import datetime
 
 import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
@@ -14,6 +15,7 @@ from torchvision.transforms.functional import to_pil_image, to_tensor
 from accelerate import Accelerator
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
+from omnigen2.utils.img_util import create_collage
 
 NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -82,33 +84,26 @@ def run(
     progress(1.0)
 
     vis_images = [to_tensor(image) * 2 - 1 for image in results.images]
-
-    # Concatenate input images of different sizes horizontally
-    max_height = max(img.shape[-2] for img in vis_images)
-    total_width = sum(img.shape[-1] for img in vis_images)
-    canvas = torch.zeros((3, max_height, total_width), device=vis_images[0].device)
-
-    current_x = 0
-    for i, img in enumerate(vis_images):
-        h, w = img.shape[-2:]
-        # Place image at the top of canvas
-        canvas[:, :h, current_x : current_x + w] = img * 0.5 + 0.5
-        current_x += w
-    output_image = to_pil_image(canvas)
+    output_image = create_collage(vis_images)
 
     if save_images:
-        # Save All Generated Images
-        from datetime import datetime
-
         # Create outputs directory if it doesn't exist
         output_dir = os.path.join(ROOT_DIR, "outputs_gradio")
         os.makedirs(output_dir, exist_ok=True)
+
         # Generate unique filename with timestamp
         timestamp = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
+
+        # Generate unique filename with timestamp
         output_path = os.path.join(output_dir, f"{timestamp}.png")
         # Save the image
         output_image.save(output_path)
 
+        # Save All Generated Images
+        if len(results.images) > 1:
+            for i, image in enumerate(results.images):
+                image_name, ext = os.path.splitext(output_path)
+                image.save(f"{image_name}_{i}{ext}")
     return output_image
 
 
