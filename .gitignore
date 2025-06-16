@@ -224,3 +224,4 @@ convert_ckpt_to_pipeline.py
 inference_test_efficiency.py
 upload_pipeline.py
 upload_pipeline_chat.py
+upload_pipeline_to_modelscope.py
