@@ -56,7 +56,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 
 ## 🔥 News
 - **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) demo is available.
-- **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2).
+- **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
 ## 📌 TODO
 - [ ] Technical report.
@@ -160,7 +160,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 OmniGen2 require around 21G GPU memory for BF16 inference. For users do not have such GPU memory, may try: -->
 
 ## ❤️ Citing Us
-If you find this repository or our work useful, please consider giving a star :star: and citation :t-rex:, which would be greatly appreciated (OmniGen2 report will be available as soon as possible):
+If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated (OmniGen2 report will be available as soon as possible):
 
 ```bibtex
 @article{xiao2024omnigen,
