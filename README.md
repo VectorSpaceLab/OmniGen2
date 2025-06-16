@@ -116,8 +116,8 @@ bash example_t2i.sh
 # Instruction-guided image editing
 bash example_edit.sh
 
-# Subject-driven image editing
-bash example_subject_driven_edit.sh
+# In-context generation
+bash example_in_contex_generation
 ```
 
 ---
