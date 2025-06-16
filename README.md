@@ -117,7 +117,7 @@ bash example_t2i.sh
 bash example_edit.sh
 
 # In-context generation
-bash example_in_contex_generation
+bash example_in_context_generation.sh
 ```
 
 ---
