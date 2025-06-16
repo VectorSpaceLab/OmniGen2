@@ -136,7 +136,7 @@ We are temporarily providing 8 GPUs to support the online demos. If you notice a
     ```bash
     pip install gradio
     python app.py
-    # Optional: Share demo with public link
+    # Optional: Share demo with public link (You need to be able to access huggingface)
     python app.py --share
     ```
 
