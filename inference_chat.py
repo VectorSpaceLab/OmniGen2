@@ -136,6 +136,16 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         torch_dtype=weight_dtype,
         trust_remote_code=True,
     )
+    if args.scheduler == "dpmsolver":
+        from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
+        scheduler = DPMSolverMultistepScheduler(
+            algorithm_type="dpmsolver++",
+            solver_type="midpoint",
+            solver_order=2,
+            prediction_type="flow_prediction",
+        )
+        pipeline.scheduler = scheduler
+        
     if args.enable_sequential_cpu_offload:
         pipeline.enable_sequential_cpu_offload()
     elif args.enable_model_cpu_offload:

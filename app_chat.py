@@ -15,6 +15,8 @@ from torchvision.transforms.functional import to_pil_image, to_tensor
 from accelerate import Accelerator
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2_chat import OmniGen2ChatPipeline
+from omnigen2.schedulers.scheduling_flow_match_euler_discrete import FlowMatchEulerDiscreteScheduler
+from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
 from omnigen2.utils.img_util import create_collage
 
 NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar"
@@ -43,6 +45,7 @@ def run(
     instruction,
     width_input,
     height_input,
+    scheduler,
     num_inference_steps,
     image_input_1,
     image_input_2,
@@ -71,6 +74,16 @@ def run(
         frac = (cur_step + 1) / float(timesteps)
         progress(frac)
 
+    if scheduler == 'euler':
+        pipeline.scheduler = FlowMatchEulerDiscreteScheduler()
+    elif scheduler == 'dpmsolver':
+        pipeline.scheduler = DPMSolverMultistepScheduler(
+            algorithm_type="dpmsolver++",
+            solver_type="midpoint",
+            solver_order=2,
+            prediction_type="flow_prediction",
+        )
+        
     results = pipeline(
         prompt=instruction,
         input_images=input_images,
@@ -126,6 +139,7 @@ def get_example():
             "Please briefly describe this image.",
             1024,
             1024,
+            'euler',
             50,
             "example_images/1e5953ff5e029bfc81bb0a1d4792d26d.jpg",
             None,
@@ -144,6 +158,7 @@ def get_example():
             "The sun rises slightly, the dew on the rose petals in the garden is clear, a crystal ladybug is crawling to the dew, the background is the early morning garden, macro lens.",
             1024,
             1024,
+            'euler',
             50,
             None,
             None,
@@ -162,6 +177,7 @@ def get_example():
             "A snow maiden with pale translucent skin, frosty white lashes, and a soft expression of longing",
             1024,
             1024,
+            'euler',
             50,
             None,
             None,
@@ -180,6 +196,7 @@ def get_example():
             "Add a fisherman hat to the woman's head",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/flux5.png"),
             None,
@@ -198,6 +215,7 @@ def get_example():
             " replace the sword with a hammer.",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(
                 ROOT_DIR,
@@ -220,6 +238,7 @@ def get_example():
             # "Transform the sculpture into jade",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(
                 ROOT_DIR, "example_images/46e79704-c88e-4e68-97b4-b4c40cd29826.png"
@@ -240,6 +259,7 @@ def get_example():
             "Make he smile",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(
                 ROOT_DIR, "example_images/vicky-hladynets-C8Ta0gwPbQg-unsplash.jpg"
@@ -260,6 +280,7 @@ def get_example():
             "Change the background to classroom",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/ComfyUI_temp_mllvz_00071_.png"),
             None,
@@ -278,6 +299,7 @@ def get_example():
             "Raise his hand",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(
                 ROOT_DIR,
@@ -299,6 +321,7 @@ def get_example():
             "Generate a photo of an anime-style figurine placed on a desk. The figurine model should be based on the character photo provided in the attachment, accurately replicating the full-body pose, facial expression, and clothing style of the character in the photo, ensuring the entire figurine is fully presented. The overall design should be exquisite and detailed, soft gradient colors and a delicate texture, leaning towards a Japanese anime style, rich in details, with a realistic quality and beautiful visual appeal.",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/RAL_0315.JPG"),
             None,
@@ -317,6 +340,7 @@ def get_example():
             "Change the dress to blue.",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/1.png"),
             None,
@@ -335,6 +359,7 @@ def get_example():
             "Remove the cat",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(
                 ROOT_DIR,
@@ -356,6 +381,7 @@ def get_example():
             "In a cozy café, the anime figure is sitting in front of a laptop, smiling confidently.",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/ComfyUI_00254_.png"),
             None,
@@ -374,6 +400,7 @@ def get_example():
             "Create a wedding figure based on the girl in the first image and the man in the second image. Set the background as a wedding hall, with the man dressed in a suit and the girl in a white wedding dress. Ensure that the original faces remain unchanged and are accurately preserved. The man should adopt a realistic style, whereas the girl should maintain their classic anime style.",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/1_20241127203215.png"),
             os.path.join(ROOT_DIR, "example_images/000050281.jpg"),
@@ -392,6 +419,7 @@ def get_example():
             "Let the girl  and the boy get married in the church. ",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/8FtFUxRzXqaguVRGzkHvN.png"),
             os.path.join(ROOT_DIR, "example_images/01194-20240127001056_1024x1536.png"),
@@ -410,6 +438,7 @@ def get_example():
             "Let the man from image1 and the woman from image2 kiss and hug",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/1280X1280.png"),
             os.path.join(ROOT_DIR, "example_images/000077066.jpg"),
@@ -428,6 +457,7 @@ def get_example():
             "Please let the person in image 2 hold the toy from the first image in a parking lot.",
             1024,
             1024,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/04.jpg"),
             os.path.join(ROOT_DIR, "example_images/000365954.jpg"),
@@ -446,6 +476,7 @@ def get_example():
             "Make the girl pray in the second image.",
             1024,
             682,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/000440817.jpg"),
             os.path.join(ROOT_DIR, "example_images/000119733.jpg"),
@@ -464,6 +495,7 @@ def get_example():
             "Add the bird from image 1 to the desk in image 2",
             1024,
             682,
+            'euler',
             50,
             os.path.join(
                 ROOT_DIR,
@@ -485,6 +517,7 @@ def get_example():
             "Replace the apple in the first image with the cat from the second image",
             1024,
             780,
+            'euler',
             50,
             os.path.join(ROOT_DIR, "example_images/apple.png"),
             os.path.join(
@@ -506,6 +539,7 @@ def get_example():
             "Replace the woman in the second image with the woman from the first image",
             1024,
             747,
+            'euler',
             50,
             os.path.join(
                 ROOT_DIR, "example_images/byward-outfitters-B97YFrsITyo-unsplash.jpg"
@@ -532,6 +566,7 @@ def run_for_examples(
     instruction,
     width_input,
     height_input,
+    scheduler,
     num_inference_steps,
     image_input_1,
     image_input_2,
@@ -550,6 +585,7 @@ def run_for_examples(
         instruction,
         width_input,
         height_input,
+        scheduler,
         num_inference_steps,
         image_input_1,
         image_input_2,
@@ -567,8 +603,13 @@ def run_for_examples(
 
 
 description = """
-The model mainly supports English, with slight support for Chinese.
-Increase the `image_guidance_scale` if you need more consistency with the reference image. For image editing task, we recommend to set it between 1.3 and 2.0; for in-context generateion task, a higher image_guidance_scale will maintian more details in input images, and we recommend to set it between 2.0 and 3.0.
+### 💡 Quick Tips for Best Results (see our [github](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-usage-tips) for more details)
+- Image Quality: Use high-resolution images (at least 512x512 recommended).
+- Be Specific: Instead of "Add bird to desk", try "Add the bird from image 1 to the desk in image 2".
+- Use English: English prompts currently yield better results.
+- Adjust image_guidance_scale for better consistency with the reference image:
+    - Image Editing: 1.3 - 2.0
+    - In-context Generation: 2.0 - 3.0
 """
 
 article = """
@@ -605,44 +646,45 @@ def main(args):
                 )
 
                 # slider
-                height_input = gr.Slider(
-                    label="Height", minimum=256, maximum=1024, value=1024, step=128
-                )
-                width_input = gr.Slider(
-                    label="Width", minimum=256, maximum=1024, value=1024, step=128
-                )
+                with gr.Row(equal_height=True):
+                    height_input = gr.Slider(
+                        label="Height", minimum=256, maximum=1024, value=1024, step=128
+                    )
+                    width_input = gr.Slider(
+                        label="Width", minimum=256, maximum=1024, value=1024, step=128
+                    )
+                with gr.Row(equal_height=True):
+                    text_guidance_scale_input = gr.Slider(
+                        label="Text Guidance Scale",
+                        minimum=1.0,
+                        maximum=8.0,
+                        value=5.0,
+                        step=0.1,
+                    )
 
-                text_guidance_scale_input = gr.Slider(
-                    label="Text Guidance Scale",
-                    minimum=1.0,
-                    maximum=8.0,
-                    value=5.0,
-                    step=0.1,
-                )
+                    image_guidance_scale_input = gr.Slider(
+                        label="Image Guidance Scale",
+                        minimum=1.0,
+                        maximum=3.0,
+                        value=2.0,
+                        step=0.1,
+                    )
+                with gr.Row(equal_height=True):
+                    cfg_range_start = gr.Slider(
+                        label="CFG Range Start",
+                        minimum=0.0,
+                        maximum=1.0,
+                        value=0.0,
+                        step=0.1,
+                    )
 
-                image_guidance_scale_input = gr.Slider(
-                    label="Image Guidance Scale",
-                    minimum=1.0,
-                    maximum=3.0,
-                    value=2.0,
-                    step=0.1,
-                )
-
-                cfg_range_start = gr.Slider(
-                    label="CFG Range Start",
-                    minimum=0.0,
-                    maximum=1.0,
-                    value=0.0,
-                    step=0.1,
-                )
-
-                cfg_range_end = gr.Slider(
-                    label="CFG Range End",
-                    minimum=0.0,
-                    maximum=1.0,
-                    value=1.0,
-                    step=0.1,
-                )
+                    cfg_range_end = gr.Slider(
+                        label="CFG Range End",
+                        minimum=0.0,
+                        maximum=1.0,
+                        value=1.0,
+                        step=0.1,
+                    )
                 
                 def adjust_end_slider(start_val, end_val):
                     return max(start_val, end_val)
@@ -662,35 +704,44 @@ def main(args):
                     outputs=[cfg_range_start]
                 )
 
-                num_inference_steps = gr.Slider(
-                    label="Inference Steps", minimum=20, maximum=100, value=50, step=1
-                )
+                with gr.Row(equal_height=True):
+                    scheduler_input = gr.Dropdown(
+                        label="Scheduler",
+                        choices=["euler", "dpmsolver"],
+                        value="euler",
+                        info="The scheduler to use for the model.",
+                    )
 
-                num_images_per_prompt = gr.Slider(
-                    label="Number of images per prompt",
-                    minimum=1,
-                    maximum=4,
-                    value=1,
-                    step=1,
-                )
+                    num_inference_steps = gr.Slider(
+                        label="Inference Steps", minimum=20, maximum=100, value=50, step=1
+                    )
+                with gr.Row(equal_height=True):
+                    num_images_per_prompt = gr.Slider(
+                        label="Number of images per prompt",
+                        minimum=1,
+                        maximum=4,
+                        value=1,
+                        step=1,
+                    )
 
-                seed_input = gr.Slider(
-                    label="Seed", minimum=-1, maximum=2147483647, value=0, step=1
-                )
-                max_input_image_side_length = gr.Slider(
-                    label="max_input_image_side_length",
-                    minimum=256,
-                    maximum=1024,
-                    value=1024,
-                    step=256,
-                )
-                max_pixels = gr.Slider(
-                    label="max_pixels",
-                    minimum=256 * 256,
-                    maximum=1024 * 1024,
-                    value=1024 * 1024,
-                    step=256 * 256,
-                )
+                    seed_input = gr.Slider(
+                        label="Seed", minimum=-1, maximum=2147483647, value=0, step=1
+                    )
+                with gr.Row(equal_height=True):
+                    max_input_image_side_length = gr.Slider(
+                        label="max_input_image_side_length",
+                        minimum=256,
+                        maximum=2048,
+                        value=2048,
+                        step=256,
+                    )
+                    max_pixels = gr.Slider(
+                        label="max_pixels",
+                        minimum=256 * 256,
+                        maximum=1536 * 1536,
+                        value=1024 * 1024,
+                        step=256 * 256,
+                    )
 
             with gr.Column():
                 with gr.Column():
@@ -723,6 +774,7 @@ def main(args):
                 instruction,
                 width_input,
                 height_input,
+                scheduler_input,
                 num_inference_steps,
                 image_input_1,
                 image_input_2,
@@ -747,6 +799,7 @@ def main(args):
                 instruction,
                 width_input,
                 height_input,
+                scheduler_input,
                 num_inference_steps,
                 image_input_1,
                 image_input_2,
