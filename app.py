@@ -16,6 +16,7 @@ from accelerate import Accelerator
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
 from omnigen2.utils.img_util import create_collage
+from diffusers.hooks import apply_group_offloading
 
 
 NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar"
@@ -27,6 +28,11 @@ def load_pipeline(accelerator, weight_dtype, args):
         torch_dtype=weight_dtype,
         trust_remote_code=True,
     )
+    if args.enable_group_offload:
+        apply_group_offloading(pipeline.transformer, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, low_cpu_mem_usage = True)
+        apply_group_offloading(pipeline.mllm, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, low_cpu_mem_usage = True)
+        apply_group_offloading(pipeline.vae, onload_device=accelerator.device, offload_type="leaf_level", low_cpu_mem_usage = True)
+
     if args.enable_sequential_cpu_offload:
         pipeline.enable_sequential_cpu_offload()
     elif args.enable_model_cpu_offload:
@@ -762,6 +768,10 @@ def parse_args():
         action="store_true",
         help="Enable sequential CPU offload."
     )
+    parser.add_argument(
+        "--enable_group_offload", 
+        action="store_true", 
+        help="Apply group offloading to Qwen2.5vl, DiT, and VAE to save VRAM. May require more RAM or swap to run")
     return parser.parse_args()
 
 if __name__ == "__main__":
