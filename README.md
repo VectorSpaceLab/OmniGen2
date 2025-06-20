@@ -23,9 +23,12 @@
     <p>
 </h4>
 
-**OmniGen2** is a powerful and efficient unified multimodal model. Its architecture is composed of two key components: a 3B Vision-Language Model (VLM) and a 4B diffusion model. In this design, the frozen 3B VLM ([Qwen-VL-2.5](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct)) is responsible for interpreting both visual signals and user instructions, while the 4B diffusion model leverages this understanding to perform high-quality image generation.
+## 🔥 News
+- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) demo is available.
+- **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
-This dual-component architecture enables strong performance across four primary capabilities:
+
+**OmniGen2** is a powerful and efficient unified multimodal model. Its architecture is composed of two key components: a 3B Vision-Language Model (VLM) and a 4B diffusion model. This dual-component architecture enables strong performance across four primary capabilities:
 
 - **Visual Understanding**: Inherits the robust ability to interpret and analyze image content from its Qwen-VL-2.5 foundation.
 - **Text-to-Image Generation**: Creates high-fidelity and aesthetically pleasing images from textual prompts.
@@ -54,9 +57,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
   <em>Demonstration of OmniGen2's in-context generation capabilities.</em>
 </p>
 
-## 🔥 News
-- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) demo is available.
-- **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
+
 
 ## 📌 TODO
 - [ ] Technical report.
@@ -141,33 +142,41 @@ We are temporarily providing 8 GPUs to support the online demos. If you notice a
 
 * **Run Locally**:
     ```bash
+    # for only generating image
     pip install gradio
     python app.py
     # Optional: Share demo with public link (You need to be able to access huggingface)
     python app.py --share
+
+    # for generating image or text
+    pip install gradio
+    python app_chat.py
     ```
 
 ## 💡 Usage Tips
 To achieve optimal results with OmniGen2, you can adjust the following key hyperparameters based on your specific use case.
-- `num_inference_step`: The number of sampling steps per generation. Higher values generally improve quality but increase generation time.
-    - Recommended Range: 28 to 50
 - `text_guidance_scale`: Controls how strictly the output adheres to the text prompt (Classifier-Free Guidance).
-    - **For Text-to-Image**: Use a higher value (e.g., 6-7) for simple or less detailed prompts. Use a lower value (e.g., 4) for complex and highly detailed prompts.
-    - **For Editing/Composition**: A moderate value around 4-5 is recommended.
 - `image_guidance_scale`: This controls how much the final image should resemble the input reference image.
-    - **The Trade-off**: A higher value (~2.0) makes the output more faithful to the reference image's structure and style, but it might ignore parts of your text prompt. A lower value (~1.5) gives the text prompt more influence.
-    - **Tip**: Start with 1.5 and increase it if you need more consistency with the reference image. For image editing task, we recommend to set it between 1.3 and 2.0; for in-context generateion task, a higher image_guidance_scale will maintian more details in input images, and we recommend to set it between 2.5 and 3.0.
+    - **The Trade-off**: A higher value makes the output more faithful to the reference image's structure and style, but it might ignore parts of your text prompt. A lower value (~1.5) gives the text prompt more influence.
+    - **Tip**: For image editing task, we recommend to set it between 1.2 and 2.0; for in-context generateion task, a higher image_guidance_scale will maintian more details in input images, and we recommend to set it between 2.5 and 3.0.
 - `max_pixels`: Automatically resizes images when their total pixel count (width × height) exceeds this limit, while maintaining its aspect ratio. This helps manage performance and memory usage.
+  - **Tip**: Default value is 1024*1024. You can reduce this value if you encounter memory issues.
 - `max_input_image_side_length`: Maximum side length for input images.
 - `negative_prompt`: Tell the model what you don't want to see in the image.
     - **Example**: blurry, low quality, text, watermark
-    - **Tip**: For the best results, try experimenting with different negative prompts. If you're not sure, just leave it blank.
+    - **Tip**: For the best results, try experimenting with different negative prompts. If you're not sure, just use the default negative prompt.
 - `enable_model_cpu_offload`: **Reduces VRAM usage by nearly 50% with a negligible impact on speed**.
   - This is achieved by offloading the model weights to CPU RAM when they are not in use.
   - See: [Model Offloading](https://huggingface.co/docs/diffusers/optimization/memory#model-offloading)
 - `enable_sequential_cpu_offload`: Minimizes VRAM usage to less than 3GB, but at the cost of significantly slower performance.
   - This works by offloading the model in submodules and loading them onto the GPU sequentially as needed.
   - See: [CPU Offloading](https://huggingface.co/docs/diffusers/optimization/memory#cpu-offloading)
+
+Some suggestions for improving generation quality:
+- Use high-resolution and high-quality images. Images that are too small or blurry will also result in low-quality output. We recommend ensuring that the input image size is greater than 512 whenever possible.
+- Provide detailed instructions. For in-context generation tasks, specify which elements from which image the model should use.
+- Try to use English as much as possible, as OmniGen2 currently performs better in English than in Chinese.
+
 
 ## 💻 Resources Requirement
 OmniGen2 natively requires an **NVIDIA RTX 3090** or an equivalent GPU with approximately **17GB of VRAM**. For devices with less VRAM, you can enable **CPU Offload** to run the model.

@@ -673,6 +673,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
 
         images = None
         if generated_text.startswith("<|img|>"):
+            #TODO: reuse the hidden state when generate text instead of re-generating
             prompt = prompt + generated_text.split("<|img|>")[0]
             images = self.generate_image(
                 prompt=prompt,
