@@ -42,6 +42,8 @@ def run(
     negative_prompt,
     guidance_scale_input,
     img_guidance_scale_input,
+    cfg_range_start,
+    cfg_range_end,
     num_images_per_prompt,
     max_input_image_side_length,
     max_pixels,
@@ -74,6 +76,7 @@ def run(
         max_sequence_length=1024,
         text_guidance_scale=guidance_scale_input,
         image_guidance_scale=img_guidance_scale_input,
+        cfg_range=(cfg_range_start, cfg_range_end),
         negative_prompt=negative_prompt,
         num_images_per_prompt=num_images_per_prompt,
         generator=generator,
@@ -120,6 +123,8 @@ def get_example():
             NEGATIVE_PROMPT,
             3.5,
             1.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -135,6 +140,8 @@ def get_example():
             None,
             NEGATIVE_PROMPT,
             3.5,
+            1.0,
+            0.0,
             1.0,
             1,
             2048,
@@ -152,6 +159,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -171,6 +180,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -190,6 +201,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -208,6 +221,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -224,6 +239,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -243,6 +260,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -259,6 +278,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -275,6 +296,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -294,6 +317,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -310,6 +335,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -326,6 +353,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             3.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -342,13 +371,15 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             3.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
             0,
         ],
         [
-            "Let the man form image1 and the woman from image2 kiss and hug",
+            "Let the man from image1 and the woman from image2 kiss and hug",
             1024,
             1024,
             50,
@@ -358,6 +389,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -374,6 +407,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -390,6 +425,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -409,6 +446,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -428,6 +467,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -448,6 +489,8 @@ def get_example():
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
             1,
             2048,
             1024 * 1024,
@@ -468,6 +511,8 @@ def run_for_examples(
     negative_prompt,
     text_guidance_scale_input,
     image_guidance_scale_input,
+    cfg_range_start,
+    cfg_range_end,
     num_images_per_prompt,
     max_input_image_side_length,
     max_pixels,
@@ -484,6 +529,8 @@ def run_for_examples(
         negative_prompt,
         text_guidance_scale_input,
         image_guidance_scale_input,
+        cfg_range_start,
+        cfg_range_end,
         num_images_per_prompt,
         max_input_image_side_length,
         max_pixels,
@@ -553,6 +600,40 @@ with gr.Blocks() as demo:
                 step=0.1,
             )
 
+            cfg_range_start = gr.Slider(
+                label="CFG Range Start",
+                minimum=0.0,
+                maximum=1.0,
+                value=0.0,
+                step=0.1,
+            )
+
+            cfg_range_end = gr.Slider(
+                label="CFG Range End",
+                minimum=0.0,
+                maximum=1.0,
+                value=1.0,
+                step=0.1,
+            )
+            
+            def adjust_end_slider(start_val, end_val):
+                return max(start_val, end_val)
+
+            def adjust_start_slider(end_val, start_val):
+                return min(end_val, start_val)
+            
+            cfg_range_start.input(
+                fn=adjust_end_slider,
+                inputs=[cfg_range_start, cfg_range_end],
+                outputs=[cfg_range_end]
+            )
+
+            cfg_range_end.input(
+                fn=adjust_start_slider,
+                inputs=[cfg_range_end, cfg_range_start],
+                outputs=[cfg_range_start]
+            )
+
             num_inference_steps = gr.Slider(
                 label="Inference Steps", minimum=20, maximum=100, value=50, step=1
             )
@@ -584,6 +665,7 @@ with gr.Blocks() as demo:
                 step=256 * 256,
             )
 
+
         with gr.Column():
             with gr.Column():
                 # output image
@@ -610,6 +692,8 @@ with gr.Blocks() as demo:
             negative_prompt,
             text_guidance_scale_input,
             image_guidance_scale_input,
+            cfg_range_start,
+            cfg_range_end,
             num_images_per_prompt,
             max_input_image_side_length,
             max_pixels,
@@ -632,6 +716,8 @@ with gr.Blocks() as demo:
             negative_prompt,
             text_guidance_scale_input,
             image_guidance_scale_input,
+            cfg_range_start,
+            cfg_range_end,
             num_images_per_prompt,
             max_input_image_side_length,
             max_pixels,

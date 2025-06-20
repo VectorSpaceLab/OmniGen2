@@ -76,6 +76,18 @@ def parse_args() -> argparse.Namespace:
         help="Image guidance scale."
     )
     parser.add_argument(
+        "--cfg_range_start",
+        type=float,
+        default=0.0,
+        help="Start of the CFG range."
+    )
+    parser.add_argument(
+        "--cfg_range_end",
+        type=float,
+        default=1.0,
+        help="End of the CFG range."
+    )
+    parser.add_argument(
         "--instruction",
         type=str,
         default="A dog running in the park",
@@ -106,6 +118,16 @@ def parse_args() -> argparse.Namespace:
         default=1,
         help="Number of images to generate per prompt."
     )
+    parser.add_argument(
+        "--enable_model_cpu_offload",
+        action="store_true",
+        help="Enable model CPU offload."
+    )
+    parser.add_argument(
+        "--enable_sequential_cpu_offload",
+        action="store_true",
+        help="Enable sequential CPU offload."
+    )
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2Pipeline:
@@ -114,7 +136,12 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         torch_dtype=weight_dtype,
         trust_remote_code=True,
     )
-    pipeline = pipeline.to(accelerator.device, dtype=weight_dtype)
+    if args.enable_sequential_cpu_offload:
+        pipeline.enable_sequential_cpu_offload()
+    elif args.enable_model_cpu_offload:
+        pipeline.enable_model_cpu_offload()
+    else:
+        pipeline = pipeline.to(accelerator.device)
     return pipeline
 
 def preprocess(input_image_path: List[str] = []) -> Tuple[str, str, List[Image.Image]]:
@@ -134,9 +161,6 @@ def preprocess(input_image_path: List[str] = []) -> Tuple[str, str, List[Image.I
             input_images = [Image.open(path).convert("RGB") for path in input_image_path]
 
         input_images = [ImageOps.exif_transpose(img) for img in input_images]
-
-        for input_image in input_images:
-            input_image = resize_image(input_image, args.max_input_image_pixels, 16)
 
     return input_images
 
@@ -158,6 +182,7 @@ def run(args: argparse.Namespace,
         max_sequence_length=1024,
         text_guidance_scale=args.text_guidance_scale,
         image_guidance_scale=args.image_guidance_scale,
+        cfg_range=(args.cfg_range_start, args.cfg_range_end),
         negative_prompt=negative_prompt,
         num_images_per_prompt=args.num_images_per_prompt,
         generator=generator,

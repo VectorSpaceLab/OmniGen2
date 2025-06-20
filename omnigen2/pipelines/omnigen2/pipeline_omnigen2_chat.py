@@ -441,20 +441,16 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         return self._num_timesteps
 
     @property
-    def do_text_classifier_free_guidance(self):
-        return self._text_guidance_scale != 1
-    
-    @property
     def text_guidance_scale(self):
         return self._text_guidance_scale
     
     @property
-    def do_image_classifier_free_guidance(self):
-        return self._image_guidance_scale != -1
-    
-    @property
     def image_guidance_scale(self):
         return self._image_guidance_scale
+
+    @property
+    def cfg_range(self):
+        return self._cfg_range
     
     def prepare_inputs_for_text_generation(self, prompts, input_images, device):
         if isinstance(prompts, str):
@@ -515,6 +511,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         num_inference_steps: int = 28,
         text_guidance_scale: float = 4.0,
         image_guidance_scale: float = 1.0,
+        cfg_range: Tuple[float, float] = (0.0, 1.0),
         attention_kwargs: Optional[Dict[str, Any]] = None,
         timesteps: List[int] = None,
         generator: Optional[Union[torch.Generator, List[torch.Generator]]] = None,
@@ -529,6 +526,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
 
         self._text_guidance_scale = text_guidance_scale
         self._image_guidance_scale = image_guidance_scale
+        self._cfg_range = cfg_range
         self._attention_kwargs = attention_kwargs
 
         # 2. Define call parameters
@@ -550,7 +548,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         ) = self.encode_prompt(
             prompt,
             input_images,
-            self.do_text_classifier_free_guidance,
+            self.text_guidance_scale > 1.0,
             negative_prompt=negative_prompt,
             num_images_per_prompt=num_images_per_prompt,
             device=device,
@@ -657,6 +655,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         num_inference_steps: int = 28,
         text_guidance_scale: float = 4.0,
         image_guidance_scale: float = 1.0,
+        cfg_range: Tuple[float, float] = (0.0, 1.0),
         attention_kwargs: Optional[Dict[str, Any]] = None,
         timesteps: List[int] = None,
         generator: Optional[Union[torch.Generator, List[torch.Generator]]] = None,
@@ -690,6 +689,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
                 num_inference_steps=num_inference_steps,
                 text_guidance_scale=text_guidance_scale,
                 image_guidance_scale=image_guidance_scale,
+                cfg_range=cfg_range,
                 timesteps=timesteps,
                 generator=generator,
                 latents=latents,
@@ -743,7 +743,9 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
                     ref_image_hidden_states=ref_latents,
                 )
                 
-                if self.do_text_classifier_free_guidance and self.do_image_classifier_free_guidance:
+                text_guidance_scale = self.text_guidance_scale if self.cfg_range[0] <= i / len(timesteps) <= self.cfg_range[1] else 1.0
+                image_guidance_scale = self.image_guidance_scale if self.cfg_range[0] <= i / len(timesteps) <= self.cfg_range[1] else 1.0
+                if text_guidance_scale > 1.0 and image_guidance_scale > 1.0:
                     model_pred_ref = self.predict(
                         t=t,
                         latents=latents,
@@ -753,7 +755,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
                         ref_image_hidden_states=ref_latents,
                     )
 
-                    if self.image_guidance_scale != 1:
+                    if image_guidance_scale != 1:
                         model_pred_uncond = self.predict(
                             t=t,
                             latents=latents,
@@ -765,9 +767,9 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
                     else:
                         model_pred_uncond = torch.zeros_like(model_pred)
 
-                    model_pred = model_pred_uncond + self.image_guidance_scale * (model_pred_ref - model_pred_uncond) + \
-                    self.text_guidance_scale * (model_pred - model_pred_ref)
-                elif self.do_text_classifier_free_guidance:
+                    model_pred = model_pred_uncond + image_guidance_scale * (model_pred_ref - model_pred_uncond) + \
+                    text_guidance_scale * (model_pred - model_pred_ref)
+                elif text_guidance_scale > 1.0:
                     model_pred_uncond = self.predict(
                         t=t,
                         latents=latents,
@@ -776,7 +778,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
                         prompt_attention_mask=negative_prompt_attention_mask,
                         ref_image_hidden_states=None,
                     )
-                    model_pred = model_pred_uncond + self.text_guidance_scale * (model_pred - model_pred_uncond)
+                    model_pred = model_pred_uncond + text_guidance_scale * (model_pred - model_pred_uncond)
 
                 latents = self.scheduler.step(model_pred, t, latents, return_dict=False)[0]
 

@@ -88,7 +88,10 @@ pip install torch==2.6.0 torchvision --extra-index-url https://download.pytorch.
 
 # 3.2 Install other required packages
 pip install -r requirements.txt
-pip install flash-attn --no-build-isolation
+
+# Note: Version 2.7.4.post1 is specified for compatibility with CUDA 12.4.
+# Feel free to use a newer version if you use CUDA 12.6 or they fixed this compatibility issue.
+pip install flash-attn==2.7.4.post1 --no-build-isolation
 ```
 
 #### 🌏 For users in Mainland China
@@ -99,7 +102,10 @@ pip install torch==2.6.0 torchvision --index-url https://mirror.sjtu.edu.cn/pyto
 
 # Install other dependencies from Tsinghua mirror
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install flash-attn --no-build-isolation -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# Note: Version 2.7.4.post1 is specified for compatibility with CUDA 12.4.
+# Feel free to use a newer version if you use CUDA 12.6 or they fixed this compatibility issue.
+pip install flash-attn==2.7.4.post1 --no-build-isolation -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ---
@@ -156,9 +162,24 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `negative_prompt`: Tell the model what you don't want to see in the image.
     - **Example**: blurry, low quality, text, watermark
     - **Tip**: For the best results, try experimenting with different negative prompts. If you're not sure, just leave it blank.
+- `enable_model_cpu_offload`: **Reduces VRAM usage by nearly 50% with a negligible impact on speed**.
+  - This is achieved by offloading the model weights to CPU RAM when they are not in use.
+  - See: [Model Offloading](https://huggingface.co/docs/diffusers/optimization/memory#model-offloading)
+- `enable_sequential_cpu_offload`: Minimizes VRAM usage to less than 3GB, but at the cost of significantly slower performance.
+  - This works by offloading the model in submodules and loading them onto the GPU sequentially as needed.
+  - See: [CPU Offloading](https://huggingface.co/docs/diffusers/optimization/memory#cpu-offloading)
 
-<!-- ## 💻 Resources Requirement
-OmniGen2 require around 21G GPU memory for BF16 inference. For users do not have such GPU memory, may try: -->
+## 💻 Resources Requirement
+OmniGen2 natively requires an **NVIDIA RTX 3090** or an equivalent GPU with approximately **17GB of VRAM**. For devices with less VRAM, you can enable **CPU Offload** to run the model.
+
+**Performance Tip**: To improve inference speed, consider decreasing the `cfg_range_end` parameter. Within a reasonable range, this has a negligible impact on output quality.
+
+The following table details the inference performance of OmniGen2 on an **A800 GPU**:
+<p align="center">
+  <img src="assets/efficiency.png" width="95%">
+  <br>
+  <em>Inference Efficiency of OmniGen2.</em>
+</p>
 
 ## ❤️ Citing Us
 If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated (OmniGen2 report will be available as soon as possible):
