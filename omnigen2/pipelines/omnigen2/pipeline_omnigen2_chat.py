@@ -136,6 +136,7 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
         tokenizer (Union[Qwen2Tokenizer, Qwen2TokenizerFast]): The tokenizer for text processing.
     """
 
+    model_cpu_offload_seq = "mllm->transformer->vae"
     def __init__(
         self,
         transformer: OmniGen2Transformer2DModel,

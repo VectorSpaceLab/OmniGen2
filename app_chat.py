@@ -20,16 +20,24 @@ from omnigen2.utils.img_util import create_collage
 NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+pipeline = None
+accelerator = None
+save_images = False
 
-def load_pipeline(accelerator, weight_dtype):
+
+def load_pipeline(accelerator, weight_dtype, args):
     pipeline = OmniGen2ChatPipeline.from_pretrained(
-        "OmniGen2/OmniGen2",
+        args.model_path,
         torch_dtype=weight_dtype,
         trust_remote_code=True,
     )
-    pipeline = pipeline.to(accelerator.device, dtype=weight_dtype)
+    if args.enable_sequential_cpu_offload:
+        pipeline.enable_sequential_cpu_offload()
+    elif args.enable_model_cpu_offload:
+        pipeline.enable_model_cpu_offload()
+    else:
+        pipeline = pipeline.to(accelerator.device)
     return pipeline
-
 
 def run(
     instruction,
@@ -567,199 +575,225 @@ article = """
 citation to be added
 """
 
-# Gradio
-with gr.Blocks() as demo:
-    gr.Markdown(
-        "# OmniGen2: Unified Image Generation [paper](https://arxiv.org/abs/2409.11340) [code](https://github.com/VectorSpaceLab/OmniGen2)"
-    )
-    gr.Markdown(description)
-    with gr.Row():
-        with gr.Column():
-            # text prompt
-            instruction = gr.Textbox(
-                label='Enter your prompt. Use "first/second image" or “第一张图/第二张图” as reference.',
-                placeholder="Type your prompt here...",
-            )
-
-            with gr.Row(equal_height=True):
-                # input images
-                image_input_1 = gr.Image(label="First Image", type="pil")
-                image_input_2 = gr.Image(label="Second Image", type="pil")
-                image_input_3 = gr.Image(label="Third Image", type="pil")
-
-            generate_button = gr.Button("Generate")
-
-            negative_prompt = gr.Textbox(
-                label="Enter your negative prompt",
-                placeholder="Type your negative prompt here...",
-                value=NEGATIVE_PROMPT,
-            )
-
-            # slider
-            height_input = gr.Slider(
-                label="Height", minimum=256, maximum=1024, value=1024, step=128
-            )
-            width_input = gr.Slider(
-                label="Width", minimum=256, maximum=1024, value=1024, step=128
-            )
-
-            text_guidance_scale_input = gr.Slider(
-                label="Text Guidance Scale",
-                minimum=1.0,
-                maximum=8.0,
-                value=5.0,
-                step=0.1,
-            )
-
-            image_guidance_scale_input = gr.Slider(
-                label="Image Guidance Scale",
-                minimum=1.0,
-                maximum=3.0,
-                value=2.0,
-                step=0.1,
-            )
-
-            cfg_range_start = gr.Slider(
-                label="CFG Range Start",
-                minimum=0.0,
-                maximum=1.0,
-                value=0.0,
-                step=0.1,
-            )
-
-            cfg_range_end = gr.Slider(
-                label="CFG Range End",
-                minimum=0.0,
-                maximum=1.0,
-                value=1.0,
-                step=0.1,
-            )
-            
-            def adjust_end_slider(start_val, end_val):
-                return max(start_val, end_val)
-
-            def adjust_start_slider(end_val, start_val):
-                return min(end_val, start_val)
-            
-            cfg_range_start.input(
-                fn=adjust_end_slider,
-                inputs=[cfg_range_start, cfg_range_end],
-                outputs=[cfg_range_end]
-            )
-
-            cfg_range_end.input(
-                fn=adjust_start_slider,
-                inputs=[cfg_range_end, cfg_range_start],
-                outputs=[cfg_range_start]
-            )
-
-            num_inference_steps = gr.Slider(
-                label="Inference Steps", minimum=20, maximum=100, value=50, step=1
-            )
-
-            num_images_per_prompt = gr.Slider(
-                label="Number of images per prompt",
-                minimum=1,
-                maximum=4,
-                value=1,
-                step=1,
-            )
-
-            seed_input = gr.Slider(
-                label="Seed", minimum=-1, maximum=2147483647, value=0, step=1
-            )
-            max_input_image_side_length = gr.Slider(
-                label="max_input_image_side_length",
-                minimum=256,
-                maximum=1024,
-                value=1024,
-                step=256,
-            )
-            max_pixels = gr.Slider(
-                label="max_pixels",
-                minimum=256 * 256,
-                maximum=1024 * 1024,
-                value=1024 * 1024,
-                step=256 * 256,
-            )
-        with gr.Column():
+def main(args):
+    # Gradio
+    with gr.Blocks() as demo:
+        gr.Markdown(
+            "# OmniGen2: Unified Image Generation [paper](https://arxiv.org/abs/2409.11340) [code](https://github.com/VectorSpaceLab/OmniGen2)"
+        )
+        gr.Markdown(description)
+        with gr.Row():
             with gr.Column():
-                # output image
-                save_images = gr.Checkbox(label="Save generated images", value=False)
-                output_image = gr.Image(label="Output Image")
-                # output text
-                output_text = gr.Textbox(
-                    label="Model Response",
-                    placeholder="Text responses will appear here...",
-                    lines=5,
-                    visible=True,
-                    interactive=False,
+                # text prompt
+                instruction = gr.Textbox(
+                    label='Enter your prompt. Use "first/second image" or “第一张图/第二张图” as reference.',
+                    placeholder="Type your prompt here...",
                 )
 
-    bf16 = True
-    accelerator = Accelerator(mixed_precision="bf16" if bf16 else "no")
-    weight_dtype = torch.bfloat16 if bf16 else torch.float32
+                with gr.Row(equal_height=True):
+                    # input images
+                    image_input_1 = gr.Image(label="First Image", type="pil")
+                    image_input_2 = gr.Image(label="Second Image", type="pil")
+                    image_input_3 = gr.Image(label="Third Image", type="pil")
 
-    pipeline = load_pipeline(accelerator, weight_dtype)
+                generate_button = gr.Button("Generate")
 
-    # click
-    generate_button.click(
-        run,
-        inputs=[
-            instruction,
-            width_input,
-            height_input,
-            num_inference_steps,
-            image_input_1,
-            image_input_2,
-            image_input_3,
-            negative_prompt,
-            text_guidance_scale_input,
-            image_guidance_scale_input,
-            cfg_range_start,
-            cfg_range_end,
-            num_images_per_prompt,
-            max_input_image_side_length,
-            max_pixels,
-            seed_input,
-        ],
-        outputs=[output_image, output_text],
-    )
+                negative_prompt = gr.Textbox(
+                    label="Enter your negative prompt",
+                    placeholder="Type your negative prompt here...",
+                    value=NEGATIVE_PROMPT,
+                )
 
-    gr.Examples(
-        examples=get_example(),
-        fn=run_for_examples,
-        inputs=[
-            instruction,
-            width_input,
-            height_input,
-            num_inference_steps,
-            image_input_1,
-            image_input_2,
-            image_input_3,
-            negative_prompt,
-            text_guidance_scale_input,
-            image_guidance_scale_input,
-            cfg_range_start,
-            cfg_range_end,
-            num_images_per_prompt,
-            max_input_image_side_length,
-            max_pixels,
-            seed_input,
-        ],
-        outputs=[output_image, output_text],
-    )
+                # slider
+                height_input = gr.Slider(
+                    label="Height", minimum=256, maximum=1024, value=1024, step=128
+                )
+                width_input = gr.Slider(
+                    label="Width", minimum=256, maximum=1024, value=1024, step=128
+                )
 
-    gr.Markdown(article)
+                text_guidance_scale_input = gr.Slider(
+                    label="Text Guidance Scale",
+                    minimum=1.0,
+                    maximum=8.0,
+                    value=5.0,
+                    step=0.1,
+                )
+
+                image_guidance_scale_input = gr.Slider(
+                    label="Image Guidance Scale",
+                    minimum=1.0,
+                    maximum=3.0,
+                    value=2.0,
+                    step=0.1,
+                )
+
+                cfg_range_start = gr.Slider(
+                    label="CFG Range Start",
+                    minimum=0.0,
+                    maximum=1.0,
+                    value=0.0,
+                    step=0.1,
+                )
+
+                cfg_range_end = gr.Slider(
+                    label="CFG Range End",
+                    minimum=0.0,
+                    maximum=1.0,
+                    value=1.0,
+                    step=0.1,
+                )
+                
+                def adjust_end_slider(start_val, end_val):
+                    return max(start_val, end_val)
+
+                def adjust_start_slider(end_val, start_val):
+                    return min(end_val, start_val)
+                
+                cfg_range_start.input(
+                    fn=adjust_end_slider,
+                    inputs=[cfg_range_start, cfg_range_end],
+                    outputs=[cfg_range_end]
+                )
+
+                cfg_range_end.input(
+                    fn=adjust_start_slider,
+                    inputs=[cfg_range_end, cfg_range_start],
+                    outputs=[cfg_range_start]
+                )
+
+                num_inference_steps = gr.Slider(
+                    label="Inference Steps", minimum=20, maximum=100, value=50, step=1
+                )
+
+                num_images_per_prompt = gr.Slider(
+                    label="Number of images per prompt",
+                    minimum=1,
+                    maximum=4,
+                    value=1,
+                    step=1,
+                )
+
+                seed_input = gr.Slider(
+                    label="Seed", minimum=-1, maximum=2147483647, value=0, step=1
+                )
+                max_input_image_side_length = gr.Slider(
+                    label="max_input_image_side_length",
+                    minimum=256,
+                    maximum=1024,
+                    value=1024,
+                    step=256,
+                )
+                max_pixels = gr.Slider(
+                    label="max_pixels",
+                    minimum=256 * 256,
+                    maximum=1024 * 1024,
+                    value=1024 * 1024,
+                    step=256 * 256,
+                )
+
+            with gr.Column():
+                with gr.Column():
+                    # output image
+                    global save_images
+                    save_images = gr.Checkbox(label="Save generated images", value=False)
+                    output_image = gr.Image(label="Output Image")
+                    # output text
+                    output_text = gr.Textbox(
+                        label="Model Response",
+                        placeholder="Text responses will appear here...",
+                        lines=5,
+                        visible=True,
+                        interactive=False,
+                    )
+
+        global accelerator
+        global pipeline
+
+        bf16 = True
+        accelerator = Accelerator(mixed_precision="bf16" if bf16 else "no")
+        weight_dtype = torch.bfloat16 if bf16 else torch.float32
+
+        pipeline = load_pipeline(accelerator, weight_dtype, args)
+
+        # click
+        generate_button.click(
+            run,
+            inputs=[
+                instruction,
+                width_input,
+                height_input,
+                num_inference_steps,
+                image_input_1,
+                image_input_2,
+                image_input_3,
+                negative_prompt,
+                text_guidance_scale_input,
+                image_guidance_scale_input,
+                cfg_range_start,
+                cfg_range_end,
+                num_images_per_prompt,
+                max_input_image_side_length,
+                max_pixels,
+                seed_input,
+            ],
+            outputs=[output_image, output_text],
+        )
+
+        gr.Examples(
+            examples=get_example(),
+            fn=run_for_examples,
+            inputs=[
+                instruction,
+                width_input,
+                height_input,
+                num_inference_steps,
+                image_input_1,
+                image_input_2,
+                image_input_3,
+                negative_prompt,
+                text_guidance_scale_input,
+                image_guidance_scale_input,
+                cfg_range_start,
+                cfg_range_end,
+                num_images_per_prompt,
+                max_input_image_side_length,
+                max_pixels,
+                seed_input,
+            ],
+            outputs=[output_image, output_text],
+        )
+
+        gr.Markdown(article)
+    # launch
+    demo.launch(share=args.share, server_port=args.port, allowed_paths=[ROOT_DIR])
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run the OmniGen")
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run the OmniGen2")
     parser.add_argument("--share", action="store_true", help="Share the Gradio app")
     parser.add_argument(
         "--port", type=int, default=7860, help="Port to use for the Gradio app"
     )
+    parser.add_argument(
+        "--model_path",
+        type=str,
+        default="OmniGen2/OmniGen2",
+        help="Path or HuggingFace name of the model to load."
+    )
+    parser.add_argument(
+        "--enable_model_cpu_offload",
+        action="store_true",
+        help="Enable model CPU offload."
+    )
+    parser.add_argument(
+        "--enable_sequential_cpu_offload",
+        action="store_true",
+        help="Enable sequential CPU offload."
+    )
     args = parser.parse_args()
+    return args
 
-    # launch
-    demo.launch(share=args.share, server_port=args.port, allowed_paths=[ROOT_DIR])
+if __name__ == "__main__":
+    args = parse_args()
+    main(args)
