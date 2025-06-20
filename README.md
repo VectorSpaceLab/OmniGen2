@@ -24,6 +24,7 @@
 </h4>
 
 ## 🔥 News
+- **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
 - **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available.
 - **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
@@ -172,7 +173,8 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `enable_sequential_cpu_offload`: Minimizes VRAM usage to less than 3GB, but at the cost of significantly slower performance.
   - This works by offloading the model in submodules and loading them onto the GPU sequentially as needed.
   - See: [CPU Offloading](https://huggingface.co/docs/diffusers/optimization/memory#cpu-offloading)
-
+- `cfg_range_start`, `cfg_range_end`: Define the timestep range where CFG is applied. Per this [paper](https://arxiv.org/abs/2404.07724), reducing cfg_range_end can significantly decrease inference time with a negligible impact on quality.
+  
 **Some suggestions for improving generation quality:**
 - Use high-resolution and high-quality images. Images that are too small or blurry will also result in low-quality output. We recommend ensuring that the input image size is greater than 512 whenever possible.
 - Provide detailed instructions. For in-context generation tasks, specify which elements from which image the model should use.
