@@ -24,10 +24,11 @@
 </h4>
 
 ## 🔥 News
-- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) demo is available.
+- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available.
 - **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
 
+## Introduction
 **OmniGen2** is a powerful and efficient unified multimodal model. Its architecture is composed of two key components: a 3B Vision-Language Model (VLM) and a 4B diffusion model. This dual-component architecture enables strong performance across four primary capabilities:
 
 - **Visual Understanding**: Inherits the robust ability to interpret and analyze image content from its Qwen-VL-2.5 foundation.
@@ -172,7 +173,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
   - This works by offloading the model in submodules and loading them onto the GPU sequentially as needed.
   - See: [CPU Offloading](https://huggingface.co/docs/diffusers/optimization/memory#cpu-offloading)
 
-Some suggestions for improving generation quality:
+**Some suggestions for improving generation quality:**
 - Use high-resolution and high-quality images. Images that are too small or blurry will also result in low-quality output. We recommend ensuring that the input image size is greater than 512 whenever possible.
 - Provide detailed instructions. For in-context generation tasks, specify which elements from which image the model should use.
 - Try to use English as much as possible, as OmniGen2 currently performs better in English than in Chinese.
