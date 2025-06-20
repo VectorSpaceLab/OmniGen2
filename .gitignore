@@ -212,6 +212,7 @@ local_scripts/
 
 omnigen2/utils/vpn_utils.py
 
+otuputs_gradio/*
 test_tokenizer.py
 save_pipeline.py
 app.sh

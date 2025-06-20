@@ -17,12 +17,9 @@ from accelerate import Accelerator
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
 from omnigen2.utils.img_util import create_collage
 
+
 NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-pipeline = None
-accelerator = None
-save_images = False
 
 def load_pipeline(accelerator, weight_dtype, args):
     pipeline = OmniGen2Pipeline.from_pretrained(
@@ -765,8 +762,7 @@ def parse_args():
         action="store_true",
         help="Enable sequential CPU offload."
     )
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()
