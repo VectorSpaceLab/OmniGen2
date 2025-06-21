@@ -30,7 +30,7 @@
 
 
 ## Introduction
-**OmniGen2** is a powerful and efficient unified multimodal model. Its architecture is composed of two key components: a 3B Vision-Language Model (VLM) and a 4B diffusion model. This dual-component architecture enables strong performance across four primary capabilities:
+**OmniGen2** is a powerful and efficient unified multimodal model. Unlike OmniGen v1, OmniGen2 features two distinct decoding pathways for text and image modalities, utilizing unshared parameters and a decoupled image tokenizer. OmniGen2 has competitive performance across four primary capabilities:
 
 - **Visual Understanding**: Inherits the robust ability to interpret and analyze image content from its Qwen-VL-2.5 foundation.
 - **Text-to-Image Generation**: Creates high-fidelity and aesthetically pleasing images from textual prompts.
