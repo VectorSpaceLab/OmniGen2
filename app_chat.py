@@ -558,6 +558,31 @@ def get_example():
             1024 * 1024,
             0,
         ],
+        [
+            "The cat is sitting on the table. The bird is perching on the edge of the table.",
+            800,
+            512,
+            "euler",
+            50,
+            os.path.join(
+                ROOT_DIR,
+                "example_images/996e2cf6-daa5-48c4-9ad7-0719af640c17_1748848108409.png",
+            ),
+            os.path.join(
+                ROOT_DIR,
+                "example_images/468404374-d52ec1a44aa7e0dc9c2807ce09d303a111c78f34da3da2401b83ce10815ff872.png",
+            ),
+            os.path.join(ROOT_DIR, "example_images/00066-10350085.png"),
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
     ]
     return case
 

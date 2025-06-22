@@ -15,16 +15,16 @@ from diffusers.models.attention_processor import Attention
 from diffusers.models.modeling_outputs import Transformer2DModelOutput
 from diffusers.models.modeling_utils import ModelMixin
 
-from ..attention_processor import OmniGen2AttnProcessorFlash2Varlen
+from ..attention_processor import OmniGen2AttnProcessorFlash2Varlen, OmniGen2AttnProcessor
 from .repo import OmniGen2RotaryPosEmbed
 from .block_lumina2 import LuminaLayerNormContinuous, LuminaRMSNormZero, LuminaFeedForward, Lumina2CombinedTimestepCaptionEmbedding
 
-try:
-    from ...ops.triton.layer_norm import RMSNorm as FusedRMSNorm
-    FUSEDRMSNORM_AVALIBLE = True
-except ImportError:
-    FUSEDRMSNORM_AVALIBLE = False
-    warnings.warn("Cannot import FusedRMSNorm, falling back to vanilla implementation")
+from ...utils.import_utils import is_triton_available, is_flash_attn_available
+
+if is_triton_available():
+    from ...ops.triton.layer_norm import RMSNorm
+else:
+    from torch.nn import RMSNorm
 
 logger = logging.get_logger(__name__)
 
@@ -60,13 +60,16 @@ class OmniGen2TransformerBlock(nn.Module):
         ffn_dim_multiplier: float,
         norm_eps: float,
         modulation: bool = True,
-        use_fused_rms_norm: bool = True,
-        use_fused_swiglu: bool = True,
     ) -> None:
         """Initialize the transformer block."""
         super().__init__()
         self.head_dim = dim // num_attention_heads
         self.modulation = modulation
+
+        try:
+            processor = OmniGen2AttnProcessorFlash2Varlen()
+        except ImportError:
+            processor = OmniGen2AttnProcessor()
 
         # Initialize attention layer
         self.attn = Attention(
@@ -79,7 +82,7 @@ class OmniGen2TransformerBlock(nn.Module):
             eps=1e-5,
             bias=False,
             out_bias=False,
-            processor=OmniGen2AttnProcessorFlash2Varlen(),
+            processor=processor,
         )
 
         # Initialize feed-forward network
@@ -87,8 +90,7 @@ class OmniGen2TransformerBlock(nn.Module):
             dim=dim,
             inner_dim=4 * dim,
             multiple_of=multiple_of,
-            ffn_dim_multiplier=ffn_dim_multiplier,
-            use_fused_swiglu=use_fused_swiglu,
+            ffn_dim_multiplier=ffn_dim_multiplier
         )
 
         # Initialize normalization layers
@@ -96,27 +98,14 @@ class OmniGen2TransformerBlock(nn.Module):
             self.norm1 = LuminaRMSNormZero(
                 embedding_dim=dim,
                 norm_eps=norm_eps,
-                norm_elementwise_affine=True,
-                use_fused_rms_norm=use_fused_rms_norm,
+                norm_elementwise_affine=True
             )
         else:
-            if use_fused_rms_norm:
-                if not FUSEDRMSNORM_AVALIBLE:
-                    raise ImportError("FusedRMSNorm is not available")
-                self.norm1 = FusedRMSNorm(dim, eps=norm_eps)
-            else:
-                self.norm1 = nn.RMSNorm(dim, eps=norm_eps)
+            self.norm1 = RMSNorm(dim, eps=norm_eps)
 
-        if use_fused_rms_norm:
-            if not FUSEDRMSNORM_AVALIBLE:
-                raise ImportError("FusedRMSNorm is not available")
-            self.ffn_norm1 = FusedRMSNorm(dim, eps=norm_eps)
-            self.norm2 = FusedRMSNorm(dim, eps=norm_eps)
-            self.ffn_norm2 = FusedRMSNorm(dim, eps=norm_eps)
-        else:
-            self.ffn_norm1 = nn.RMSNorm(dim, eps=norm_eps)
-            self.norm2 = nn.RMSNorm(dim, eps=norm_eps)
-            self.ffn_norm2 = nn.RMSNorm(dim, eps=norm_eps)
+        self.ffn_norm1 = RMSNorm(dim, eps=norm_eps)
+        self.norm2 = RMSNorm(dim, eps=norm_eps)
+        self.ffn_norm2 = RMSNorm(dim, eps=norm_eps)
 
         self.initialize_weights()
 
@@ -158,30 +147,43 @@ class OmniGen2TransformerBlock(nn.Module):
         Returns:
             torch.Tensor: Output hidden states after transformer block processing
         """
+        import time
         if self.modulation:
             if temb is None:
                 raise ValueError("temb must be provided when modulation is enabled")
                 
             norm_hidden_states, gate_msa, scale_mlp, gate_mlp = self.norm1(hidden_states, temb)
+            start_time = time.time()
             attn_output = self.attn(
                 hidden_states=norm_hidden_states,
                 encoder_hidden_states=norm_hidden_states,
                 attention_mask=attention_mask,
                 image_rotary_emb=image_rotary_emb,
             )
+            end_time = time.time()
+            print(f"attn time: {end_time - start_time}", flush=True)
             hidden_states = hidden_states + gate_msa.unsqueeze(1).tanh() * self.norm2(attn_output)
+            start_time = time.time()
             mlp_output = self.feed_forward(self.ffn_norm1(hidden_states) * (1 + scale_mlp.unsqueeze(1)))
+            end_time = time.time()
+            print(f"mlp time: {end_time - start_time}", flush=True)
             hidden_states = hidden_states + gate_mlp.unsqueeze(1).tanh() * self.ffn_norm2(mlp_output)
         else:
             norm_hidden_states = self.norm1(hidden_states)
+            start_time = time.time()
             attn_output = self.attn(
                 hidden_states=norm_hidden_states,
                 encoder_hidden_states=norm_hidden_states,
                 attention_mask=attention_mask,
                 image_rotary_emb=image_rotary_emb,
             )
+            end_time = time.time()
+            print(f"attn time: {end_time - start_time}", flush=True)
             hidden_states = hidden_states + self.norm2(attn_output)
+            start_time = time.time()
             mlp_output = self.feed_forward(self.ffn_norm1(hidden_states))
+            end_time = time.time()
+            print(f"mlp time: {end_time - start_time}", flush=True)
             hidden_states = hidden_states + self.ffn_norm2(mlp_output)
 
         return hidden_states
@@ -238,9 +240,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
         axes_dim_rope: Tuple[int, int, int] = (32, 32, 32),
         axes_lens: Tuple[int, int, int] = (300, 512, 512),
         text_feat_dim: int = 1024,
-        timestep_scale: float = 1.0,
-        use_fused_rms_norm: bool = True,
-        use_fused_swiglu: bool = True,
+        timestep_scale: float = 1.0
     ) -> None:
         """Initialize the OmniGen2 transformer model."""
         super().__init__()
@@ -276,8 +276,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
             hidden_size=hidden_size,
             text_feat_dim=text_feat_dim,
             norm_eps=norm_eps,
-            timestep_scale=timestep_scale,
-            use_fused_rms_norm=use_fused_rms_norm,
+            timestep_scale=timestep_scale
         )
 
         # Initialize transformer blocks
@@ -289,9 +288,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
                 multiple_of,
                 ffn_dim_multiplier,
                 norm_eps,
-                modulation=True,
-                use_fused_rms_norm=use_fused_rms_norm,
-                use_fused_swiglu=use_fused_swiglu,
+                modulation=True
             )
             for _ in range(num_refiner_layers)
         ])
@@ -304,9 +301,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
                 multiple_of,
                 ffn_dim_multiplier,
                 norm_eps,
-                modulation=True,
-                use_fused_rms_norm=use_fused_rms_norm,
-                use_fused_swiglu=use_fused_swiglu,
+                modulation=True
             )
             for _ in range(num_refiner_layers)
         ])
@@ -320,9 +315,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
                     multiple_of,
                     ffn_dim_multiplier,
                     norm_eps,
-                    modulation=False,
-                    use_fused_rms_norm=use_fused_rms_norm,
-                    use_fused_swiglu=use_fused_swiglu
+                    modulation=False
                 )
                 for _ in range(num_refiner_layers)
             ]
@@ -338,9 +331,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
                     multiple_of,
                     ffn_dim_multiplier,
                     norm_eps,
-                    modulation=True,
-                    use_fused_rms_norm=use_fused_rms_norm,
-                    use_fused_swiglu=use_fused_swiglu
+                    modulation=True
                 )
                 for _ in range(num_layers)
             ]
@@ -353,8 +344,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
             elementwise_affine=False,
             eps=1e-6,
             bias=True,
-            out_dim=patch_size * patch_size * self.out_channels,
-            use_fused_rms_norm=use_fused_rms_norm,
+            out_dim=patch_size * patch_size * self.out_channels
         )
         
         # Add learnable embeddings to distinguish different images

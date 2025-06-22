@@ -289,9 +289,16 @@ class OmniGen2Pipeline(DiffusionPipeline):
         """
         device = device or self._execution_device
         prompt = [prompt] if isinstance(prompt, str) else prompt
+        # text_inputs = self.processor.tokenizer(
+        #     prompt,
+        #     padding="max_length",
+        #     max_length=max_sequence_length,
+        #     truncation=True,
+        #     return_tensors="pt",
+        # )
         text_inputs = self.processor.tokenizer(
             prompt,
-            padding="max_length",
+            padding="longest",
             max_length=max_sequence_length,
             truncation=True,
             return_tensors="pt",
@@ -708,7 +715,7 @@ class OmniGen2Pipeline(DiffusionPipeline):
         optional_kwargs = {}
         if 'ref_image_hidden_states' in set(inspect.signature(self.transformer.forward).parameters.keys()):
             optional_kwargs['ref_image_hidden_states'] = ref_image_hidden_states
-
+        
         model_pred = self.transformer(
             latents,
             timestep,

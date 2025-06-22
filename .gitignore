@@ -228,3 +228,4 @@ example_edit_test_efficiency*.sh
 example_in_context_generation_test_efficiency*.sh
 intro*
 resize_example_images.py
+save_pipeline.py

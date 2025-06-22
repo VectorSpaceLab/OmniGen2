@@ -12,6 +12,7 @@ import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
 
 from accelerate import Accelerator
+from diffusers.hooks import apply_group_offloading
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2_chat import OmniGen2ChatPipeline
 from omnigen2.utils.img_util import resize_image
@@ -128,6 +129,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Enable model CPU offload."
     )
+    parser.add_argument(
+        "--enable_group_offload",
+        action="store_true",
+        help="Enable group offload."
+    )
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2ChatPipeline:
@@ -150,6 +156,10 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         pipeline.enable_sequential_cpu_offload()
     elif args.enable_model_cpu_offload:
         pipeline.enable_model_cpu_offload()
+    elif args.enable_group_offload:
+        apply_group_offloading(pipeline.transformer, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
+        apply_group_offloading(pipeline.mllm, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
+        apply_group_offloading(pipeline.vae, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
     else:
         pipeline = pipeline.to(accelerator.device)
     return pipeline

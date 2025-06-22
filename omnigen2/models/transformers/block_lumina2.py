@@ -14,34 +14,35 @@
 # limitations under the License.
 
 import warnings
-import itertools
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from diffusers.models.embeddings import Timesteps
 from ..embeddings import TimestepEmbedding
-from .components import swiglu
 
-try:
-    # from apex.normalization import FusedRMSNorm
-    # from flash_attn.ops.rms_norm import RMSNorm as FusedRMSNorm
-    # from flash_attn.ops.triton.layer_norm import RMSNorm as FusedRMSNorm
-    from ...ops.triton.layer_norm import RMSNorm as FusedRMSNorm
-    FUSEDRMSNORM_AVALIBLE = True
-except ImportError:
-    FUSEDRMSNORM_AVALIBLE = False
-    warnings.warn("Cannot import apex RMSNorm, switch to vanilla implementation")
+from ...utils.import_utils import is_flash_attn_available, is_triton_available
 
-try:
-    from flash_attn.ops.activations import swiglu as fused_swiglu
-    FUSEDSWIGLU_AVALIBLE = True
-except ImportError:
+if is_triton_available():
+    from ...ops.triton.layer_norm import RMSNorm
+else:
+    from torch.nn import RMSNorm
+    warnings.warn("Cannot import triton, install triton to use fused RMSNorm for better performance")
     
-    FUSEDSWIGLU_AVALIBLE = False
-    warnings.warn("Cannot import apex RMSNorm, switch to vanilla implementation")
+if is_flash_attn_available():
+    from flash_attn.ops.activations import swiglu
+else:
+    from .components import swiglu
+    warnings.warn("Cannot import flash_attn, install flash_attn to use fused SwiGLU for better performance")
+
+# try:
+#     from flash_attn.ops.activations import swiglu as fused_swiglu
+#     FUSEDSWIGLU_AVALIBLE = True
+# except ImportError:
+    
+#     FUSEDSWIGLU_AVALIBLE = False
+#     warnings.warn("Cannot import apex RMSNorm, switch to vanilla implementation")
         
 class LuminaRMSNormZero(nn.Module):
     """
@@ -56,7 +57,6 @@ class LuminaRMSNormZero(nn.Module):
         embedding_dim: int,
         norm_eps: float,
         norm_elementwise_affine: bool,
-        use_fused_rms_norm: bool = False,
     ):
         super().__init__()
         self.silu = nn.SiLU()
@@ -65,11 +65,8 @@ class LuminaRMSNormZero(nn.Module):
             4 * embedding_dim,
             bias=True,
         )
-        if use_fused_rms_norm:
-            assert FUSEDRMSNORM_AVALIBLE
-            self.norm = FusedRMSNorm(embedding_dim, eps=norm_eps)
-        else:
-            self.norm = nn.RMSNorm(embedding_dim, eps=norm_eps)
+        
+        self.norm = RMSNorm(embedding_dim, eps=norm_eps)
 
     def forward(
         self,
@@ -79,12 +76,6 @@ class LuminaRMSNormZero(nn.Module):
         emb = self.linear(self.silu(emb))
         scale_msa, gate_msa, scale_mlp, gate_mlp = emb.chunk(4, dim=1)
         x = self.norm(x) * (1 + scale_msa[:, None])
-        # x_norm = self.norm(x)
-        # print(f"{x.shape=} {x.dtype=} {x_norm.shape=} {x_norm.dtype=}")
-        # print(f"{scale_msa.shape=} {scale_msa.dtype=}")
-        # print(f"{scale_msa[:, None].shape=} {scale_msa[:, None].dtype=}")
-        # x = x_norm * (1 + scale_msa[:, None])
-
         return x, gate_msa, scale_mlp, gate_mlp
     
 
@@ -103,7 +94,6 @@ class LuminaLayerNormContinuous(nn.Module):
         bias=True,
         norm_type="layer_norm",
         out_dim: Optional[int] = None,
-        use_fused_rms_norm: bool = False
     ):
         super().__init__()
 
@@ -114,11 +104,7 @@ class LuminaLayerNormContinuous(nn.Module):
         if norm_type == "layer_norm":
             self.norm = nn.LayerNorm(embedding_dim, eps, elementwise_affine, bias)
         elif norm_type == "rms_norm":
-            if use_fused_rms_norm:
-                assert FUSEDRMSNORM_AVALIBLE
-                self.norm = FusedRMSNorm(embedding_dim, eps=eps, elementwise_affine=elementwise_affine)
-            else:
-                self.norm = nn.RMSNorm(embedding_dim, eps=eps, elementwise_affine=elementwise_affine)
+            self.norm = RMSNorm(embedding_dim, eps=eps, elementwise_affine=elementwise_affine)
         else:
             raise ValueError(f"unknown norm_type {norm_type}")
 
@@ -163,16 +149,9 @@ class LuminaFeedForward(nn.Module):
         inner_dim: int,
         multiple_of: Optional[int] = 256,
         ffn_dim_multiplier: Optional[float] = None,
-        use_fused_swiglu: bool = False
     ):
         super().__init__()
-        self.use_fused_swiglu = use_fused_swiglu
-
-        if use_fused_swiglu:
-            assert FUSEDSWIGLU_AVALIBLE
-            self.swiglu = fused_swiglu
-        else:
-            self.swiglu = swiglu
+        self.swiglu = swiglu
         
         # custom hidden_size factor multiplier
         if ffn_dim_multiplier is not None:
@@ -208,7 +187,6 @@ class Lumina2CombinedTimestepCaptionEmbedding(nn.Module):
         frequency_embedding_size: int = 256,
         norm_eps: float = 1e-5,
         timestep_scale: float = 1.0,
-        use_fused_rms_norm: bool = False
     ) -> None:
         super().__init__()
 
@@ -220,12 +198,6 @@ class Lumina2CombinedTimestepCaptionEmbedding(nn.Module):
             in_channels=frequency_embedding_size, time_embed_dim=min(hidden_size, 1024)
         )
 
-        if use_fused_rms_norm:
-            assert FUSEDRMSNORM_AVALIBLE
-            RMSNorm = FusedRMSNorm
-        else:
-            RMSNorm = nn.RMSNorm
-            
         self.caption_embedder = nn.Sequential(
             RMSNorm(text_feat_dim, eps=norm_eps),
             nn.Linear(text_feat_dim, hidden_size, bias=True),
