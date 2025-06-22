@@ -2,8 +2,7 @@
 SHELL_FOLDER=$(cd "$(dirname "$0")";pwd)
 cd $SHELL_FOLDER
 
-# model_path="OmniGen2/OmniGen2"
-model_path="/share_2/luoxin/projects/OmniGen2/pretrained_models/omnigen2_pipe_model_fuse_v17_native_support"
+model_path="OmniGen2/OmniGen2"
 python inference.py \
 --model_path $model_path \
 --num_inference_step 50 \
