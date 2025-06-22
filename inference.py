@@ -144,15 +144,8 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2Pipeline:
-    from omnigen2.models.transformers.transformer_omnigen2 import OmniGen2Transformer2DModel
-    transformer = OmniGen2Transformer2DModel.from_pretrained(
-        args.model_path,
-        subfolder="transformer",
-        torch_dtype=weight_dtype,
-    )
     pipeline = OmniGen2Pipeline.from_pretrained(
         args.model_path,
-        transformer=transformer,
         torch_dtype=weight_dtype,
         trust_remote_code=True,
     )

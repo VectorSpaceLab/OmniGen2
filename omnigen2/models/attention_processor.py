@@ -344,9 +344,10 @@ class OmniGen2AttnProcessor:
 
         print(f"{query.shape=} {key.shape=} {value.shape=} {attention_mask.shape=} {attention_mask.sum()=}", flush=True)
 
-        hidden_states = F.scaled_dot_product_attention(
-            query, key, value, attn_mask=attention_mask, scale=softmax_scale, enable_gqa=True
-        )
+        with torch.backends.cuda.sdp_kernel(enable_flash=True, enable_mem_efficient=True, enable_math=False):
+            hidden_states = F.scaled_dot_product_attention(
+                query, key, value, attn_mask=attention_mask, scale=softmax_scale, enable_gqa=True
+            )
         hidden_states = hidden_states.transpose(1, 2).reshape(batch_size, -1, attn.heads * head_dim)
         hidden_states = hidden_states.type_as(query)
 
