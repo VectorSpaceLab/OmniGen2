@@ -133,8 +133,7 @@ bash example_in_context_generation.sh
 
 ### 🌐 Gradio Demo
 
-* **Online Demo**:
-We are temporarily providing 8 GPUs to support the online demos. If you notice a long queue for a particular link, please try other links:
+* **Online Demo**: [HF Spaces](https://huggingface.co/spaces/OmniGen2/OmniGen2). Beyond Hugging Face Spaces, we are temporarily allocating additional GPU resources to ensure smooth access to the online demos. If you notice a long queue for a particular link, please try other links:
 
     [Demo1](https://8f10329141d53b6884.gradio.live), [Demo2](https://110863cb06c6c44bd2.gradio.live), [Demo3](https://19b0952eb3cf0d2243.gradio.live), [Demo4](https://981758b17b4197aea7.gradio.live)
 
