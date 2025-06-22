@@ -173,7 +173,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `enable_sequential_cpu_offload`: Minimizes VRAM usage to less than 3GB, but at the cost of significantly slower performance.
   - This works by offloading the model in submodules and loading them onto the GPU sequentially as needed.
   - See: [CPU Offloading](https://huggingface.co/docs/diffusers/optimization/memory#cpu-offloading)
-- `cfg_range_start`, `cfg_range_end`: Define the timestep range where CFG is applied. Per this [paper](https://arxiv.org/abs/2404.07724), reducing cfg_range_end can significantly decrease inference time with a negligible impact on quality.
+- `cfg_range_start`, `cfg_range_end`: Define the timestep range where CFG is applied. Per this [paper](https://arxiv.org/abs/2404.07724), reducing `cfg_range_end` can significantly decrease inference time with a negligible impact on quality.
   
 **Some suggestions for improving generation quality:**
 - 1. Use High-Quality Images
