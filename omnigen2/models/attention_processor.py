@@ -29,9 +29,7 @@ from ..utils.import_utils import is_flash_attn_available
 if is_flash_attn_available():
     from flash_attn import flash_attn_varlen_func
     from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input
-    FLASHATTN_AVALIBLE = True
 else:
-    FLASHATTN_AVALIBLE = False
     warnings.warn("Cannot import flash_attn, install flash_attn to use Flash2Varlen attention for better performance")
 
 
@@ -341,13 +339,14 @@ class OmniGen2AttnProcessor:
         query = query.transpose(1, 2)
         key = key.transpose(1, 2)
         value = value.transpose(1, 2)
+        
+        # explicitly repeat key and value to match query length, otherwise using enable_gqa=True results in MATH backend of sdpa in our test of pytorch2.6
+        key = key.repeat_interleave(query.size(-3) // key.size(-3), -3)
+        value = value.repeat_interleave(query.size(-3) // value.size(-3), -3)
 
-        print(f"{query.shape=} {key.shape=} {value.shape=} {attention_mask.shape=} {attention_mask.sum()=}", flush=True)
-
-        with torch.backends.cuda.sdp_kernel(enable_flash=True, enable_mem_efficient=True, enable_math=False):
-            hidden_states = F.scaled_dot_product_attention(
-                query, key, value, attn_mask=attention_mask, scale=softmax_scale, enable_gqa=True
-            )
+        hidden_states = F.scaled_dot_product_attention(
+            query, key, value, attn_mask=attention_mask, scale=softmax_scale
+        )
         hidden_states = hidden_states.transpose(1, 2).reshape(batch_size, -1, attn.heads * head_dim)
         hidden_states = hidden_states.type_as(query)
 

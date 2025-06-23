@@ -153,37 +153,25 @@ class OmniGen2TransformerBlock(nn.Module):
                 raise ValueError("temb must be provided when modulation is enabled")
                 
             norm_hidden_states, gate_msa, scale_mlp, gate_mlp = self.norm1(hidden_states, temb)
-            start_time = time.time()
             attn_output = self.attn(
                 hidden_states=norm_hidden_states,
                 encoder_hidden_states=norm_hidden_states,
                 attention_mask=attention_mask,
                 image_rotary_emb=image_rotary_emb,
             )
-            end_time = time.time()
-            print(f"attn time: {end_time - start_time}", flush=True)
             hidden_states = hidden_states + gate_msa.unsqueeze(1).tanh() * self.norm2(attn_output)
-            start_time = time.time()
             mlp_output = self.feed_forward(self.ffn_norm1(hidden_states) * (1 + scale_mlp.unsqueeze(1)))
-            end_time = time.time()
-            print(f"mlp time: {end_time - start_time}", flush=True)
             hidden_states = hidden_states + gate_mlp.unsqueeze(1).tanh() * self.ffn_norm2(mlp_output)
         else:
             norm_hidden_states = self.norm1(hidden_states)
-            start_time = time.time()
             attn_output = self.attn(
                 hidden_states=norm_hidden_states,
                 encoder_hidden_states=norm_hidden_states,
                 attention_mask=attention_mask,
                 image_rotary_emb=image_rotary_emb,
             )
-            end_time = time.time()
-            print(f"attn time: {end_time - start_time}", flush=True)
             hidden_states = hidden_states + self.norm2(attn_output)
-            start_time = time.time()
             mlp_output = self.feed_forward(self.ffn_norm1(hidden_states))
-            end_time = time.time()
-            print(f"mlp time: {end_time - start_time}", flush=True)
             hidden_states = hidden_states + self.ffn_norm2(mlp_output)
 
         return hidden_states

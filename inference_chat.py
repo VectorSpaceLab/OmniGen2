@@ -15,7 +15,7 @@ from accelerate import Accelerator
 from diffusers.hooks import apply_group_offloading
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2_chat import OmniGen2ChatPipeline
-from omnigen2.utils.img_util import resize_image
+from omnigen2.models.transformers.transformer_omnigen2 import OmniGen2Transformer2DModel
 
 
 def parse_args() -> argparse.Namespace:
@@ -141,6 +141,11 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         args.model_path,
         torch_dtype=weight_dtype,
         trust_remote_code=True,
+    )
+    pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+        args.model_path,
+        subfolder="transformer",
+        torch_dtype=weight_dtype,
     )
     if args.scheduler == "dpmsolver":
         from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler

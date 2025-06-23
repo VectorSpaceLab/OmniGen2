@@ -15,9 +15,10 @@ from torchvision.transforms.functional import to_pil_image, to_tensor
 from accelerate import Accelerator
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
-from omnigen2.utils.img_util import create_collage
+from omnigen2.models.transformers.transformer_omnigen2 import OmniGen2Transformer2DModel
 from omnigen2.schedulers.scheduling_flow_match_euler_discrete import FlowMatchEulerDiscreteScheduler
 from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
+from omnigen2.utils.img_util import create_collage
 
 NEGATIVE_PROMPT = "(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +32,11 @@ def load_pipeline(accelerator, weight_dtype, args):
         args.model_path,
         torch_dtype=weight_dtype,
         trust_remote_code=True,
+    )
+    pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+        args.model_path,
+        subfolder="transformer",
+        torch_dtype=weight_dtype,
     )
     if args.enable_sequential_cpu_offload:
         pipeline.enable_sequential_cpu_offload()
