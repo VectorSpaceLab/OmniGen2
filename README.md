@@ -43,7 +43,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 **We will release the training code, dataset, and data construction pipeline soon. Stay tuned!**
 
 <p align="center">
-  <img src="assets/teaser.png" width="95%">
+  <img src="assets/teaser.jpg" width="95%">
   <br>
   <em>Demonstration of OmniGen2's overall capabilities.</em>
 </p>
