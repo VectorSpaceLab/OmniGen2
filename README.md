@@ -6,6 +6,7 @@
 <p align="center">
   <a href="https://vectorspacelab.github.io/OmniGen2"><img src="https://img.shields.io/badge/Project%20Page-OmniGen2-yellow" alt="project page"></a>
   <a href=""><img src="https://img.shields.io/badge/arXiv%20paper-2409.11340-b31b1b.svg" alt="arxiv"></a>
+  <a href="https://8f10329141d53b6884.gradio.live"><img src="https://img.shields.io/badge/Gradio%20Demo-🤗-blue" alt="demo"></a>
   <a href="https://huggingface.co/spaces/OmniGen2/OmniGen2"><img src="https://img.shields.io/badge/HF%20Demo-🤗-lightblue" alt="demo"></a>
   <a href="https://huggingface.co/OmniGen2/OmniGen2"><img src="https://img.shields.io/badge/Model-🤗-yellow" alt="model"></a>
   <a href=""><img src="https://img.shields.io/badge/Benchmark-🤗-yellow" alt="model"></a>
@@ -26,7 +27,7 @@
 ## 🔥 News
 - **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
-- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available.
+- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://8f10329141d53b6884.gradio.live); [Chat-Demo1](https://9315447fc78ef638e3.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
 - **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
 
