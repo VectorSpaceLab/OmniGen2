@@ -178,13 +178,13 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `cfg_range_start`, `cfg_range_end`: Define the timestep range where CFG is applied. Per this [paper](https://arxiv.org/abs/2404.07724), reducing `cfg_range_end` can significantly decrease inference time with a negligible impact on quality.
   
 **Some suggestions for improving generation quality:**
-- 1. Use High-Quality Images
+1. Use High-Quality Images
   - Provide clear images, preferably with a resolution **greater than 512×512 pixels**.
   - Small or blurry inputs will result in low-quality outputs.
-- 2. Be Specific with Instructions
+2. Be Specific with Instructions
   - Clearly describe both **what to change** and **how you want it changed**.
   - For in-context generation tasks, explicitly state which elements should come from which image. For example, instead of "Add bird to desk", say "Add the bird from image 1 onto the desk in image 2."
-- 3. Prioritize English
+3. Prioritize English
 The model currently performs best with **English** prompts.
 
 ## 💻 Resources Requirement
