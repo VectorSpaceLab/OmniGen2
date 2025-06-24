@@ -1,4 +1,3 @@
-<!-- <h1 align="center">OmniGen2</h1> -->
 <p align="center">
   <img src="assets/brand.png" width="65%">
 </p>
@@ -202,7 +201,7 @@ The following table details the inference performance of OmniGen2 on an **A800 G
 </p>
 
 ## ❤️ Citing Us
-If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated (OmniGen2 report will be available as soon as possible):
+If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated:
 
 ```bibtex
 @article{wu2025omnigen2,
