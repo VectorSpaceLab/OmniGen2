@@ -17,9 +17,9 @@
         <a href=#-news>News</a> |
         <a href=#-quick-start>Quick Start</a> |
         <a href=#-usage-tips>Usage Tips</a> |
+        <a href=#limitations>Limitations</a> |
         <a href=#-gradio-demo>Online Demos</a> |
-        <a href="#heart-citing-us">Citation</a> |
-        <a href="#license">License</a>
+        <a href="#-citing-us">Citation</a> |
     <p>
 </h4>
 
@@ -187,6 +187,12 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
   - For in-context generation tasks, explicitly state which elements should come from which image. For example, instead of "Add bird to desk", say "Add the bird from image 1 onto the desk in image 2."
 3. Prioritize English
 The model currently performs best with **English** prompts.
+
+
+## Limitations
+The current model sometimes does not follow instructions. You can increase the "Number of images per prompt" to generate multiple images at once, so you can choose the result you are satisfied with, or try different prompts. In our own experience, being as detailed as possible tends to work better.
+
+The current model cannot decide the output image size by itself; the default size is 1024×1024. You need to set a specific size if you require a different one. When you input an image, we will set the output size to match the input image (this works best for editing tasks). If you want to modify just one image out of several, you should also set the output size to match the image you want to edit; otherwise, it may lead to low-quality outputs.
 
 ## 💻 Resources Requirement
 OmniGen2 natively requires an **NVIDIA RTX 3090** or an equivalent GPU with approximately **17GB of VRAM**. For devices with less VRAM, you can enable **CPU Offload** to run the model.
