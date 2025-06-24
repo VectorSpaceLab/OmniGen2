@@ -17,7 +17,7 @@
         <a href=#-news>News</a> |
         <a href=#-quick-start>Quick Start</a> |
         <a href=#-usage-tips>Usage Tips</a> |
-        <a href=#limitations>Limitations</a> |
+        <a href=#-limitations>Limitations</a> |
         <a href=#-gradio-demo>Online Demos</a> |
         <a href=#-citing-us>Citation</a> |
     <p>
