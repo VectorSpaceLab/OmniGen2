@@ -267,12 +267,12 @@ class OmniGen2ChatPipeline(DiffusionPipeline):
     
     def _apply_chat_template(self, prompt: str, images: List = None):
         if images is not None:
-            prompt += "".join(
+            prompt = "".join(
                 [
                     f"<img{i}>: <|vision_start|><|image_pad|><|vision_end|>"
                     for i in range(1, len(images) + 1)
                 ]
-            )
+            ) + prompt
         prompt = f"<|im_start|>system\nYou are a helpful assistant that generates high-quality images based on user instructions.<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n"
         return prompt
     
