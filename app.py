@@ -622,14 +622,21 @@ description = """
 """
 
 article = """
-citation to be added
+```bibtex
+@article{wu2025omnigen2,
+  title={OmniGen2: Exploration to Advanced Multimodal Generation},
+  author={Chenyuan Wu and Pengfei Zheng and Ruiran Yan and Shitao Xiao and Xin Luo and Yueze Wang and Wanli Li and Xiyan Jiang and Yexin Liu and Junjie Zhou and Ze Liu and Ziyi Xia and Chaofan Li and Haoge Deng and Jiahao Wang and Kun Luo and Bo Zhang and Defu Lian and Xinlong Wang and Zhongyuan Wang and Tiejun Huang and Zheng Liu},
+  journal={arXiv preprint arXiv:2506.18871},
+  year={2025}
+}
+```
 """
 
 def main(args):
     # Gradio
     with gr.Blocks() as demo:
         gr.Markdown(
-            "# OmniGen2: Unified Image Generation [paper](https://arxiv.org/abs/2409.11340) [code](https://github.com/VectorSpaceLab/OmniGen2)"
+            "# OmniGen2: Exploration to Advanced Multimodal Generation [paper](https://arxiv.org/abs/2506.18871) [code](https://github.com/VectorSpaceLab/OmniGen2)"
         )
         gr.Markdown(description)
         with gr.Row():

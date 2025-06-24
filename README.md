@@ -5,7 +5,7 @@
 
 <p align="center">
   <a href="https://vectorspacelab.github.io/OmniGen2"><img src="https://img.shields.io/badge/Project%20Page-OmniGen2-yellow" alt="project page"></a>
-  <a href=""><img src="https://img.shields.io/badge/arXiv%20paper-2409.11340-b31b1b.svg" alt="arxiv"></a>
+  <a href="https://arxiv.org/abs/2506.18871"><img src="https://img.shields.io/badge/arXiv%20paper-2409.11340-b31b1b.svg" alt="arxiv"></a>
   <a href="https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo"><img src="https://img.shields.io/badge/Online%20Demo-🤗-blue" alt="demo"></a>
   <a href="https://huggingface.co/spaces/OmniGen2/OmniGen2"><img src="https://img.shields.io/badge/HF%20Spaces-🤗-lightblue" alt="demo"></a>
   <a href="https://huggingface.co/OmniGen2/OmniGen2"><img src="https://img.shields.io/badge/Model-🤗-yellow" alt="model"></a>
@@ -25,6 +25,7 @@
 </h4>
 
 ## 🔥 News
+- **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
 - **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
 - **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://8f10329141d53b6884.gradio.live); [Chat-Demo1](https://9315447fc78ef638e3.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
@@ -64,7 +65,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 
 
 ## 📌 TODO
-- [ ] Technical report.
+- [x] Technical report.
 - [ ] In-context generation benchmark: **OmniContext**.
 - [x] Support CPU offload and improve inference efficiency.
 - [ ] Integrated in diffusers.
@@ -204,11 +205,11 @@ The following table details the inference performance of OmniGen2 on an **A800 G
 If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated (OmniGen2 report will be available as soon as possible):
 
 ```bibtex
-@article{xiao2024omnigen,
-  title={Omnigen: Unified image generation},
-  author={Xiao, Shitao and Wang, Yueze and Zhou, Junjie and Yuan, Huaying and Xing, Xingrun and Yan, Ruiran and Wang, Shuting and Huang, Tiejun and Liu, Zheng},
-  journal={arXiv preprint arXiv:2409.11340},
-  year={2024}
+@article{wu2025omnigen2,
+  title={OmniGen2: Exploration to Advanced Multimodal Generation},
+  author={Chenyuan Wu and Pengfei Zheng and Ruiran Yan and Shitao Xiao and Xin Luo and Yueze Wang and Wanli Li and Xiyan Jiang and Yexin Liu and Junjie Zhou and Ze Liu and Ziyi Xia and Chaofan Li and Haoge Deng and Jiahao Wang and Kun Luo and Bo Zhang and Defu Lian and Xinlong Wang and Zhongyuan Wang and Tiejun Huang and Zheng Liu},
+  journal={arXiv preprint arXiv:2506.18871},
+  year={2025}
 }
 ```
 
