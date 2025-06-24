@@ -19,7 +19,7 @@
         <a href=#-usage-tips>Usage Tips</a> |
         <a href=#limitations>Limitations</a> |
         <a href=#-gradio-demo>Online Demos</a> |
-        <a href="#-citing-us">Citation</a> |
+        <a href=#-citing-us>Citation</a> |
     <p>
 </h4>
 
@@ -32,7 +32,7 @@
 
 
 ## Introduction
-**OmniGen2** is a powerful and efficient unified multimodal model. Unlike OmniGen v1, OmniGen2 features two distinct decoding pathways for text and image modalities, utilizing unshared parameters and a decoupled image tokenizer. OmniGen2 has competitive performance across four primary capabilities:
+**OmniGen2** is a powerful and efficient image generation model. Unlike OmniGen v1, OmniGen2 features two distinct decoding pathways for text and image modalities, utilizing unshared parameters and a decoupled image tokenizer. OmniGen2 has competitive performance across four primary capabilities:
 
 - **Visual Understanding**: Inherits the robust ability to interpret and analyze image content from its Qwen-VL-2.5 foundation.
 - **Text-to-Image Generation**: Creates high-fidelity and aesthetically pleasing images from textual prompts.
@@ -41,7 +41,7 @@
 
 As an open-source project, OmniGen2 provides a powerful yet resource-efficient foundation for researchers and developers exploring the frontiers of controllable and personalized generative AI.
 
-**We will release the training code, dataset, and data construction pipeline soon. Stay tuned!**
+**We will release the training code and dataset. Stay tuned!**
 
 <p align="center">
   <img src="assets/teaser.jpg" width="95%">
@@ -217,6 +217,3 @@ If you find this repository or our work useful, please consider giving a star тн
   year={2025}
 }
 ```
-
-## License
-This work is licensed under Apache 2.0 license.
