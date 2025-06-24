@@ -46,7 +46,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 <p align="center">
   <img src="assets/teaser.jpg" width="95%">
   <br>
-  <em>Demonstration of OmniGen2's overall capabilities.</em>
+  <em>Demonstrations.</em>
 </p>
 
 <p align="center">
