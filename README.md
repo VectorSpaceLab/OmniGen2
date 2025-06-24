@@ -189,7 +189,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 The model currently performs best with **English** prompts.
 
 
-## Limitations
+## ❌ Limitations
 The current model sometimes does not follow instructions. You can increase the "Number of images per prompt" to generate multiple images at once, so you can choose the result you are satisfied with, or try different prompts. In our own experience, being as detailed as possible tends to work better.
 
 The current model cannot decide the output image size by itself; the default size is 1024×1024. You need to set a specific size if you require a different one. When you input an image, we will set the output size to match the input image (this works best for editing tasks). If you want to modify just one image out of several, you should also set the output size to match the image you want to edit; otherwise, it may lead to low-quality outputs.
