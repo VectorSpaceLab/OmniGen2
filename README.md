@@ -65,10 +65,11 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 
 ## 📌 TODO
 - [x] Technical report.
-- [ ] In-context generation benchmark: **OmniContext**.
 - [x] Support CPU offload and improve inference efficiency.
-- [ ] Integrated in diffusers.
-- [ ] Training data and scripts.
+- [ ] In-context generation benchmark: **OmniContext**.
+- [ ] Integration of diffusers.
+- [ ] Training datasets.
+- [ ] Training data construction pipeline.
 - [ ] ComfyUI Demo (**commuity support will be greatly appreciated!**).
 
 ## 🚀 Quick Start
