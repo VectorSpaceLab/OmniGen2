@@ -40,10 +40,9 @@
 - **Instruction-guided Image Editing**: Executes complex, instruction-based image modifications with high precision, achieving state-of-the-art performance among open-source models.
 - **In-context Generation**: A versatile capability to process and flexibly combine diverse inputs—including humans, reference objects, and scenes—to produce novel and coherent visual outputs.
 
-As an open-source project, OmniGen2 provides a powerful yet resource-efficient foundation for researchers and developers exploring the frontiers of controllable and personalized generative AI.
-
 **We will release the training code and dataset. Stay tuned!**
 
+Some good cases of OmniGen2:
 <p align="center">
   <img src="assets/teaser.jpg" width="95%">
   <br>
@@ -53,13 +52,13 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 <p align="center">
   <img src="assets/examples_edit.png" width="95%">
   <br>
-  <em>Demonstration of OmniGen2's image editing capabilities.</em>
+  <em> Good demonstrations of OmniGen2's image editing capabilities.</em>
 </p>
 
 <p align="center">
   <img src="assets/examples_subject.png" width="95%">
   <br>
-  <em>Demonstration of OmniGen2's in-context generation capabilities.</em>
+  <em> Good demonstrations of OmniGen2's in-context generation capabilities.</em>
 </p>
 
 
@@ -192,10 +191,15 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 The model currently performs best with **English** prompts.
 
 
-## ❌ Limitations
+## ❌ Limitations and Suggestions
 The current model sometimes does not follow instructions. You can increase the "Number of images per prompt" to generate multiple images at once, so you can choose the result you are satisfied with, or try different prompts. In our own experience, being as detailed as possible tends to work better.
 
 The current model cannot decide the output image size by itself; the default size is 1024×1024. You need to set a specific size if you require a different one. When you input an image, we will set the output size to match the input image (this works best for editing tasks). If you want to modify just one image out of several, you should also set the output size to match the image you want to edit; otherwise, it may lead to low-quality outputs.
+
+The in-context generation capability sometimes produces objects that differ from the original ones. Some suggested improvements are: increasing `image_guidance_scale` (it is recommended to set it to 3) can help alleviate this issue; using high-resolution images, increasing the size of the input image, and ensuring that the object to be used occupies a larger proportion of the image; and modifying the prompt. However, there is still a significant gap compared to GPT-4o.
+
+Compared to OmniGen 1.0, although OmniGen 2 has made some improvements, many issues still remain. It may take multiple attempts to achieve a satisfactory result. 
+
 
 ## 💻 Resources Requirement
 OmniGen2 natively requires an **NVIDIA RTX 3090** or an equivalent GPU with approximately **17GB of VRAM**. For devices with less VRAM, you can enable **CPU Offload** to run the model.
