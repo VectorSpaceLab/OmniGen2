@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
         "--scheduler",
         type=str,
         default="euler",
-        choices=["euler", "dpmsolver"],
+        choices=["euler", "dpmsolver++"],
         help="Scheduler to use.",
     )
     parser.add_argument(
@@ -154,7 +154,7 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         subfolder="transformer",
         torch_dtype=weight_dtype,
     )
-    if args.scheduler == "dpmsolver":
+    if args.scheduler == "dpmsolver++":
         from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
         scheduler = DPMSolverMultistepScheduler(
             algorithm_type="dpmsolver++",
