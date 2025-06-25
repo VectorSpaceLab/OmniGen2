@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
         "--scheduler",
         type=str,
         default="euler",
-        choices=["euler", "dpmsolver"],
+        choices=["euler", "dpmsolver++"],
         help="Scheduler to use.",
     )
     parser.add_argument(
@@ -144,6 +144,14 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2Pipeline:
+<<<<<<< HEAD
+    pipeline = OmniGen2Pipeline.from_pretrained(
+        args.model_path,
+        torch_dtype=weight_dtype,
+        trust_remote_code=True,
+    )
+    pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+=======
     from transformers import Qwen2_5_VLForConditionalGeneration, Qwen2VLProcessor
     from diffusers.models.autoencoders import AutoencoderKL
     from omnigen2.schedulers.scheduling_flow_match_euler_discrete import FlowMatchEulerDiscreteScheduler
@@ -151,10 +159,14 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
     # Load individual components manually to avoid remote code
     print("Loading transformer...")
     transformer = OmniGen2Transformer2DModel.from_pretrained(
+>>>>>>> 90bfac5 (feat: save and push local changes)
         args.model_path,
         subfolder="transformer",
         torch_dtype=weight_dtype,
     )
+<<<<<<< HEAD
+    if args.scheduler == "dpmsolver++":
+=======
     
     print("Loading VAE...")
     vae = AutoencoderKL.from_pretrained(
@@ -165,6 +177,7 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
     
     print("Loading scheduler...")
     if args.scheduler == "dpmsolver":
+>>>>>>> 90bfac5 (feat: save and push local changes)
         from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
         scheduler = DPMSolverMultistepScheduler(
             algorithm_type="dpmsolver++",
@@ -202,24 +215,13 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
     if args.enable_sequential_cpu_offload:
         pipeline.enable_sequential_cpu_offload()
     elif args.enable_model_cpu_offload:
-        try:
-            pipeline.enable_model_cpu_offload(gpu_id=0)
-            print(f"Enabled model CPU offload successfully")
-        except RuntimeError as e:
-            print(f"Warning: Could not enable model CPU offload ({e}), using fallback approach")
-            # Fallback: manually move components to CPU and GPU as needed
-            pipeline = pipeline.to('cpu')  # Move to CPU first
-            # The pipeline will automatically move components to device during inference
+        pipeline.enable_model_cpu_offload()
     elif args.enable_group_offload:
         apply_group_offloading(pipeline.transformer, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
         apply_group_offloading(pipeline.mllm, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
         apply_group_offloading(pipeline.vae, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
     else:
         pipeline = pipeline.to(accelerator.device)
-        # For MPS, ensure all components are properly moved and synced
-        if accelerator.device.type == 'mps':
-            torch.mps.synchronize()
-            print(f"Pipeline moved to MPS device successfully")
     return pipeline
 
 def preprocess(input_image_path: List[str] = []) -> Tuple[str, str, List[Image.Image]]:
@@ -293,11 +295,6 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
         weight_dtype = torch.float16
     elif args.dtype == 'bf16':
         weight_dtype = torch.bfloat16
-
-    # Auto-enable model CPU offload for MPS devices to prevent memory issues
-    if accelerator.device.type == 'mps' and not args.enable_sequential_cpu_offload:
-        args.enable_model_cpu_offload = True
-        print(f"Auto-enabled model CPU offload for MPS compatibility")
 
     # Load pipeline and process inputs
     pipeline = load_pipeline(args, accelerator, weight_dtype)

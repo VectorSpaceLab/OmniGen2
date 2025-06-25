@@ -28,16 +28,51 @@ accelerator = None
 save_images = False
 
 def load_pipeline(accelerator, weight_dtype, args):
-    pipeline = OmniGen2Pipeline.from_pretrained(
-        args.model_path,
-        torch_dtype=weight_dtype,
-        trust_remote_code=True,
-    )
-    pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+    from transformers import Qwen2_5_VLForConditionalGeneration, Qwen2VLProcessor
+    from diffusers.models.autoencoders import AutoencoderKL
+    
+    # Load individual components manually to avoid remote code
+    print("Loading transformer...")
+    transformer = OmniGen2Transformer2DModel.from_pretrained(
         args.model_path,
         subfolder="transformer",
         torch_dtype=weight_dtype,
     )
+    
+    print("Loading VAE...")
+    vae = AutoencoderKL.from_pretrained(
+        args.model_path,
+        subfolder="vae", 
+        torch_dtype=weight_dtype,
+    )
+    
+    print("Loading scheduler...")
+    scheduler = FlowMatchEulerDiscreteScheduler()
+    
+    print("Loading MLLM...")
+    mllm = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        args.model_path,
+        subfolder="mllm",
+        torch_dtype=weight_dtype,
+    )
+    
+    print("Loading processor...")
+    processor = Qwen2VLProcessor.from_pretrained(
+        args.model_path,
+        subfolder="processor",
+        use_fast=False,  # Explicitly use slow processor for compatibility
+    )
+    
+    # Manually construct the pipeline
+    print("Constructing pipeline...")
+    pipeline = OmniGen2Pipeline(
+        transformer=transformer,
+        vae=vae,
+        scheduler=scheduler,
+        mllm=mllm,
+        processor=processor
+    )
+    
     if args.enable_sequential_cpu_offload:
         pipeline.enable_sequential_cpu_offload()
     elif args.enable_model_cpu_offload:
@@ -769,7 +804,7 @@ def main(args):
         global accelerator
         global pipeline
 
-        bf16 = True
+        bf16 = False
         accelerator = Accelerator(mixed_precision="bf16" if bf16 else "no")
         weight_dtype = torch.bfloat16 if bf16 else torch.float32
 

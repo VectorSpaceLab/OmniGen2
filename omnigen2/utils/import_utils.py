@@ -36,11 +36,8 @@ def _is_package_available(pkg_name: str):
 
     return pkg_exists, pkg_version
 
-_triton_available, _triton_version = _is_package_available("triton")
-_flash_attn_available, _flash_attn_version = _is_package_available("flash_attn")
-
 def is_triton_available():
-    return _triton_available
+    return False
 
 def is_flash_attn_available():
-    return _flash_attn_available
+    return False

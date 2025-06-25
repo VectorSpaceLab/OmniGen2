@@ -22,27 +22,15 @@ import torch.nn as nn
 from diffusers.models.embeddings import Timesteps
 from ..embeddings import TimestepEmbedding
 
-from ...utils.import_utils import is_flash_attn_available, is_triton_available
+from ...utils.import_utils import is_triton_available
 
 if is_triton_available():
     from ...ops.triton.layer_norm import RMSNorm
 else:
     from torch.nn import RMSNorm
-    warnings.warn("Cannot import triton, install triton to use fused RMSNorm for better performance")
     
-if is_flash_attn_available():
-    from flash_attn.ops.activations import swiglu
-else:
-    from .components import swiglu
-    warnings.warn("Cannot import flash_attn, install flash_attn to use fused SwiGLU for better performance")
+from .components import swiglu
 
-# try:
-#     from flash_attn.ops.activations import swiglu as fused_swiglu
-#     FUSEDSWIGLU_AVALIBLE = True
-# except ImportError:
-    
-#     FUSEDSWIGLU_AVALIBLE = False
-#     warnings.warn("Cannot import apex RMSNorm, switch to vanilla implementation")
         
 class LuminaRMSNormZero(nn.Module):
     """

@@ -294,11 +294,6 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
     elif args.dtype == 'bf16':
         weight_dtype = torch.bfloat16
 
-    # Auto-enable model CPU offload for MPS devices to prevent memory issues
-    if accelerator.device.type == 'mps' and not args.enable_sequential_cpu_offload:
-        args.enable_model_cpu_offload = True
-        print(f"Auto-enabled model CPU offload for MPS compatibility")
-
     # Load pipeline and process inputs
     pipeline = load_pipeline(args, accelerator, weight_dtype)
     input_images = preprocess(args.input_image_path)

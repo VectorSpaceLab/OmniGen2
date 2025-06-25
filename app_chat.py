@@ -29,22 +29,61 @@ save_images = False
 
 
 def load_pipeline(accelerator, weight_dtype, args):
-    pipeline = OmniGen2ChatPipeline.from_pretrained(
-        args.model_path,
-        torch_dtype=weight_dtype,
-        trust_remote_code=True,
-    )
-    pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+    from transformers import Qwen2_5_VLForConditionalGeneration, Qwen2VLProcessor
+    from diffusers.models.autoencoders import AutoencoderKL
+    
+    # Load individual components manually to avoid remote code
+    print("Loading transformer...")
+    transformer = OmniGen2Transformer2DModel.from_pretrained(
         args.model_path,
         subfolder="transformer",
         torch_dtype=weight_dtype,
     )
+    
+    print("Loading VAE...")
+    vae = AutoencoderKL.from_pretrained(
+        args.model_path,
+        subfolder="vae", 
+        torch_dtype=weight_dtype,
+    )
+    
+    print("Loading scheduler...")
+    scheduler = FlowMatchEulerDiscreteScheduler()
+    
+    print("Loading MLLM...")
+    mllm = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        args.model_path,
+        subfolder="mllm",
+        torch_dtype=weight_dtype,
+    )
+    
+    print("Loading processor...")
+    processor = Qwen2VLProcessor.from_pretrained(
+        args.model_path,
+        subfolder="processor",
+        use_fast=False,  # Explicitly use slow processor for compatibility
+    )
+    
+    # Manually construct the pipeline
+    print("Constructing pipeline...")
+    pipeline = OmniGen2ChatPipeline(
+        transformer=transformer,
+        vae=vae,
+        scheduler=scheduler,
+        mllm=mllm,
+        processor=processor
+    )
+    
     if args.enable_sequential_cpu_offload:
         pipeline.enable_sequential_cpu_offload()
     elif args.enable_model_cpu_offload:
         pipeline.enable_model_cpu_offload()
     else:
         pipeline = pipeline.to(accelerator.device)
+        # For MPS, ensure all components are properly moved and synced
+        if accelerator.device.type == 'mps':
+            torch.mps.synchronize()
+            print(f"Pipeline moved to MPS device successfully")
     return pipeline
 
 def run(
@@ -634,13 +673,24 @@ def run_for_examples(
 
 
 description = """
-### 💡 Quick Tips for Best Results (see our [github](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-usage-tips) for more details)
-- Image Quality: Use high-resolution images (at least 512x512 recommended).
-- Be Specific: Instead of "Add bird to desk", try "Add the bird from image 1 to the desk in image 2".
-- Use English: English prompts currently yield better results.
-- Adjust image_guidance_scale for better consistency with the reference image:
-    - Image Editing: 1.3 - 2.0
-    - In-context Generation: 2.0 - 3.0
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; margin: 10px 0;">
+    <h3 style="color: white; margin-top: 0;">🎨 OmniGen2 Multimodal AI Studio</h3>
+    <p style="color: white; margin-bottom: 0;">Advanced text-to-image generation with visual understanding and editing capabilities</p>
+</div>
+
+### 💡 Quick Tips for Best Results
+<div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50;">
+<ul style="margin: 0; padding-left: 20px;">
+<li><strong>Image Quality:</strong> Use high-resolution images (at least 512x512)</li>
+<li><strong>Be Specific:</strong> "Add the bird from first image to the desk in second image"</li>
+<li><strong>Language:</strong> English prompts yield better results</li>
+<li><strong>Guidance Scale:</strong> Image editing (1.3-2.0) | In-context generation (2.0-3.0)</li>
+</ul>
+</div>
+
+<div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin: 10px 0;">
+🍎 <strong>Apple Silicon Optimized:</strong> Running with MPS acceleration and float32 precision for Mac compatibility
+</div>
 """
 
 article = """
@@ -799,7 +849,7 @@ def main(args):
         global accelerator
         global pipeline
 
-        bf16 = True
+        bf16 = False
         accelerator = Accelerator(mixed_precision="bf16" if bf16 else "no")
         weight_dtype = torch.bfloat16 if bf16 else torch.float32
 
