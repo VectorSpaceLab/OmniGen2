@@ -213,7 +213,7 @@ The following table details the inference performance of OmniGen2 on an **A800 G
 </p>
 
 ## 🤝 Community Efforts
-We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community(**Currently, we have not confirmed whether there are no bugs. Please try to use the official demo as much as possible.**):
+We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community(**Currently, we have not confirmed whether there are no bugs. Please try to use the our official demo as much as possible.**):
 - ComfyUI:
   - [https://github.com/Yuan-ManX/ComfyUI-OmniGen2](https://github.com/Yuan-ManX/ComfyUI-OmniGen2)
   - [https://github.com/neverbiasu/ComfyUI-OmniGen2](https://github.com/neverbiasu/ComfyUI-OmniGen2)
