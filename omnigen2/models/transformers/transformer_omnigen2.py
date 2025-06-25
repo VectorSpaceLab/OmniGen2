@@ -15,11 +15,11 @@ from diffusers.models.attention_processor import Attention
 from diffusers.models.modeling_outputs import Transformer2DModelOutput
 from diffusers.models.modeling_utils import ModelMixin
 
-from ..attention_processor import OmniGen2AttnProcessorFlash2Varlen, OmniGen2AttnProcessor
+from ..attention_processor import OmniGen2AttnProcessor
 from .repo import OmniGen2RotaryPosEmbed
 from .block_lumina2 import LuminaLayerNormContinuous, LuminaRMSNormZero, LuminaFeedForward, Lumina2CombinedTimestepCaptionEmbedding
 
-from ...utils.import_utils import is_triton_available, is_flash_attn_available
+from ...utils.import_utils import is_triton_available
 
 if is_triton_available():
     from ...ops.triton.layer_norm import RMSNorm
@@ -34,7 +34,7 @@ class OmniGen2TransformerBlock(nn.Module):
     Transformer block for OmniGen2 model.
     
     This block implements a transformer layer with:
-    - Multi-head attention with flash attention
+    - Multi-head attention with scaled dot-product attention
     - Feed-forward network with SwiGLU activation
     - RMS normalization
     - Optional modulation for conditional generation
@@ -66,10 +66,7 @@ class OmniGen2TransformerBlock(nn.Module):
         self.head_dim = dim // num_attention_heads
         self.modulation = modulation
 
-        try:
-            processor = OmniGen2AttnProcessorFlash2Varlen()
-        except ImportError:
-            processor = OmniGen2AttnProcessor()
+        processor = OmniGen2AttnProcessor()
 
         # Initialize attention layer
         self.attn = Attention(

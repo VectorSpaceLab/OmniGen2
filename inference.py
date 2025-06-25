@@ -67,7 +67,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dtype",
         type=str,
-        default='bf16',
+        default='fp32',
         choices=['fp32', 'fp16', 'bf16'],
         help="Data type for model weights."
     )
@@ -144,22 +144,26 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2Pipeline:
-    from transformers import CLIPProcessor
-    pipeline = OmniGen2Pipeline.from_pretrained(
-        args.model_path,
-        processor=CLIPProcessor.from_pretrained(
-            args.model_path,
-            subfolder="processor",
-            use_fast=True
-        ),
-        torch_dtype=weight_dtype,
-        trust_remote_code=True,
-    )
-    pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+    from transformers import Qwen2_5_VLForConditionalGeneration, Qwen2VLProcessor
+    from diffusers.models.autoencoders import AutoencoderKL
+    from omnigen2.schedulers.scheduling_flow_match_euler_discrete import FlowMatchEulerDiscreteScheduler
+    
+    # Load individual components manually to avoid remote code
+    print("Loading transformer...")
+    transformer = OmniGen2Transformer2DModel.from_pretrained(
         args.model_path,
         subfolder="transformer",
         torch_dtype=weight_dtype,
     )
+    
+    print("Loading VAE...")
+    vae = AutoencoderKL.from_pretrained(
+        args.model_path,
+        subfolder="vae", 
+        torch_dtype=weight_dtype,
+    )
+    
+    print("Loading scheduler...")
     if args.scheduler == "dpmsolver":
         from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
         scheduler = DPMSolverMultistepScheduler(
@@ -168,7 +172,32 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
             solver_order=2,
             prediction_type="flow_prediction",
         )
-        pipeline.scheduler = scheduler
+    else:
+        scheduler = FlowMatchEulerDiscreteScheduler()
+    
+    print("Loading MLLM...")
+    mllm = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        args.model_path,
+        subfolder="mllm",
+        torch_dtype=weight_dtype,
+    )
+    
+    print("Loading processor...")
+    processor = Qwen2VLProcessor.from_pretrained(
+        args.model_path,
+        subfolder="processor",
+        use_fast=False,  # Explicitly use slow processor for compatibility
+    )
+    
+    # Manually construct the pipeline
+    print("Constructing pipeline...")
+    pipeline = OmniGen2Pipeline(
+        transformer=transformer,
+        vae=vae,
+        scheduler=scheduler,
+        mllm=mllm,
+        processor=processor
+    )
 
     if args.enable_sequential_cpu_offload:
         pipeline.enable_sequential_cpu_offload()

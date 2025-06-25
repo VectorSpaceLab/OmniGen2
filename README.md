@@ -75,7 +75,7 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 
 ### 🛠️ Environment Setup
 
-#### ✅ Recommended Setup
+#### ✅ Recommended Setup (Linux/Windows with CUDA)
 
 ```bash
 # 1. Clone the repo
@@ -98,6 +98,30 @@ pip install -r requirements.txt
 # OmniGen2 runs even without flash-attn, though we recommend install it for best performance.
 pip install flash-attn==2.7.4.post1 --no-build-isolation
 ```
+
+#### 🍎 Apple Silicon (macOS) Setup
+
+**For Apple Silicon Macs (M1/M2/M3/M4), use the optimized fork:**
+
+```bash
+# 1. Clone the Apple Silicon optimized repository
+git clone https://github.com/zettai-seigi/OmniGen2.git
+cd OmniGen2
+
+# 2. Create a clean Python environment
+conda create -n omnigen2 python=3.11
+conda activate omnigen2
+
+# 3. Install PyTorch with MPS support
+pip install torch==2.6.0 torchvision torchaudio
+
+# 4. Install other required packages
+pip install -r requirements.txt
+
+# Note: Do NOT install flash-attn on Apple Silicon
+```
+
+**📋 See the complete [macOS Setup Guide](README_MACOS.md) for detailed Apple Silicon instructions, optimizations, and troubleshooting.**
 
 #### 🌏 For users in Mainland China
 
@@ -155,6 +179,9 @@ bash example_in_context_generation.sh
     # for generating image or text
     pip install gradio
     python app_chat.py
+    
+    # 🍎 Apple Silicon users: Enhanced interface available
+    python app_chat_enhanced.py  # Modern UI with Apple Silicon optimizations
     ```
 
 ## 💡 Usage Tips
