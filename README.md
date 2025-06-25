@@ -24,7 +24,6 @@
 </h4>
 
 ## 🔥 News
-- **2025-06-25**: The unofficial [ComfyUI Node](#-community-efforts) is now available. Thanks to the contributors! (Please use it with caution.)
 - **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
 - **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
@@ -214,7 +213,7 @@ The following table details the inference performance of OmniGen2 on an **A800 G
 </p>
 
 ## 🤝 Community Efforts
-We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community:
+We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community(**Currently, we have not confirmed whether there are no bugs. Please try to use the official demo as much as possible.**):
 - ComfyUI:
   - [https://github.com/Yuan-ManX/ComfyUI-OmniGen2](https://github.com/Yuan-ManX/ComfyUI-OmniGen2)
   - [https://github.com/neverbiasu/ComfyUI-OmniGen2](https://github.com/neverbiasu/ComfyUI-OmniGen2)
