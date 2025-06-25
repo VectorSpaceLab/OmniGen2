@@ -144,14 +144,8 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2Pipeline:
-    from transformers import CLIPProcessor
     pipeline = OmniGen2Pipeline.from_pretrained(
         args.model_path,
-        processor=CLIPProcessor.from_pretrained(
-            args.model_path,
-            subfolder="processor",
-            use_fast=True
-        ),
         torch_dtype=weight_dtype,
         trust_remote_code=True,
     )
