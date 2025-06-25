@@ -82,7 +82,7 @@ def run(
 
     if scheduler == 'euler':
         pipeline.scheduler = FlowMatchEulerDiscreteScheduler()
-    elif scheduler == 'dpmsolver':
+    elif scheduler == 'dpmsolver++':
         pipeline.scheduler = DPMSolverMultistepScheduler(
             algorithm_type="dpmsolver++",
             solver_type="midpoint",
@@ -745,7 +745,7 @@ def main(args):
                 with gr.Row(equal_height=True):
                     scheduler_input = gr.Dropdown(
                         label="Scheduler",
-                        choices=["euler", "dpmsolver"],
+                        choices=["euler", "dpmsolver++"],
                         value="euler",
                         info="The scheduler to use for the model.",
                     )
