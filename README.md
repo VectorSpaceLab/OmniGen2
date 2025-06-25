@@ -138,9 +138,9 @@ bash example_in_context_generation.sh
 
 * **Online Demo**: [HF Spaces](https://huggingface.co/spaces/OmniGen2/OmniGen2). Beyond Hugging Face Spaces, we are *temporarily* allocating additional GPU resources to ensure smooth access to the online demos. If you notice a long queue for a particular link, please try other links:
 
-    [Demo1](https://8f10329141d53b6884.gradio.live), [Demo2](https://110863cb06c6c44bd2.gradio.live), [Demo3](https://19b0952eb3cf0d2243.gradio.live), [Demo4](https://981758b17b4197aea7.gradio.live)
+    [Demo1](https://225d7c247964ee9b4f.gradio.live), [Demo2](https://af79400f8e3ba0b49d.gradio.live), [Demo3](https://d2b5bdc844568e5e73.gradio.live), [Demo4](https://f7a82946cfe429d434.gradio.live)
 
-    [Chat-Demo1](https://9315447fc78ef638e3.gradio.live), [Chat-Demo2](https://abe054be89543e4cef.gradio.live), [Chat-Demo3](https://4aa913765db00bbe51.gradio.live), [Chat-Demo4](https://f28a8718565627d2cb.gradio.live)
+    [Chat-Demo1](https://88065dd87ee2bda8d9.gradio.live), [Chat-Demo2](https://48fdd6b58ed6ffe484.gradio.live), [Chat-Demo3](https://ba227b12f20ea3995f.gradio.live), [Chat-Demo4](https://cdca7ab8e3d198190f.gradio.live)
 
 <!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
