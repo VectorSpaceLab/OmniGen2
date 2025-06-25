@@ -96,6 +96,8 @@ pip install -r requirements.txt
 # Note: Version 2.7.4.post1 is specified for compatibility with CUDA 12.4.
 # Feel free to use a newer version if you use CUDA 12.6 or they fixed this compatibility issue.
 # OmniGen2 runs even without flash-attn, though we recommend install it for best performance.
+# For Windows OS support install triton-windows
+# pip install triton-windows
 pip install flash-attn==2.7.4.post1 --no-build-isolation
 ```
 
