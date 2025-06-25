@@ -15,3 +15,5 @@ omegaconf
 python-dotenv
 ninja
 ipykernel
+wheel
+triton-windows; sys_platform == "win32"

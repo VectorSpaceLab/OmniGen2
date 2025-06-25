@@ -202,13 +202,24 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
     if args.enable_sequential_cpu_offload:
         pipeline.enable_sequential_cpu_offload()
     elif args.enable_model_cpu_offload:
-        pipeline.enable_model_cpu_offload()
+        try:
+            pipeline.enable_model_cpu_offload(gpu_id=0)
+            print(f"Enabled model CPU offload successfully")
+        except RuntimeError as e:
+            print(f"Warning: Could not enable model CPU offload ({e}), using fallback approach")
+            # Fallback: manually move components to CPU and GPU as needed
+            pipeline = pipeline.to('cpu')  # Move to CPU first
+            # The pipeline will automatically move components to device during inference
     elif args.enable_group_offload:
         apply_group_offloading(pipeline.transformer, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
         apply_group_offloading(pipeline.mllm, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
         apply_group_offloading(pipeline.vae, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
     else:
         pipeline = pipeline.to(accelerator.device)
+        # For MPS, ensure all components are properly moved and synced
+        if accelerator.device.type == 'mps':
+            torch.mps.synchronize()
+            print(f"Pipeline moved to MPS device successfully")
     return pipeline
 
 def preprocess(input_image_path: List[str] = []) -> Tuple[str, str, List[Image.Image]]:
@@ -282,6 +293,11 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
         weight_dtype = torch.float16
     elif args.dtype == 'bf16':
         weight_dtype = torch.bfloat16
+
+    # Auto-enable model CPU offload for MPS devices to prevent memory issues
+    if accelerator.device.type == 'mps' and not args.enable_sequential_cpu_offload:
+        args.enable_model_cpu_offload = True
+        print(f"Auto-enabled model CPU offload for MPS compatibility")
 
     # Load pipeline and process inputs
     pipeline = load_pipeline(args, accelerator, weight_dtype)

@@ -24,10 +24,11 @@
 </h4>
 
 ## 🔥 News
+- **2025-06-25**: The unofficial [ComfyUI Node](#-community-efforts) is now available. Thanks to the contributors! (Please use it with caution.)
 - **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
 - **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
-- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://8f10329141d53b6884.gradio.live); [Chat-Demo1](https://9315447fc78ef638e3.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
+- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://f84f8cab923c024485.gradio.live); [Chat-Demo1](https://e842d62e0ffe2592c8.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
 - **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
 
@@ -39,10 +40,9 @@
 - **Instruction-guided Image Editing**: Executes complex, instruction-based image modifications with high precision, achieving state-of-the-art performance among open-source models.
 - **In-context Generation**: A versatile capability to process and flexibly combine diverse inputs—including humans, reference objects, and scenes—to produce novel and coherent visual outputs.
 
-As an open-source project, OmniGen2 provides a powerful yet resource-efficient foundation for researchers and developers exploring the frontiers of controllable and personalized generative AI.
-
 **We will release the training code and dataset. Stay tuned!**
 
+Some good cases of OmniGen2:
 <p align="center">
   <img src="assets/teaser.jpg" width="95%">
   <br>
@@ -52,23 +52,24 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 <p align="center">
   <img src="assets/examples_edit.png" width="95%">
   <br>
-  <em>Demonstration of OmniGen2's image editing capabilities.</em>
+  <em> Good demonstrations of OmniGen2's image editing capabilities.</em>
 </p>
 
 <p align="center">
   <img src="assets/examples_subject.png" width="95%">
   <br>
-  <em>Demonstration of OmniGen2's in-context generation capabilities.</em>
+  <em> Good demonstrations of OmniGen2's in-context generation capabilities.</em>
 </p>
 
 
 
 ## 📌 TODO
 - [x] Technical report.
-- [ ] In-context generation benchmark: **OmniContext**.
 - [x] Support CPU offload and improve inference efficiency.
-- [ ] Integrated in diffusers.
-- [ ] Training data and scripts.
+- [ ] In-context generation benchmark: **OmniContext**.
+- [ ] Integration of diffusers.
+- [ ] Training datasets.
+- [ ] Training data construction pipeline.
 - [ ] ComfyUI Demo (**commuity support will be greatly appreciated!**).
 
 ## 🚀 Quick Start
@@ -162,9 +163,9 @@ bash example_in_context_generation.sh
 
 * **Online Demo**: [HF Spaces](https://huggingface.co/spaces/OmniGen2/OmniGen2). Beyond Hugging Face Spaces, we are *temporarily* allocating additional GPU resources to ensure smooth access to the online demos. If you notice a long queue for a particular link, please try other links:
 
-    [Demo1](https://8f10329141d53b6884.gradio.live), [Demo2](https://110863cb06c6c44bd2.gradio.live), [Demo3](https://19b0952eb3cf0d2243.gradio.live), [Demo4](https://981758b17b4197aea7.gradio.live)
+    [Demo1](https://f84f8cab923c024485.gradio.live), [Demo2](https://8e1158169364281b31.gradio.live), [Demo3](https://452f266355f13cc1fa.gradio.live), [Demo4](https://342f889b61a4b5e853.gradio.live)
 
-    [Chat-Demo1](https://9315447fc78ef638e3.gradio.live), [Chat-Demo2](https://abe054be89543e4cef.gradio.live), [Chat-Demo3](https://4aa913765db00bbe51.gradio.live), [Chat-Demo4](https://f28a8718565627d2cb.gradio.live)
+    [Chat-Demo1](https://e842d62e0ffe2592c8.gradio.live), [Chat-Demo2](https://60dc68e9bee206924c.gradio.live), [Chat-Demo3](https://4452f78762c2099bf6.gradio.live), [Chat-Demo4](https://cbd2725135225f1f2b.gradio.live)
 
 <!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
@@ -203,7 +204,9 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
   - This works by offloading the model in submodules and loading them onto the GPU sequentially as needed.
   - See: [CPU Offloading](https://huggingface.co/docs/diffusers/optimization/memory#cpu-offloading)
 - `cfg_range_start`, `cfg_range_end`: Define the timestep range where CFG is applied. Per this [paper](https://arxiv.org/abs/2404.07724), reducing `cfg_range_end` can significantly decrease inference time with a negligible impact on quality.
-  
+- `scheduler`: Choose between `[euler, dpmsolver++]`. Default is `euler`. For potentially better performance with fewer steps, try `dpmsolver++`.
+- `num_inference_step`: Number of discretization steps for the ODE solver. Default is `50`.
+
 **Some suggestions for improving generation quality:**
 1. Use High-Quality Images
   - Provide clear images, preferably with a resolution **greater than 512×512 pixels**.
@@ -215,10 +218,15 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 The model currently performs best with **English** prompts.
 
 
-## ❌ Limitations
+## ❌ Limitations and Suggestions
 The current model sometimes does not follow instructions. You can increase the "Number of images per prompt" to generate multiple images at once, so you can choose the result you are satisfied with, or try different prompts. In our own experience, being as detailed as possible tends to work better.
 
 The current model cannot decide the output image size by itself; the default size is 1024×1024. You need to set a specific size if you require a different one. When you input an image, we will set the output size to match the input image (this works best for editing tasks). If you want to modify just one image out of several, you should also set the output size to match the image you want to edit; otherwise, it may lead to low-quality outputs.
+
+The in-context generation capability sometimes produces objects that differ from the original ones. Some suggested improvements are: increasing `image_guidance_scale` (it is recommended to set it to 3) can help alleviate this issue; using high-resolution images, increasing the size of the input image, and ensuring that the object to be used occupies a larger proportion of the image; and modifying the prompt. However, there is still a significant gap compared to GPT-4o.
+
+Compared to OmniGen 1.0, although OmniGen 2 has made some improvements, many issues still remain. It may take multiple attempts to achieve a satisfactory result. 
+
 
 ## 💻 Resources Requirement
 OmniGen2 natively requires an **NVIDIA RTX 3090** or an equivalent GPU with approximately **17GB of VRAM**. For devices with less VRAM, you can enable **CPU Offload** to run the model.
@@ -231,6 +239,12 @@ The following table details the inference performance of OmniGen2 on an **A800 G
   <br>
   <em>Inference Efficiency of OmniGen2.</em>
 </p>
+
+## 🤝 Community Efforts
+We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community:
+- ComfyUI:
+  - [https://github.com/Yuan-ManX/ComfyUI-OmniGen2](https://github.com/Yuan-ManX/ComfyUI-OmniGen2)
+  - [https://github.com/neverbiasu/ComfyUI-OmniGen2](https://github.com/neverbiasu/ComfyUI-OmniGen2)
 
 ## ❤️ Citing Us
 If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated:
