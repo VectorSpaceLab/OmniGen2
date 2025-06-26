@@ -92,28 +92,39 @@ def run(
             prediction_type="flow_prediction",
         )
 
-    results = pipeline(
-        prompt=instruction,
-        input_images=input_images,
-        width=width_input,
-        height=height_input,
-        max_input_image_side_length=max_input_image_side_length,
-        max_pixels=max_pixels,
-        num_inference_steps=num_inference_steps,
-        max_sequence_length=1024,
-        text_guidance_scale=guidance_scale_input,
-        image_guidance_scale=img_guidance_scale_input,
-        cfg_range=(cfg_range_start, cfg_range_end),
-        negative_prompt=negative_prompt,
-        num_images_per_prompt=num_images_per_prompt,
-        generator=generator,
-        output_type="pil",
-        step_func=progress_callback,
-    )
+    all_images = []
+    total_steps = num_images_per_prompt * num_inference_steps
+
+    def batch_progress_callback(img_idx, cur_step, timesteps):
+        progress((img_idx * num_inference_steps + cur_step + 1) / total_steps)
+
+    for img_idx in range(num_images_per_prompt):
+        def step_callback(cur_step, timesteps, img_idx=img_idx):
+            batch_progress_callback(img_idx, cur_step, timesteps)
+        per_image_generator = torch.Generator(device=accelerator.device).manual_seed(seed_input + img_idx)
+        results = pipeline(
+            prompt=instruction,
+            input_images=input_images,
+            width=width_input,
+            height=height_input,
+            max_input_image_side_length=max_input_image_side_length,
+            max_pixels=max_pixels,
+            num_inference_steps=num_inference_steps,
+            max_sequence_length=1024,
+            text_guidance_scale=guidance_scale_input,
+            image_guidance_scale=img_guidance_scale_input,
+            cfg_range=(cfg_range_start, cfg_range_end),
+            negative_prompt=negative_prompt,
+            num_images_per_prompt=1,  # only 1 per call
+            generator=per_image_generator,
+            output_type="pil",
+            step_func=step_callback,
+        )
+        all_images.append(results.images[0])
 
     progress(1.0)
 
-    vis_images = [to_tensor(image) * 2 - 1 for image in results.images]
+    vis_images = [to_tensor(image) * 2 - 1 for image in all_images]
     output_image = create_collage(vis_images)
 
     if save_images:
@@ -916,7 +927,7 @@ def main(args):
                     num_images_per_prompt = gr.Slider(
                         label="Number of images per prompt",
                         minimum=1,
-                        maximum=4,
+                        maximum=25,
                         value=1,
                         step=1,
                     )
