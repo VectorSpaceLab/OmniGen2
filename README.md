@@ -191,6 +191,7 @@ The model currently performs best with **English** prompts.
 
 4. Change instructions to enhance subject consistency.
 When the generated image does not align well with the input image, you can try the following methods to improve subject consistency:
+  - **Use images with larger size, as well as images in which people occupy a larger proportion of the frame.**
   - **Increase the Image Guidance Scale**, for example to 3.0. The trade-off may be slight overexposure or a greasy look in the image. 
   - **When using a single input image**, you can try to use the following prompt template: "she/he ..., maintaining her/his facial features, hairstyle, and other attributes."
   - **Increase the parameter--Number of images per prompt** to generate more outputs, giving you a better chance to find one with stronger subject consistency and a more satisfactory result. 
