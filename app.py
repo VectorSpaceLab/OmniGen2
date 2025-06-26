@@ -134,6 +134,24 @@ def run(
 
         # Generate unique filename with timestamp
         timestamp = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
+        output_path = os.path.join(output_dir, f"{timestamp}.png")
+
+        # Save the collage
+        output_image.save(output_path)
+
+        # Save all generated images separately
+        if len(all_images) > 1:
+            for i, image in enumerate(all_images):
+                image_name, ext = os.path.splitext(output_path)
+                image.save(f"{image_name}_{i}{ext}")
+
+    if save_images:
+        # Create outputs directory if it doesn't exist
+        output_dir = os.path.join(ROOT_DIR, "outputs_gradio")
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Generate unique filename with timestamp
+        timestamp = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
 
         # Generate unique filename with timestamp
         output_path = os.path.join(output_dir, f"{timestamp}.png")
@@ -956,7 +974,7 @@ def main(args):
                     # output image
                     output_image = gr.Image(label="Output Image")
                     global save_images
-                    save_images = gr.Checkbox(label="Save generated images", value=False)
+                    save_images = gr.Checkbox(label="Save generated images", value=True)
 
         global accelerator
         global pipeline
