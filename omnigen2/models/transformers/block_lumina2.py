@@ -61,7 +61,7 @@ class LuminaRMSNormZero(nn.Module):
         super().__init__()
         self.silu = nn.SiLU()
         self.linear = nn.Linear(
-            min(embedding_dim, 1024),
+            embedding_dim,
             4 * embedding_dim,
             bias=True,
         )

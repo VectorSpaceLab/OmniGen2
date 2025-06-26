@@ -266,7 +266,6 @@ def _layer_norm_fwd_1pass_kernel(
         tl.store(RESIDUAL_OUT + cols, x, mask=cols < N)
     if not IS_RMS_NORM:
         mean = tl.sum(x, axis=0) / N
-        tl.store(Mean + row, mean)
         xbar = tl.where(cols < N, x - mean, 0.0)
         var = tl.sum(xbar * xbar, axis=0) / N
     else:

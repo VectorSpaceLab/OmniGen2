@@ -119,8 +119,8 @@ def apply_rotary_emb(
     else:
         # used for lumina
         # x_rotated = torch.view_as_complex(x.float().reshape(*x.shape[:-1], -1, 2))
-        x_rotated = torch.view_as_complex(x.float().reshape(*x.shape[:-1], x.shape[-1] // 2, 2))
-        freqs_cis = freqs_cis.unsqueeze(2)
-        x_out = torch.view_as_real(x_rotated * freqs_cis).flatten(3)
+        x_rotated = torch.view_as_complex(x.float().reshape(*x.shape[:-1], 2, -1))
+        freqs_cis = freqs_cis.unsqueeze(1)
+        x_out = torch.view_as_real(x_rotated * freqs_cis).flatten(2)
 
         return x_out.type_as(x)

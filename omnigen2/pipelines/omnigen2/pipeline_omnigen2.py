@@ -249,19 +249,25 @@ class OmniGen2Pipeline(DiffusionPipeline):
         Returns:
             List[Optional[torch.FloatTensor]]: List of encoded latent representations for each image.
         """
-        if batch_size == 1:
+        if images is None:
+            return [None] * (batch_size * num_images_per_prompt)
+
+        if not isinstance(images, list):
             images = [images]
+
         latents = []
-        for i, img in enumerate(images):
-            if img is not None and len(img) > 0:
-                ref_latents = []
-                for j, img_j in enumerate(img):
+        for img in images:
+            if img is not None:
+                if not isinstance(img, list):
+                    img = [img]
+                ref_latents_per_image = []
+                for img_j in img:
                     img_j = self.image_processor.preprocess(img_j, max_pixels=max_pixels, max_side_length=max_side_length)
-                    ref_latents.append(self.encode_vae(img_j.to(device=device)).squeeze(0))
+                    ref_latents_per_image.append(self.encode_vae(img_j.to(device=device)).squeeze(0))
             else:
-                ref_latents = None
+                ref_latents_per_image = None
             for _ in range(num_images_per_prompt):
-                latents.append(ref_latents)
+                latents.append(ref_latents_per_image)
 
         return latents
     

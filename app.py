@@ -65,6 +65,7 @@ def run(
     max_input_image_side_length,
     max_pixels,
     seed_input,
+    save_images,
     progress=gr.Progress(),
 ):
     input_images = [image_input_1, image_input_2, image_input_3]
@@ -590,6 +591,7 @@ def run_for_examples(
     max_input_image_side_length,
     max_pixels,
     seed_input,
+    save_images,
 ):
     return run(
         instruction,
@@ -609,6 +611,7 @@ def run_for_examples(
         max_input_image_side_length,
         max_pixels,
         seed_input,
+        save_images,
     )
 
 description = """
@@ -763,8 +766,7 @@ def main(args):
                 with gr.Column():
                     # output image
                     output_image = gr.Image(label="Output Image")
-                    global save_images
-                    save_images = gr.Checkbox(label="Save generated images", value=False)
+                    save_images_checkbox = gr.Checkbox(label="Save generated images", value=False)
 
         global accelerator
         global pipeline
@@ -796,6 +798,7 @@ def main(args):
                 max_input_image_side_length,
                 max_pixels,
                 seed_input,
+                save_images_checkbox,
             ],
             outputs=output_image,
         )
@@ -821,6 +824,7 @@ def main(args):
                 max_input_image_side_length,
                 max_pixels,
                 seed_input,
+                save_images_checkbox,
             ],
             outputs=output_image,
         )
