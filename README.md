@@ -24,11 +24,10 @@
 </h4>
 
 ## 🔥 News
-- **2025-06-25**: The unofficial [ComfyUI Node](#-community-efforts) is now available. Thanks to the contributors! (Please use it with caution.)
 - **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
 - **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
-- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://62e2d2a10ac2b4fd98.gradio.live); [Chat-Demo1](https://6d1a6bc79b9747d154.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
+- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://f84f8cab923c024485.gradio.live); [Chat-Demo1](https://e842d62e0ffe2592c8.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
 - **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
 
@@ -40,10 +39,9 @@
 - **Instruction-guided Image Editing**: Executes complex, instruction-based image modifications with high precision, achieving state-of-the-art performance among open-source models.
 - **In-context Generation**: A versatile capability to process and flexibly combine diverse inputs—including humans, reference objects, and scenes—to produce novel and coherent visual outputs.
 
-As an open-source project, OmniGen2 provides a powerful yet resource-efficient foundation for researchers and developers exploring the frontiers of controllable and personalized generative AI.
-
 **We will release the training code and dataset. Stay tuned!**
 
+Some good cases of OmniGen2:
 <p align="center">
   <img src="assets/teaser.jpg" width="95%">
   <br>
@@ -53,13 +51,13 @@ As an open-source project, OmniGen2 provides a powerful yet resource-efficient f
 <p align="center">
   <img src="assets/examples_edit.png" width="95%">
   <br>
-  <em>Demonstration of OmniGen2's image editing capabilities.</em>
+  <em> Good demonstrations of OmniGen2's image editing capabilities.</em>
 </p>
 
 <p align="center">
   <img src="assets/examples_subject.png" width="95%">
   <br>
-  <em>Demonstration of OmniGen2's in-context generation capabilities.</em>
+  <em> Good demonstrations of OmniGen2's in-context generation capabilities.</em>
 </p>
 
 
@@ -140,9 +138,9 @@ bash example_in_context_generation.sh
 
 * **Online Demo**: [HF Spaces](https://huggingface.co/spaces/OmniGen2/OmniGen2). Beyond Hugging Face Spaces, we are *temporarily* allocating additional GPU resources to ensure smooth access to the online demos. If you notice a long queue for a particular link, please try other links:
 
-    [Demo1](https://62e2d2a10ac2b4fd98.gradio.live), [Demo2](https://96215acc97715c3520.gradio.live), [Demo3](https://bcd61a702c2f4ca6e6.gradio.live), [Demo4](https://93ae7e61c3f50eae60.gradio.live)
+    [Demo1](https://f84f8cab923c024485.gradio.live), [Demo2](https://8e1158169364281b31.gradio.live), [Demo3](https://452f266355f13cc1fa.gradio.live), [Demo4](https://342f889b61a4b5e853.gradio.live)
 
-    [Chat-Demo1](https://6d1a6bc79b9747d154.gradio.live), [Chat-Demo2](https://fa3512f87d35d5fa69.gradio.live), [Chat-Demo3](https://bee544b30f68dd127d.gradio.live), [Chat-Demo4](https://9d133903110fd1fd29.gradio.live)
+    [Chat-Demo1](https://e842d62e0ffe2592c8.gradio.live), [Chat-Demo2](https://60dc68e9bee206924c.gradio.live), [Chat-Demo3](https://4452f78762c2099bf6.gradio.live), [Chat-Demo4](https://cbd2725135225f1f2b.gradio.live)
 
 <!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
@@ -187,15 +185,31 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
   - Small or blurry inputs will result in low-quality outputs.
 2. Be Specific with Instructions
   - Clearly describe both **what to change** and **how you want it changed**.
-  - For in-context generation tasks, explicitly state which elements should come from which image. For example, instead of "Add bird to desk", say "Add the bird from image 1 onto the desk in image 2."
+
 3. Prioritize English
 The model currently performs best with **English** prompts.
 
+4. Change instructions to enhance subject consistency.
+When the generated image does not align well with the input image, you can try the following methods to improve subject consistency:
+  - **Use images with larger size, as well as images in which people occupy a larger proportion of the frame.**
+  - **Increase the Image Guidance Scale**, for example to 3.0. The trade-off may be slight overexposure or a greasy look in the image. 
+  - **When using a single input image**, you can try to use the following prompt template: "she/he ..., maintaining her/his facial features, hairstyle, and other attributes."
+  - **Increase the parameter--Number of images per prompt** to generate more outputs, giving you a better chance to find one with stronger subject consistency and a more satisfactory result. 
+  - **Longer prompts generally yield better results than shorter ones.** More detailed descriptions of the scene and character interactions can provide additional benefits.
 
-## ❌ Limitations
+5. For in-context edit (edit based multiple images), we recommend using the following prompt format: "Edit the first image: add/replace (the [object] with) the [object] from the second image. [descripton for your target image]." 
+For example: "Edit the first image: add the man from the second image. The man is talking with a woman in the kitchen". The descition for your target image should be as detailed as possible.
+
+
+## ❌ Limitations and Suggestions
 The current model sometimes does not follow instructions. You can increase the "Number of images per prompt" to generate multiple images at once, so you can choose the result you are satisfied with, or try different prompts. In our own experience, being as detailed as possible tends to work better.
 
 The current model cannot decide the output image size by itself; the default size is 1024×1024. You need to set a specific size if you require a different one. When you input an image, we will set the output size to match the input image (this works best for editing tasks). If you want to modify just one image out of several, you should also set the output size to match the image you want to edit; otherwise, it may lead to low-quality outputs.
+
+The in-context generation capability sometimes produces objects that differ from the original ones. Some suggested improvements are: increasing `image_guidance_scale` (it is recommended to set it to 3) can help alleviate this issue; using high-resolution images, increasing the size of the input image, and ensuring that the object to be used occupies a larger proportion of the image; and modifying the prompt. However, there is still a  gap compared to GPT-4o.
+
+Compared to OmniGen 1.0, although OmniGen 2 has made some improvements, many issues still remain. It may take multiple attempts to achieve a satisfactory result. 
+
 
 ## 💻 Resources Requirement
 OmniGen2 natively requires an **NVIDIA RTX 3090** or an equivalent GPU with approximately **17GB of VRAM**. For devices with less VRAM, you can enable **CPU Offload** to run the model.
@@ -210,7 +224,7 @@ The following table details the inference performance of OmniGen2 on an **A800 G
 </p>
 
 ## 🤝 Community Efforts
-We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community:
+We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community(**Currently, we have not confirmed whether there are no bugs. Please try to use the our official demo as much as possible.**):
 - ComfyUI:
   - [https://github.com/Yuan-ManX/ComfyUI-OmniGen2](https://github.com/Yuan-ManX/ComfyUI-OmniGen2)
   - [https://github.com/neverbiasu/ComfyUI-OmniGen2](https://github.com/neverbiasu/ComfyUI-OmniGen2)

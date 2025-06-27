@@ -84,7 +84,7 @@ def run(
 
     if scheduler == 'euler':
         pipeline.scheduler = FlowMatchEulerDiscreteScheduler()
-    elif scheduler == 'dpmsolver':
+    elif scheduler == 'dpmsolver++':
         pipeline.scheduler = DPMSolverMultistepScheduler(
             algorithm_type="dpmsolver++",
             solver_type="midpoint",
@@ -477,20 +477,20 @@ def get_example():
             0,
         ],
         [
-            "Add the bird from image 1 to the desk in image 2",
+            "Edit the first image: add the man from the second image. The man is talking with a woman in the kitchen",
             1024,
             682,
             "euler",
             50,
             os.path.join(
                 ROOT_DIR,
-                "example_images/996e2cf6-daa5-48c4-9ad7-0719af640c17_1748848108409.png",
+                "example_images/woman_kitchen.webp",
             ),
-            os.path.join(ROOT_DIR, "example_images/00066-10350085.png"),
+            os.path.join(ROOT_DIR, "example_images/a_man.webp"),
             None,
             NEGATIVE_PROMPT,
             5.0,
-            2.0,
+            3.0,
             0.0,
             1.0,
             1,
@@ -499,7 +499,51 @@ def get_example():
             0,
         ],
         [
-            "Replace the apple in the first image with the cat from the second image",
+            "Edit the first image: replace the woman with the person from the second image. The person is watching his phone in the kitchen",
+            1024,
+            682,
+            "euler",
+            50,
+            os.path.join(
+                ROOT_DIR,
+                "example_images/woman_kitchen.webp",
+            ),
+            os.path.join(ROOT_DIR, "example_images/a_man.webp"),
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            3.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
+        # [
+        #     "Add the bird from image 1 to the desk in image 2",
+        #     1024,
+        #     682,
+        #     "euler",
+        #     50,
+        #     os.path.join(
+        #         ROOT_DIR,
+        #         "example_images/996e2cf6-daa5-48c4-9ad7-0719af640c17_1748848108409.png",
+        #     ),
+        #     os.path.join(ROOT_DIR, "example_images/00066-10350085.png"),
+        #     None,
+        #     NEGATIVE_PROMPT,
+        #     5.0,
+        #     2.0,
+        #     0.0,
+        #     1.0,
+        #     1,
+        #     2048,
+        #     1024 * 1024,
+        #     0,
+        # ],
+        [
+            "Edit the first image: replace the apple with the cat from the second image.",
             1024,
             780,
             "euler",
@@ -520,22 +564,155 @@ def get_example():
             1024 * 1024,
             0,
         ],
+        # [
+        #     "Replace the woman in the second image with the woman from the first image",
+        #     1024,
+        #     747,
+        #     "euler",
+        #     50,
+        #     os.path.join(
+        #         ROOT_DIR, "example_images/byward-outfitters-B97YFrsITyo-unsplash.jpg"
+        #     ),
+        #     os.path.join(
+        #         ROOT_DIR, "example_images/6652baf6-4096-40ef-a475-425e4c072daf.png"
+        #     ),
+        #     None,
+        #     NEGATIVE_PROMPT,
+        #     5.0,
+        #     2.0,
+        #     0.0,
+        #     1.0,
+        #     1,
+        #     2048,
+        #     1024 * 1024,
+        #     0,
+        # ],
         [
-            "Replace the woman in the second image with the woman from the first image",
+            "She holds the sunflower close to her chest, eyes closed and smiling softly, standing on a sunlit balcony with the awakening city skyline behind her.",
             1024,
-            747,
+            1536,
             "euler",
             50,
-            os.path.join(
-                ROOT_DIR, "example_images/byward-outfitters-B97YFrsITyo-unsplash.jpg"
-            ),
-            os.path.join(
-                ROOT_DIR, "example_images/6652baf6-4096-40ef-a475-425e4c072daf.png"
-            ),
+            os.path.join(ROOT_DIR, "example_images/woman1.webp"),
+            None,
             None,
             NEGATIVE_PROMPT,
             5.0,
             2.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
+        [
+            "She does push-ups on the moonlit beach, staring intensely at the camera. Moonlight highlights her strong, focused expression, with waves crashing beside her on the glistening sand.",
+            1024,
+            1536,
+            "euler",
+            50,
+            os.path.join(ROOT_DIR, "example_images/woman1.webp"),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            3.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
+        [
+            "She is sitting on a motorcycle, framed by a daytime backdrop with swaying palm trees.",
+            1024,
+            1536,
+            "euler",
+            50,
+            os.path.join(ROOT_DIR, "example_images/woman1.webp"),
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
+        [
+            "The two people shown in the images are sitting in a theater, watching the screen. One person points at the other person.",
+            1024,
+            1024,
+            "euler",
+            50,
+            os.path.join(ROOT_DIR, "example_images/man1.webp"),
+            os.path.join(ROOT_DIR, "example_images/woman1.webp"),
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            3.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
+        [
+            "The two people shown in the images are sitting in a theater, watching the screen. One person points at the other person.",
+            1024,
+            1024,
+            "euler",
+            50,
+            os.path.join(ROOT_DIR, "example_images/saml-altman-openai-ceo.webp"),
+            os.path.join(ROOT_DIR, "example_images/elon-twitter-new-ceo.webp"),
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            3.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
+        [
+            "The two people shown in the images are drinking wine, their eyes locked in an intense gaze at the camera, seated at an elegantly set table in a dimly lit room. Soft, golden light spills from a nearby chandelier, casting a warm glow over the polished wood surface, while the ambient sound of quiet conversation fills the air.",
+            1024,
+            1024,
+            "euler",
+            50,
+            os.path.join(ROOT_DIR, "example_images/man1.webp"),
+            os.path.join(ROOT_DIR, "example_images/woman1.webp"),
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            3.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
+        [
+            "The two people shown in the images are drinking wine, their eyes locked in an intense gaze at the camera, seated at an elegantly set table in a dimly lit room. Soft, golden light spills from a nearby chandelier, casting a warm glow over the polished wood surface, while the ambient sound of quiet conversation fills the air.",
+            1024,
+            1024,
+            "euler",
+            50,
+            os.path.join(ROOT_DIR, "example_images/saml-altman-openai-ceo.webp"),
+            os.path.join(ROOT_DIR, "example_images/elon-twitter-new-ceo.webp"),
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            3.0,
             0.0,
             1.0,
             1,
@@ -613,12 +790,16 @@ def run_for_examples(
 
 description = """
 ### 💡 Quick Tips for Best Results (see our [github](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-usage-tips) for more details)
-- Image Quality: Use high-resolution images (at least 512x512 recommended).
+- Image Quality: Use high-resolution images (**at least 512x512 recommended**).
 - Be Specific: Instead of "Add bird to desk", try "Add the bird from image 1 to the desk in image 2".
 - Use English: English prompts currently yield better results.
-- Adjust image_guidance_scale for better consistency with the reference image:
+- Increase image_guidance_scale for better consistency with the reference image:
     - Image Editing: 1.3 - 2.0
     - In-context Generation: 2.0 - 3.0
+- For in-context edit (edit based multiple images), we recommend using the following prompt format: "Edit the first image: add/replace (the [object] with) the [object] from the second image. [descripton for your target image]."
+For example: "Edit the first image: add the man from the second image. The man is talking with a woman in the kitchen"
+
+Compared to OmniGen 1.0, although OmniGen2 has made some improvements, some issues still remain. It may take multiple attempts to achieve a satisfactory result.
 """
 
 article = """
@@ -664,10 +845,10 @@ def main(args):
                 # slider
                 with gr.Row(equal_height=True):
                     height_input = gr.Slider(
-                        label="Height", minimum=256, maximum=1024, value=1024, step=128
+                        label="Height", minimum=256, maximum=2048, value=1024, step=128
                     )
                     width_input = gr.Slider(
-                        label="Width", minimum=256, maximum=1024, value=1024, step=128
+                        label="Width", minimum=256, maximum=2048, value=1024, step=128
                     )
                 with gr.Row(equal_height=True):
                     text_guidance_scale_input = gr.Slider(
@@ -723,7 +904,7 @@ def main(args):
                 with gr.Row(equal_height=True):
                     scheduler_input = gr.Dropdown(
                         label="Scheduler",
-                        choices=["euler", "dpmsolver"],
+                        choices=["euler", "dpmsolver++"],
                         value="euler",
                         info="The scheduler to use for the model.",
                     )
