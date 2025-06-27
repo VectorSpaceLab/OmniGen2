@@ -1,0 +1,17 @@
+data:
+  - 
+    path: '/share_2/pengfei/NEW_FOLDER/Translation/unprocess_data/process_human'
+    type: 't2i'
+    ratio: !!float 1
+  - 
+    path: '/share_2/pengfei/NEW_FOLDER/Translation/unprocess_data/unprocess_human'
+    type: 't2i'
+    ratio: !!float 1
+  - 
+    path: '/share_2/pengfei/NEW_FOLDER2/Human_data_lying/Label/final.jsonl'
+    type: 't2i'
+    ratio: !!float 1
+  - 
+    path: '/share_2/pengfei/NEW_FOLDER/Translation/unprocess_data/process_lying/final_cn.jsonl'
+    type: 't2i'
+    ratio: !!float 1

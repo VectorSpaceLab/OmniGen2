@@ -1,0 +1,25 @@
+data:
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/OmniConsistency/t2i/jsonls_flux_0dot1_cool_adaptv1'
+    ratio: !!float 1
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/OmniConsistency/t2i/jsonls_flux_0dot1_cool_adaptv1_zh'
+    ratio: !!float 1
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/OmniConsistency/stylization/jsonls_flux_0dot1_cool_adaptv1'
+    ratio: !!float 1
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/OmniConsistency/stylization/jsonls_flux_0dot1_cool_adaptv1_zh'
+    ratio: !!float 1
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/OmniConsistency/style_reference/jsonls_flux_0dot1_cool_adaptv1'
+    ratio: !!float 1
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/OmniConsistency/style_reference/jsonls_flux_0dot1_cool_adaptv1_zh'
+    ratio: !!float 1
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/edit_style/jsonls_flux_0dot1_cool_adaptv1'
+    ratio: !!float 1
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/edit_style/jsonls_flux_0dot1_cool_adaptv1_zh'
+    ratio: !!float 1

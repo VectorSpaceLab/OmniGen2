@@ -1,0 +1,17 @@
+data:
+  - 
+    path: "/share_2/pengfei/NEW_FOLDER/Translation/unprocess_data2/unprocess_data_flux_1/output/data_flux_1.jsonl"
+    type: "edit"
+    ratio: !!float 1
+  - 
+    path: "/share_2/pengfei/NEW_FOLDER/Translation/unprocess_data2/unprocess_data_flux_1/input/data_flux_1.jsonl"
+    type: "edit"
+    ratio: !!float 1
+  - 
+    path: "/share_2/pengfei/NEW_FOLDER/Translation/unprocess_data2/process_data_flux_1/output/data_flux_1_cn.jsonl"
+    type: "edit"
+    ratio: !!float 1
+  - 
+    path: "/share_2/pengfei/NEW_FOLDER/Translation/unprocess_data2/process_data_flux_1/input/data_flux_1_cn.jsonl"
+    type: "edit"
+    ratio: !!float 1

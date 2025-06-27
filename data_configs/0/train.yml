@@ -1,0 +1,45 @@
+data:
+  - 
+    path: 'data_configs/0/t2i/gpt4o_t2i.yml'
+    type: 't2i'
+    ratio: !!float 0.14
+  - 
+    path: 'data_configs/0/t2i/other_t2i.yml'
+    type: 't2i'
+    ratio: !!float 0.02
+  - 
+    path: 'data_configs/0/t2i/flux_t2i2.yml'
+    type: 't2i'
+    ratio: !!float 0.14
+  -
+    path: 'data_configs/0/edit/gedit.yml'
+    type: 'edit'
+    ratio: !!float 0.12
+  - 
+    path: 'data_configs/0/edit/emu_edit.yml'
+    type: 'edit'
+    ratio: !!float 0.1
+  - 
+    path: 'data_configs/0/edit/ref_edit.yml'
+    type: 'edit'
+    ratio: !!float 0.05
+  - 
+    path: 'data_configs/0/edit/other_edit.yml'
+    type: 'edit'
+    ratio: !!float 0.05
+  - 
+    path: 'data_configs/0/ic/style.yml'
+    type: 'ic'
+    ratio: !!float 0.03
+  - 
+    path: 'data_configs/0/ic/gpt4o_subject2.yml'
+    type: 'ic'
+    ratio: !!float 0.15
+  - 
+    path: 'data_configs/0/ic/flux_subject2.yml'
+    type: 'ic'
+    ratio: !!float 0.1
+  - 
+    path: 'data_configs/0/ic/gpt4o_features.yml'
+    type: 'ic'
+    ratio: !!float 0.1

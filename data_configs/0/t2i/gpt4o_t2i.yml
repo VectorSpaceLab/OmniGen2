@@ -1,0 +1,9 @@
+data:
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/PT/BLIP3o-60k/jsonls_flux_strength0dot1_cool_adaptv1'
+    type: 't2i'
+    ratio: !!float 0.5
+  - 
+    path: '/share_2/chenyuan/data/Awesome_gpt4o_images/PT/BLIP3o-60k/jsonls_flux_strength0dot1_cool_adaptv1_zh'
+    type: 't2i'
+    ratio: !!float 0.5

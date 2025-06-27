@@ -1,0 +1,103 @@
+name: train_lora
+
+seed: 2233
+device_specific_seed: true
+workder_specific_seed: true
+
+data:
+  data_path: data_configs/0/train.yml
+  image_size: 1024
+  use_chat_template: true
+  max_token_len: 888
+  dynamic_image_size: true
+  prompt_dropout_prob: !!float 0.0001
+  ref_img_dropout_prob: !!float 0.5
+  apply_chat_template_on_null_prompt: true
+  specified_null_chat_template: true
+  null_prompt_version: v1
+  
+model:
+  # pretrained_model_path: ~
+  pretrained_vae_model_name_or_path: /share_2/luoxin/modelscope/hub/models/FLUX.1-dev
+  pretrained_text_encoder_model_name_or_path: Qwen/Qwen2.5-VL-3B-Instruct
+  pretrained_model_path: /share_2/pengfei/NEW_FOLDER3/Model_fuse/Model_path/version1/pytorch_model_fsdp.bin
+  
+  arch_opt:
+    patch_size: 2
+    in_channels: 16
+    hidden_size: 2520
+    num_layers: 32
+    num_refiner_layers: 2
+    num_attention_heads: 21
+    num_kv_heads: 7
+    multiple_of: 256
+    norm_eps: !!float 1e-05
+    axes_dim_rope: [40, 40, 40]
+    axes_lens: [10000, 10000, 10000]
+    text_feat_dim: 2048
+    timestep_scale: !!float 1000
+
+transport:
+  snr_type: lognorm
+  do_shift: true
+  dynamic_time_shift: true
+
+train:
+  # Dataloader
+  global_batch_size: 128
+  batch_size: 2
+  gradient_accumulation_steps: 1
+
+  # num_train_epochs: 4
+  max_train_steps: 4000
+  
+  dataloader_num_workers: 6
+
+  # Optimizer
+  learning_rate: !!float 1e-5
+  scale_lr: false
+  lr_scheduler: timm_cosine
+  t_initial: 200000
+  lr_min: 0
+  cycle_decay: 0.5
+  warmup_t: 500
+  warmup_lr_init: 1e-18
+  warmup_prefix: true
+  t_in_epochs: false
+
+  # resume_from_checkpoint: 
+
+  use_8bit_adam: false
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_weight_decay: !!float 0.01
+  adam_epsilon: !!float 1e-08
+  max_grad_norm: 1
+
+  gradient_checkpointing: true
+  
+  set_grads_to_none: true
+
+  # Misc
+  allow_tf32: false
+  mixed_precision: 'bf16'
+
+  ema_decay: 0.0
+
+  lora_ft: true
+  lora_rank: 8
+  lora_dropout: 0
+
+val:
+  validation_steps: 500
+  train_visualization_steps: 100
+
+logger:
+  log_with: [wandb, tensorboard]
+  # log_with: ~
+
+  checkpointing_steps: 1000
+  checkpoints_total_limit: ~
+
+cache_dir: 
+resume_from_checkpoint: latest
