@@ -230,3 +230,4 @@ intro*
 resize_example_images.py
 save_pipeline.py
 outputs_gradio/
+test.py

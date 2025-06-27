@@ -138,7 +138,7 @@ def run(
 
 
 def get_example():
-    case = [
+    cases = [
         [
             "The sun rises slightly, the dew on the rose petals in the garden is clear, a crystal ladybug is crawling to the dew, the background is the early morning garden, macro lens.",
             1024,
@@ -860,7 +860,7 @@ def get_example():
             0,
         ],
     ]
-    return case
+    return cases
 
 
 def run_for_examples(
