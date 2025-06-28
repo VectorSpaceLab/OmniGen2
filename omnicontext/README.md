@@ -82,6 +82,7 @@ python -m omnicontext.test_omnicontext_score \
 ```bash
 python -m omnicontext.calculate_statistics \
 --save_path "omnicontext/results" \
+--model_name "OmniGen2" \
 --backbone gpt4dot1
 ```
 
