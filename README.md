@@ -66,7 +66,7 @@ Some good cases of OmniGen2:
 ## 📌 TODO
 - [x] Technical report.
 - [x] Support CPU offload and improve inference efficiency.
-- [ ] In-context generation benchmark: **OmniContext**.
+- [x] In-context generation benchmark: **OmniContext**.
 - [ ] Integration of diffusers.
 - [ ] Training datasets.
 - [ ] Training data construction pipeline.
