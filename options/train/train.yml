@@ -44,7 +44,7 @@ transport:
 
 train:
   # Dataloader
-  global_batch_size: 128
+  global_batch_size: 96
   batch_size: 2
   gradient_accumulation_steps: 1
 
