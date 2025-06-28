@@ -24,7 +24,7 @@
 </h4>
 
 ## 🔥 News
-- **2025-06-28**: We release [OmniContext benchmark](https://huggingface.co/datasets/OmniGen2/OmniContext). The evaluation code can be found in [omnicontext](https://github.com/VectorSpaceLab/OmniGen2/tree/main/omnicontext).
+- **2025-06-28**: We release [OmniContext](https://huggingface.co/datasets/OmniGen2/OmniContext) benchmark. The evaluation code can be found in [omnicontext](https://github.com/VectorSpaceLab/OmniGen2/tree/main/omnicontext).
 - **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
 - **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
