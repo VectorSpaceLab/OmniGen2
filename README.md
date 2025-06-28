@@ -27,7 +27,7 @@
 - **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
 - **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
-- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://db73d28ed498894554.gradio.live); [Chat-Demo1](https://c41fbf42145e8f8baf.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
+- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://9c4426d27c3b9ecbed.gradio.live); [Chat-Demo1](https://0351497834a4d7226c.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
 - **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
 
@@ -138,9 +138,9 @@ bash example_in_context_generation.sh
 
 * **Online Demo**: [HF Spaces](https://huggingface.co/spaces/OmniGen2/OmniGen2). Beyond Hugging Face Spaces, we are *temporarily* allocating additional GPU resources to ensure smooth access to the online demos. If you notice a long queue for a particular link, please try other links:
 
-    [Demo1](https://db73d28ed498894554.gradio.live), [Demo2](https://bd2126551017173961.gradio.live), [Demo3](https://f8ac6c81a772cbe497.gradio.live), [Demo4](https://ee53e6ad3e14fa20ad.gradio.live)
+    [Demo1](https://db73d28ed498894554.gradio.live), [Demo2](https://06574c5e62d815f799.gradio.live), [Demo3](https://e0a82fd380d2ff17ac.gradio.live), [Demo4](https://d9c4410ee48ce35051.gradio.live)
 
-    [Chat-Demo1](https://c41fbf42145e8f8baf.gradio.live), [Chat-Demo2](https://eac6a2fc4484bd28ea.gradio.live), [Chat-Demo3](https://ad7e47f31588e71156.gradio.live), [Chat-Demo4](https://db17657bb668996508.gradio.live)
+    [Chat-Demo1](https://0351497834a4d7226c.gradio.live), [Chat-Demo2](https://032160099388d1d10c.gradio.live), [Chat-Demo3](https://cf9f2797e92cfa2767.gradio.live), [Chat-Demo4](https://b87b82fd14215affc2.gradio.live)
 
 <!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
