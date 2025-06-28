@@ -141,6 +141,17 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Enable group offload."
     )
+    parser.add_argument(
+        "--enable_teacache",
+        action="store_true",
+        help="Enable teacache to speed up inference."
+    )
+    parser.add_argument(
+        "--rel_l1_thresh",
+        type=float,
+        default=0.05,
+        help="Relative L1 threshold for teacache."
+    )
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2Pipeline:
@@ -154,6 +165,11 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         subfolder="transformer",
         torch_dtype=weight_dtype,
     )
+
+    if args.enable_teacache:
+        pipeline.transformer.enable_teacache = True
+        pipeline.transformer.rel_l1_thresh = args.rel_l1_thresh
+
     if args.scheduler == "dpmsolver++":
         from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
         scheduler = DPMSolverMultistepScheduler(
