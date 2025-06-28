@@ -138,7 +138,7 @@ bash example_in_context_generation.sh
 
 * **Online Demo**: [HF Spaces](https://huggingface.co/spaces/OmniGen2/OmniGen2). Beyond Hugging Face Spaces, we are *temporarily* allocating additional GPU resources to ensure smooth access to the online demos. If you notice a long queue for a particular link, please try other links:
 
-    [Demo1](https://db73d28ed498894554.gradio.live), [Demo2](https://06574c5e62d815f799.gradio.live), [Demo3](https://e0a82fd380d2ff17ac.gradio.live), [Demo4](https://d9c4410ee48ce35051.gradio.live)
+    [Demo1](https://9c4426d27c3b9ecbed.gradio.live), [Demo2](https://06574c5e62d815f799.gradio.live), [Demo3](https://e0a82fd380d2ff17ac.gradio.live), [Demo4](https://d9c4410ee48ce35051.gradio.live)
 
     [Chat-Demo1](https://0351497834a4d7226c.gradio.live), [Chat-Demo2](https://032160099388d1d10c.gradio.live), [Chat-Demo3](https://cf9f2797e92cfa2767.gradio.live), [Chat-Demo4](https://b87b82fd14215affc2.gradio.live)
 

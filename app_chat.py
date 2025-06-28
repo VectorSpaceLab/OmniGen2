@@ -142,6 +142,25 @@ def run(
 def get_example():
     cases = [
         [
+            "Please briefly describe this image.",
+            1024,
+            1024,
+            'euler',
+            50,
+            "example_images/1e5953ff5e029bfc81bb0a1d4792d26d.jpg",
+            None,
+            None,
+            NEGATIVE_PROMPT,
+            5.0,
+            2.0,
+            0.0,
+            1.0,
+            1,
+            2048,
+            1024 * 1024,
+            0,
+        ],
+        [
             "The sun rises slightly, the dew on the rose petals in the garden is clear, a crystal ladybug is crawling to the dew, the background is the early morning garden, macro lens.",
             1024,
             1024,
