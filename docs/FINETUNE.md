@@ -1,7 +1,3 @@
-Of course! Here is an optimized, all-English version of your GitHub README section. I've focused on creating a clear, step-by-step structure, improving the language for clarity, and ensuring it's easy for any user to follow.
-
----
-
 ## ⚙️ Fine-Tuning OmniGen2
 
 You can fine-tune OmniGen2 to customize its capabilities, enhance its performance on specific tasks, or address potential limitations.
