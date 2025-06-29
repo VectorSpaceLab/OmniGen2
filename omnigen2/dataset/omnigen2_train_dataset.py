@@ -98,11 +98,6 @@ class OmniGen2TrainDataset(torch.utils.data.Dataset):
                     if p in data_item['instruction']:
                         data_item['instruction'] = data_item['instruction'].replace(p, "")
                         break
-
-        if "/share_2/shitao/datasets/PT/BLIP3o-60k/data/" in data_item['output_image']:
-            data_item['output_image'] = data_item['output_image'].replace("/share_2/shitao/datasets/PT/BLIP3o-60k/data/", "/share_2/chenyuan/data/Awesome_gpt4o_images/PT/BLIP3o-60k/imgs_flux_1_cool_shift10/")
-            data_item['output_image'] = data_item['output_image'].replace("jpg", "png")
-
         return data_item
     
     def apply_chat_template(self, instruction, system_prompt):
