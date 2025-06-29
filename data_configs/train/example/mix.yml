@@ -1,0 +1,13 @@
+data:
+  - 
+    path: 'data_configs/example/t2i/t2i.yml'
+    type: 't2i'
+    ratio: !!float 0.33
+  -
+    path: 'data_configs/example/edit/edit.yml'
+    type: 'edit'
+    ratio: !!float 0.33
+  - 
+    path: 'data_configs/example/ic/ic.yml'
+    type: 'ic'
+    ratio: !!float 0.33

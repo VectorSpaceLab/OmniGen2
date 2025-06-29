@@ -1,0 +1,9 @@
+data:
+  - 
+    path: "data_configs/example/edit/jsonls/0.jsonl"
+    type: "edit"
+    ratio: !!float 1
+  - 
+    path: "data_configs/example/edit/jsonls/1.jsonl"
+    type: "edit"
+    ratio: !!float 1

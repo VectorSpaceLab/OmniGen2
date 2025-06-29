@@ -143,7 +143,7 @@ def log_model_info(name: str, model: torch.nn.Module):
 def log_time_distribution(transport, device, args):
     """Samples time steps from transport and plots their distribution."""
     with torch.no_grad():
-        dummy_tensor = torch.randn((64, 16, args.data.image_size // 8, args.data.image_size // 8), device=device)
+        dummy_tensor = torch.randn((64, 16, int(math.sqrt(args.data.max_output_pixels) / 8), int(math.sqrt(args.data.max_output_pixels) / 8)), device=device)
         ts = torch.cat([transport.sample(dummy_tensor, AcceleratorState().process_index, AcceleratorState().num_processes)[0] for _ in range(1000)], dim=0)
     
     ts_np = ts.cpu().numpy()
@@ -198,8 +198,13 @@ def main(args):
     
     ema_decay = args.train.get('ema_decay', 0)
 
-    model = OmniGen2Transformer2DModel(**args.model.arch_opt)
+    model = OmniGen2Transformer2DModel.from_pretrained(
+        args.model.pretrained_model_path, subfolder="transformer"
+    )
     model.train()
+
+    # model = OmniGen2Transformer2DModel(**args.model.arch_opt)
+    # model.train()
 
     freqs_cis = OmniGen2RotaryPosEmbed.get_freqs_cis(
         model.config.axes_dim_rope,
@@ -207,14 +212,14 @@ def main(args):
         theta=10000,
     )
 
-    if args.model.get("pretrained_model_path", None) is not None:
-        logger.info(f"Loading model parameters from: {args.model.pretrained_model_path}")
-        state_dict = torch.load(args.model.pretrained_model_path, map_location="cpu")
-        missing, unexpect = model.load_state_dict(state_dict, strict=False)
-        logger.info(
-            f"missed parameters: {missing}",
-        )
-        logger.info(f"unexpected parameters: {unexpect}")
+    # if args.model.get("pretrained_model_path", None) is not None:
+    #     logger.info(f"Loading model parameters from: {args.model.pretrained_model_path}")
+    #     state_dict = torch.load(args.model.pretrained_model_path, map_location="cpu")
+    #     missing, unexpect = model.load_state_dict(state_dict, strict=False)
+    #     logger.info(
+    #         f"missed parameters: {missing}",
+    #     )
+    #     logger.info(f"unexpected parameters: {unexpect}")
 
     if ema_decay != 0:
         model_ema = deepcopy(model)
@@ -290,10 +295,10 @@ def main(args):
     log_model_info("transformer", model)
 
     # Optimizer creation
-    model_params = list(filter(lambda p: p.requires_grad, model.parameters()))
+    trainable_params = list(filter(lambda p: p.requires_grad, model.parameters()))
     
     optimizer = optimizer_class(
-        model_params,
+        trainable_params,
         lr=args.train.learning_rate,
         betas=(args.train.adam_beta1, args.train.adam_beta2),
         weight_decay=args.train.adam_weight_decay,
@@ -309,8 +314,9 @@ def main(args):
             use_chat_template=args.data.use_chat_template,
             prompt_dropout_prob=args.data.get('prompt_dropout_prob', 0.0),
             ref_img_dropout_prob=args.data.get('ref_img_dropout_prob', 0.0),
-            max_pixels=1024 * 1024,
-            max_side_length=2048,
+            max_input_pixels=OmegaConf.to_object(args.data.get('max_input_pixels', 1024 * 1024)),
+            max_output_pixels=args.data.get('max_output_pixels', 1024 * 1024),
+            max_side_length=args.data.get('max_side_length', 2048),
         )
 
     # default: 1000 steps, linear noise schedule
@@ -322,7 +328,7 @@ def main(args):
         None,
         snr_type=args.transport.snr_type,
         do_shift=args.transport.do_shift,
-        seq_len=(args.data.image_size // 16) ** 2,
+        seq_len=args.data.max_output_pixels // 16 // 16,
         dynamic_time_shift=args.transport.get("dynamic_time_shift", False),
         time_shift_version=args.transport.get("time_shift_version", "v1"),
     )  # default: velocity;
@@ -355,7 +361,7 @@ def main(args):
         num_workers=args.train.dataloader_num_workers,
         worker_init_fn=worker_init_fn,
         drop_last=True,
-        collate_fn=OmniGen2Collator(tokenizer=text_tokenizer, max_token_len=args.data.max_token_len)
+        collate_fn=OmniGen2Collator(tokenizer=text_tokenizer, max_token_len=args.data.maximum_text_tokens)
     )
 
     logger.info(f"{args.train.batch_size=} {args.train.gradient_accumulation_steps=} {accelerator.num_processes=} {args.train.global_batch_size=}")
@@ -386,12 +392,24 @@ def main(args):
                                          warmup_lr_init=args.train.warmup_lr_init,
                                          warmup_prefix=args.train.warmup_prefix,
                                          t_in_epochs=args.train.t_in_epochs)
+    elif args.train.lr_scheduler == 'timm_constant_with_warmup':
+        from omnigen2.optim.scheduler.step_lr import StepLRScheduler
+
+        lr_scheduler = StepLRScheduler(
+            optimizer=optimizer,
+            decay_t=1,
+            decay_rate=1,
+            warmup_t=args.train.warmup_t,
+            warmup_lr_init=args.train.warmup_lr_init,
+            warmup_prefix=args.train.warmup_prefix,
+            t_in_epochs=args.train.t_in_epochs,
+        )
     else:
         lr_scheduler = get_scheduler(
             args.train.lr_scheduler,
             optimizer=optimizer,
-            num_warmup_steps=args.train.lr_warmup_steps * accelerator.num_processes,
-            num_training_steps=args.train.max_train_steps * accelerator.num_processes,
+            num_warmup_steps=args.train.lr_warmup_steps,
+            num_training_steps=args.train.max_train_steps,
             num_cycles=args.train.lr_num_cycles,
             power=args.train.lr_power,
         )
@@ -571,8 +589,7 @@ def main(args):
                 bin_sum_loss = accelerator.gather(rearrange(bin_sum_loss, "b -> 1 b")).sum(dim=0)
 
                 if accelerator.sync_gradients:
-                    params_to_clip = list(model.parameters())
-                    accelerator.clip_grad_norm_(params_to_clip, args.train.max_grad_norm)
+                    accelerator.clip_grad_norm_(trainable_params, args.train.max_grad_norm)
 
                 optimizer.step()
                 if 'timm' in args.train.lr_scheduler:
@@ -671,13 +688,12 @@ def main(args):
             if 'max_train_steps' in args.train and global_step >= args.train.max_train_steps:
                 break
 
+    checkpoints = os.listdir(args.output_dir)
+    checkpoints = [d for d in checkpoints if d.startswith("checkpoint")]
+    checkpoints = sorted(checkpoints, key=lambda x: int(x.split("-")[1]))
     if len(checkpoints) > 0 and int(checkpoints[-1].split("-")[1]) < global_step:
         if accelerator.is_main_process:
             if args.logger.checkpoints_total_limit is not None:
-                checkpoints = os.listdir(args.output_dir)
-                checkpoints = [d for d in checkpoints if d.startswith("checkpoint")]
-                checkpoints = sorted(checkpoints, key=lambda x: int(x.split("-")[1]))
-
                 if len(checkpoints) >= args.logger.checkpoints_total_limit:
                     num_to_remove = len(checkpoints) - args.logger.checkpoints_total_limit + 1
                     removing_checkpoints = checkpoints[0:num_to_remove]

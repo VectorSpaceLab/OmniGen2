@@ -1,0 +1,9 @@
+data:
+  - 
+    path: "data_configs/example/ic/jsonls/0.jsonl"
+    type: "ic"
+    ratio: !!float 1
+  - 
+    path: "data_configs/example/ic/jsonls/1.jsonl"
+    type: "ic"
+    ratio: !!float 1

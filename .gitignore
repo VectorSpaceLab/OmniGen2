@@ -231,3 +231,5 @@ resize_example_images.py
 save_pipeline.py
 outputs_gradio/*
 test.py
+data_configs/test
+scripts/test

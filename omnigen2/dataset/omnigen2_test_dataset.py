@@ -1,4 +1,4 @@
-from typing import Optional, Union, List
+from typing import Optional
 
 import os
 import random
@@ -7,35 +7,29 @@ import glob
 from PIL import Image
 
 import torch
-from torchvision import transforms
 
 from datasets import load_dataset, concatenate_datasets
 
 from ..pipelines.omnigen2.pipeline_omnigen2 import OmniGen2ImageProcessor
 
-class OmniGen2TrainDataset(torch.utils.data.Dataset):
+class OmniGen2TestDataset(torch.utils.data.Dataset):
     SYSTEM_PROMPT = "You are a helpful assistant that generates high-quality images based on user instructions."
-    SYSTEM_PROMPT_DROP = "You are a helpful assistant that generates images."
 
     def __init__(
         self,
         config_path: str,
         tokenizer,
         use_chat_template: bool,
-        max_input_pixels: Optional[Union[int, List[int]]] = None,
-        max_output_pixels: Optional[int] = None,
+        max_pixels: Optional[int] = None,
         max_side_length: Optional[int] = None,
         img_scale_num: int = 16,
-        prompt_dropout_prob: float = 0.0,
-        ref_img_dropout_prob: float = 0.0,
+        align_res: bool = True
     ):
-        self.max_input_pixels = max_input_pixels
-        self.max_output_pixels = max_output_pixels
-
+        
+        self.max_pixels = max_pixels
         self.max_side_length = max_side_length
         self.img_scale_num = img_scale_num
-        self.prompt_dropout_prob = prompt_dropout_prob
-        self.ref_img_dropout_prob = ref_img_dropout_prob
+        self.align_res = align_res
 
         with open(config_path, "r") as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
@@ -49,8 +43,6 @@ class OmniGen2TrainDataset(torch.utils.data.Dataset):
         self.tokenizer = tokenizer
         
     def _collect_annotations(self, config):
-        total_samples = 0
-        total_ratio = 0
         json_datasets = []
         for data in config['data']:
             data_path, data_type = data['path'], data.get("type", "default")
@@ -72,38 +64,10 @@ class OmniGen2TrainDataset(torch.utils.data.Dataset):
                         "If you are using a supported format, please set the file extension so that the proper parsing "
                         "routine can be called."
                     )
-            total_ratio += data['ratio']
-            total_samples += len(json_dataset)
             json_datasets.append(json_dataset)
         
-        for json_dataset in json_datasets:
-            target_size = int(len(json_dataset) * data['ratio'] / total_ratio) # normalize the ratio
-            if target_size <= len(json_dataset):
-                # Random selection without replacement
-                indices = random.sample(range(len(json_dataset)), target_size)
-            else:
-                # Oversample with replacement
-                indices = random.choices(range(len(json_dataset)), k=target_size)
-            json_dataset = json_dataset.select(indices)
-            
         json_dataset = concatenate_datasets(json_datasets)
         return json_dataset
-    
-    def clean_data_item(self, data_item):
-        task_type = data_item['task_type']
-        prefixs = ["The image portrays ", "The image depicts ", "The image captures ", "The image highlights ", "The image shows ", "这张图片展示了"]
-        if "text_to_image" in task_type or "t2i" in task_type:
-            if random.random() < 0.5:
-                for p in prefixs:
-                    if p in data_item['instruction']:
-                        data_item['instruction'] = data_item['instruction'].replace(p, "")
-                        break
-
-        if "/share_2/shitao/datasets/PT/BLIP3o-60k/data/" in data_item['output_image']:
-            data_item['output_image'] = data_item['output_image'].replace("/share_2/shitao/datasets/PT/BLIP3o-60k/data/", "/share_2/chenyuan/data/Awesome_gpt4o_images/PT/BLIP3o-60k/imgs_flux_1_cool_shift10/")
-            data_item['output_image'] = data_item['output_image'].replace("jpg", "png")
-
-        return data_item
     
     def apply_chat_template(self, instruction, system_prompt):
         if self.use_chat_template:
@@ -119,58 +83,39 @@ class OmniGen2TrainDataset(torch.utils.data.Dataset):
     
     def process_item(self, data_item):
         assert data_item['instruction'] is not None
-        data_item = self.clean_data_item(data_item)
-
-        drop_prompt = random.random() < self.prompt_dropout_prob
-        drop_ref_img = drop_prompt and random.random() < self.ref_img_dropout_prob
-
-        if drop_prompt:
-            instruction = self.apply_chat_template("", self.SYSTEM_PROMPT_DROP)
-        else:
-            instruction = self.apply_chat_template(data_item['instruction'], self.SYSTEM_PROMPT)
-
-        if not drop_ref_img and 'input_images' in data_item and data_item['input_images'] is not None:
+        if 'input_images' in data_item and data_item['input_images'] is not None:
             input_images_path = data_item['input_images']
             input_images = []
 
-            max_input_pixels = self.max_input_pixels[len(input_images_path) - 1] if isinstance(self.max_input_pixels, list) else self.max_input_pixels
-
             for input_image_path in input_images_path:
                 input_image = Image.open(input_image_path).convert("RGB")
-                input_image = self.image_processor.preprocess(input_image, max_pixels=max_input_pixels, max_side_length=self.max_side_length)
                 input_images.append(input_image)
         else:
             input_images_path, input_images = None, None
 
-        output_image_path = data_item['output_image']
-        output_image = Image.open(output_image_path).convert("RGB")
-        output_image = self.image_processor.preprocess(output_image, max_pixels=self.max_output_pixels, max_side_length=self.max_side_length)
+        if input_images is not None and len(input_images) == 1 and self.align_res:
+            target_img_size = (input_images[0].width, input_images[0].height)
+        else:
+            target_img_size = data_item["target_img_size"]
+
+        w, h = target_img_size
+        cur_pixels = w * h
+        ratio = min(1, (self.max_pixels / cur_pixels) ** 0.5)
+
+        target_img_size = (int(w * ratio) // self.img_scale_num * self.img_scale_num, int(h * ratio) // self.img_scale_num * self.img_scale_num)
 
         data = {
             'task_type': data_item['task_type'],
-            'instruction': instruction,
+            'instruction': data_item['instruction'],
             'input_images_path': input_images_path,
             'input_images': input_images,
-            'output_image': output_image,
-            'output_image_path': output_image_path,
+            'target_img_size': target_img_size,
         }
         return data
 
     def __getitem__(self, index):
-        max_retries = 12
-
-        current_index = index
-        for attempt in range(max_retries):
-            try:
-                data_item = self.data[current_index]
-                return self.process_item(data_item)
-            except Exception as e:
-                if attempt == max_retries - 1:
-                    raise e
-                else:
-                    # Try a different index for the next attempt
-                    current_index = random.randint(0, len(self.data) - 1)
-                    continue
+        data_item = self.data[index]
+        return self.process_item(data_item)
         
     def __len__(self):
         return len(self.data)
