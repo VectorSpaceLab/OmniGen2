@@ -230,6 +230,8 @@ We’re honored and grateful for the support from the open source community. Her
   - [ComfyUI Official](https://comfyanonymous.github.io/ComfyUI_examples/omnigen/)
   - [https://github.com/Yuan-ManX/ComfyUI-OmniGen2](https://github.com/Yuan-ManX/ComfyUI-OmniGen2)
   - [https://github.com/neverbiasu/ComfyUI-OmniGen2](https://github.com/neverbiasu/ComfyUI-OmniGen2)
+- Quantization:
+  - [DFloat11, a lossless compression using 11 bits](https://github.com/LeanModels/OmniGen2-DFloat11)
 
 ## ❤️ Citing Us
 If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated:
