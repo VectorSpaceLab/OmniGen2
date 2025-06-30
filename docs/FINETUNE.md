@@ -1,4 +1,4 @@
-## ⚙️ Fine-Tuning OmniGen2
+## 🎨 Fine-Tuning OmniGen2
 
 You can fine-tune OmniGen2 to customize its capabilities, enhance its performance on specific tasks, or address potential limitations.
 

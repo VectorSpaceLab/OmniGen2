@@ -202,6 +202,8 @@ When the generated image does not align well with the input image, you can try t
 5. For in-context edit (edit based multiple images), we recommend using the following prompt format: "Edit the first image: add/replace (the [object] with) the [object] from the second image. [descripton for your target image]." 
 For example: "Edit the first image: add the man from the second image. The man is talking with a woman in the kitchen". The descition for your target image should be as detailed as possible.
 
+## 🎨 Fine-tune
+See [fine-tuning](docs/FINETUNE.md) for details.
 
 ## ❌ Limitations and Suggestions
 The current model sometimes does not follow instructions. You can increase the "Number of images per prompt" to generate multiple images at once, so you can choose the result you are satisfied with, or try different prompts. In our own experience, being as detailed as possible tends to work better.
