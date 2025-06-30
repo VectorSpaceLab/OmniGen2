@@ -1,0 +1,2 @@
+{"task_type": "t2i", "instruction": "A big tree is in the forest", "output_image": "/path/to/your/data/t2i/0.png"}
+{"task_type": "t2i", "instruction": "a dog is running on grass", "output_image": "/path/to/your/data/t2i/1.png"}

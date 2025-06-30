@@ -16,7 +16,17 @@ We provide two templates to get you started:
 *   **Full-Parameter Fine-Tuning:** `options/ft.yml`
 *   **LoRA Fine-Tuning:** `options/ft_lora.yml`
 
-Copy one of these templates and modify it according to your needs.
+Copy one of these templates and modify it according to your needs. Below are some of the most important parameters you may want to adjust:
+- `name`: The experiment name. This is used to create a directory for logs and saved model weights (e.g., `experiments/your_exp_name`).
+- `data.data_path`: Path to the data configuration file that defines your training data sources and mixing ratios.
+- `data.max_output_pixels`: The maximum number of pixels for an output image. Larger images will be downsampled while maintaining their aspect ratio.
+- `data.max_input_pixels`: A list specifying the maximum pixel count for input images, corresponding to one, two, three, or more inputs.
+- `data.max_side_length`: The maximum side length for any image (input or output). Images exceeding this will be downsampled while maintaining their aspect ratio..
+- `train.global_batch_size`: The total batch size across all GPUs. This should equal `batch_size` × `(number of GPUs)`.
+- `train.batch_size`: The batch size per GPU.
+- `train.max_train_steps`: The total number of training steps to run.
+- `train.learning_rate`: The learning rate for the optimizer. **Note:** This often requires tuning based on your dataset size and whether you are using LoRA. We recommend using lower learning rate for full-parameter fine-tuning.
+- `logger.log_with`: Specify which loggers to use for monitoring training (e.g., `tensorboard`, `wandb`).
 
 #### Step 2: Configure Your Dataset
 
@@ -25,6 +35,16 @@ The data configuration consists of a set of `yaml` and `jsonl` files.
 *   The `.jsonl` files contain the actual data entries, with each line representing a single data sample.
 
 For a practical example, please refer to `data_configs/train/example/mix.yml`.
+Each line in a `.jsonl` file describes a sample, generally following this format:
+```json
+{
+  "task_type": "edit",
+  "instruction": "add a hat to the person",
+  "input_images": ["/path/to/your/data/edit/input.png"],
+  "output_image": "/path/to/your/data/edit/output.png"
+}
+```
+*Note: The `input_images` field can be omitted for text-to-image (T2I) tasks.*
 
 #### Step 3: Review the Training Scripts
 
@@ -37,7 +57,7 @@ We provide convenient shell scripts to handle the complexities of launching dist
 
 ### 2. 🚀 Launching the Training
 
-Once your configuration is ready, you can launch the training script.
+Once your configuration is ready, you can launch the training script. All experiment artifacts, including logs and checkpoints, will be saved in `experiments/${experiment_name}`.
 
 #### Multi-Node / Multi-GPU Training
 
