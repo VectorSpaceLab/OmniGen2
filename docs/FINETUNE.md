@@ -93,17 +93,17 @@ We provide a conversion script that automatically handles both full-parameter an
 **For a full fine-tuned model:**
 ```shell
 python convert_ckpt_to_hf_format.py \
-  --config_path experiments/train_edit/train_edit.yml \
-  --model_path experiments/train_edit/checkpoint-10/pytorch_model_fsdp.bin \
-  --save_path experiments/train_edit/checkpoint-10/transformer
+  --config_path experiments/ft/ft.yml \
+  --model_path experiments/ft/checkpoint-10/pytorch_model_fsdp.bin \
+  --save_path experiments/ft/checkpoint-10/transformer
 ```
 
 **For a LoRA fine-tuned model:**
 ```shell
 python convert_ckpt_to_hf_format.py \
-  --config_path experiments/train_edit_lora/train_edit_lora.yml \
-  --model_path experiments/train_edit_lora/checkpoint-10/pytorch_model_fsdp.bin \
-  --save_path experiments/train_edit_lora/checkpoint-10/transformer_lora
+  --config_path experiments/ft_lora/ft_lora.yml \
+  --model_path experiments/ft_lora/checkpoint-10/pytorch_model_fsdp.bin \
+  --save_path experiments/ft_lora/checkpoint-10/transformer_lora
 ```
 
 #### Step 2: Run Inference
@@ -123,7 +123,7 @@ python inference.py \
   --instruction "A crystal ladybug on a dewy rose petal in an early morning garden, macro lens." \
   --output_image_path outputs/output_t2i_finetuned.png \
   --num_images_per_prompt 1 \
-  --transformer_path experiments/train_edit/checkpoint-10/transformer
+  --transformer_path experiments/ft/checkpoint-10/transformer
 ```
 
 **Using a LoRA fine-tuned model:**
@@ -139,5 +139,5 @@ python inference.py \
   --instruction "A crystal ladybug on a dewy rose petal in an early morning garden, macro lens." \
   --output_image_path outputs/output_t2i_lora.png \
   --num_images_per_prompt 1 \
-  --transformer_lora_path experiments/train_edit_lora/checkpoint-10/transformer_lora
+  --transformer_lora_path experiments/ft_lora/checkpoint-10/transformer_lora
 ```
