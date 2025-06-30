@@ -1,0 +1,2 @@
+{"task_type": "edit", "instruction": "add a hat to the person", "input_images": ["/path/to/your/data/edit/0.png"], "output_image": "/path/to/your/data/edit/0.png"}
+{"task_type": "edit", "instruction": "add a dog behind the person", "input_images": ["/path/to/your/data/edit/1.png"], "output_image": "/path/to/your/data/edit/1.png"}

@@ -28,6 +28,18 @@ def parse_args() -> argparse.Namespace:
         help="Path to model checkpoint.",
     )
     parser.add_argument(
+        "--transformer_path",
+        type=str,
+        default=None,
+        help="Path to transformer checkpoint.",
+    )
+    parser.add_argument(
+        "--transformer_lora_path",
+        type=str,
+        default=None,
+        help="Path to transformer LoRA checkpoint.",
+    )
+    parser.add_argument(
         "--scheduler",
         type=str,
         default="euler",
@@ -149,11 +161,23 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         torch_dtype=weight_dtype,
         trust_remote_code=True,
     )
-    pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
-        args.model_path,
-        subfolder="transformer",
-        torch_dtype=weight_dtype,
-    )
+    if args.transformer_path:
+        print(f"Transformer weights loaded from {args.transformer_path}")
+        pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+            args.transformer_path,
+            torch_dtype=weight_dtype,
+        )
+    else:
+        pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+            args.model_path,
+            subfolder="transformer",
+            torch_dtype=weight_dtype,
+        )
+
+    if args.transformer_lora_path:
+        print(f"LoRA weights loaded from {args.transformer_lora_path}")
+        pipeline.load_lora_weights(args.transformer_lora_path)
+
     if args.scheduler == "dpmsolver++":
         from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
         scheduler = DPMSolverMultistepScheduler(

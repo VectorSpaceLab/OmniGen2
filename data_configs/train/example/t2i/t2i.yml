@@ -1,0 +1,9 @@
+data:
+  - 
+    path: "data_configs/example/t2i/jsonls/0.jsonl"
+    type: "t2i"
+    ratio: !!float 1
+  - 
+    path: "data_configs/example/t2i/jsonls/1.jsonl"
+    type: "t2i"
+    ratio: !!float 1
