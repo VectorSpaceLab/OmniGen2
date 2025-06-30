@@ -40,7 +40,7 @@ Each line in a `.jsonl` file describes a sample, generally following this format
 {
   "task_type": "edit",
   "instruction": "add a hat to the person",
-  "input_images": ["/path/to/your/data/edit/input.png"],
+  "input_images": ["/path/to/your/data/edit/input1.png", "/path/to/your/data/edit/input2.png"],
   "output_image": "/path/to/your/data/edit/output.png"
 }
 ```
