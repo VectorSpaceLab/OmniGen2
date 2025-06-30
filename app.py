@@ -8,10 +8,10 @@ import os
 import argparse
 import random
 from datetime import datetime
-
+from PIL import PngImagePlugin
 import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
-
+import torchvision
 from accelerate import Accelerator
 
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
@@ -92,50 +92,62 @@ def run(
             prediction_type="flow_prediction",
         )
 
-    results = pipeline(
-        prompt=instruction,
-        input_images=input_images,
-        width=width_input,
-        height=height_input,
-        max_input_image_side_length=max_input_image_side_length,
-        max_pixels=max_pixels,
-        num_inference_steps=num_inference_steps,
-        max_sequence_length=1024,
-        text_guidance_scale=guidance_scale_input,
-        image_guidance_scale=img_guidance_scale_input,
-        cfg_range=(cfg_range_start, cfg_range_end),
-        negative_prompt=negative_prompt,
-        num_images_per_prompt=num_images_per_prompt,
-        generator=generator,
-        output_type="pil",
-        step_func=progress_callback,
-    )
+    total_steps = num_images_per_prompt * num_inference_steps
+
+    def batch_progress_callback(img_idx, cur_step, timesteps):
+        progress((img_idx * num_inference_steps + cur_step + 1) / total_steps)
+
+    # Prepare to save as we go, and track paths for collage
+    output_image_paths = []
+
+    if save_images:
+        output_dir = os.path.join(ROOT_DIR, "outputs_gradio")
+        os.makedirs(output_dir, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
+        base_filename = f"{timestamp}_seed{seed_input}"
+
+        def save_with_metadata(img, path, prompt, seed):
+            meta = PngImagePlugin.PngInfo()
+            meta.add_text("prompt", prompt)
+            meta.add_text("seed", str(seed))
+            img.save(path, pnginfo=meta)
+
+    for img_idx in range(num_images_per_prompt):
+        def step_callback(cur_step, timesteps, img_idx=img_idx):
+            batch_progress_callback(img_idx, cur_step, timesteps)
+        per_image_generator = torch.Generator(device=accelerator.device).manual_seed(seed_input + img_idx)
+        results = pipeline(
+            prompt=instruction,
+            input_images=input_images,
+            width=width_input,
+            height=height_input,
+            max_input_image_side_length=max_input_image_side_length,
+            max_pixels=max_pixels,
+            num_inference_steps=num_inference_steps,
+            max_sequence_length=1024,
+            text_guidance_scale=guidance_scale_input,
+            image_guidance_scale=img_guidance_scale_input,
+            cfg_range=(cfg_range_start, cfg_range_end),
+            negative_prompt=negative_prompt,
+            num_images_per_prompt=1,  # only 1 per call
+            generator=per_image_generator,
+            output_type="pil",
+            step_func=step_callback,
+        )
+        single_image = results.images[0]
+        if save_images:
+            single_path = os.path.join(output_dir, f"{base_filename}_{img_idx}.png")
+            save_with_metadata(single_image, single_path, instruction, seed_input + img_idx)
+            output_image_paths.append(single_path)
 
     progress(1.0)
 
-    vis_images = [to_tensor(image) * 2 - 1 for image in results.images]
-    output_image = create_collage(vis_images)
-
-    if save_images:
-        # Create outputs directory if it doesn't exist
-        output_dir = os.path.join(ROOT_DIR, "outputs_gradio")
-        os.makedirs(output_dir, exist_ok=True)
-
-        # Generate unique filename with timestamp
-        timestamp = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
-
-        # Generate unique filename with timestamp
-        output_path = os.path.join(output_dir, f"{timestamp}.png")
-        # Save the image
-        output_image.save(output_path)
-
-        # Save All Generated Images
-        if len(results.images) > 1:
-            for i, image in enumerate(results.images):
-                image_name, ext = os.path.splitext(output_path)
-                image.save(f"{image_name}_{i}{ext}")
-    return output_image
-
+    if save_images and len(output_image_paths) > 0:
+        from PIL import Image
+        output_images = [Image.open(p) for p in output_image_paths]
+        return output_images
+    else:
+        return []
 
 def get_example():
     cases = [
@@ -1030,7 +1042,7 @@ def main(args):
                     num_images_per_prompt = gr.Slider(
                         label="Number of images per prompt",
                         minimum=1,
-                        maximum=4,
+                        maximum=25,
                         value=1,
                         step=1,
                     )
@@ -1057,9 +1069,9 @@ def main(args):
             with gr.Column():
                 with gr.Column():
                     # output image
-                    output_image = gr.Image(label="Output Image")
+                    output_gallery = gr.Gallery(label="Generated Images", columns=2, height="auto")
                     global save_images
-                    save_images = gr.Checkbox(label="Save generated images", value=False)
+                    save_images = gr.Checkbox(label="Save generated images", value=True)
 
         global accelerator
         global pipeline
@@ -1092,7 +1104,7 @@ def main(args):
                 max_pixels,
                 seed_input,
             ],
-            outputs=output_image,
+            outputs=output_gallery,
         )
 
         gr.Examples(
@@ -1117,7 +1129,7 @@ def main(args):
                 max_pixels,
                 seed_input,
             ],
-            outputs=output_image,
+            outputs=output_gallery,
         )
 
         gr.Markdown(article)
