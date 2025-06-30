@@ -265,7 +265,7 @@ class OmniGen2AttnProcessor:
         """Initialize the attention processor."""
         if not hasattr(F, "scaled_dot_product_attention"):
             raise ImportError(
-                "OmniGen2AttnProcessorFlash2Varlen requires PyTorch 2.0. "
+                "OmniGen2AttnProcessor requires PyTorch 2.0. "
                 "Please upgrade PyTorch to version 2.0 or later."
             )
 

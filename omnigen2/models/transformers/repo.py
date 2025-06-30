@@ -35,7 +35,7 @@ class OmniGen2RotaryPosEmbed(nn.Module):
 
         result = []
         for i in range(len(self.axes_dim)):
-            freqs = freqs_cis[i].to(ids.device)
+            freqs = freqs_cis[i].to("cpu")
             index = ids[:, :, i : i + 1].repeat(1, 1, freqs.shape[-1]).to(torch.int64)
             result.append(torch.gather(freqs.unsqueeze(0).repeat(index.shape[0], 1, 1), dim=1, index=index))
         return torch.cat(result, dim=-1).to(device)
