@@ -1152,7 +1152,7 @@ def main(args):
 
         gr.Markdown(article)
     # launch
-    demo.launch(share=args.share, server_port=args.port, allowed_paths=[ROOT_DIR])
+    demo.launch(share=args.share, server_port=args.port, server_name=args.server_name, allowed_paths=[ROOT_DIR])
 
 
 def parse_args():
@@ -1160,6 +1160,12 @@ def parse_args():
     parser.add_argument("--share", action="store_true", help="Share the Gradio app")
     parser.add_argument(
         "--port", type=int, default=7860, help="Port to use for the Gradio app"
+    )
+    parser.add_argument(
+        "--server_name",
+        type=str,
+        default="127.0.0.1",
+        help="Set it to 0.0.0.0 if you want to open it remotely."
     )
     parser.add_argument(
         "--model_path",
