@@ -8,7 +8,7 @@
   <a href="https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo"><img src="https://img.shields.io/badge/Online%20Demo-🤗-blue" alt="demo"></a>
   <a href="https://huggingface.co/spaces/OmniGen2/OmniGen2"><img src="https://img.shields.io/badge/HF%20Spaces-🤗-lightblue" alt="demo"></a>
   <a href="https://huggingface.co/OmniGen2/OmniGen2"><img src="https://img.shields.io/badge/Model-🤗-yellow" alt="model"></a>
-  <a href=""><img src="https://img.shields.io/badge/Benchmark-🤗-yellow" alt="model"></a>
+  <a href="https://huggingface.co/datasets/OmniGen2/OmniContext"><img src="https://img.shields.io/badge/Benchmark-🤗-yellow" alt="model"></a>
   <a href=""><img src="https://img.shields.io/badge/Dataset-🤗-yellow" alt="model"></a>
 </p>
 
@@ -24,10 +24,12 @@
 </h4>
 
 ## 🔥 News
+- **2025-06-30**: Training code is available, see [fine-tuning](docs/FINETUNE.md) for details.
+- **2025-06-28**: We release [OmniContext](https://huggingface.co/datasets/OmniGen2/OmniContext) benchmark. The evaluation code can be found in [omnicontext](https://github.com/VectorSpaceLab/OmniGen2/tree/main/omnicontext).
 - **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
 - **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
-- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://f84f8cab923c024485.gradio.live); [Chat-Demo1](https://e842d62e0ffe2592c8.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
+- **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://9c4426d27c3b9ecbed.gradio.live); [Chat-Demo1](https://0351497834a4d7226c.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
 - **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
 
 
@@ -65,7 +67,7 @@ Some good cases of OmniGen2:
 ## 📌 TODO
 - [x] Technical report.
 - [x] Support CPU offload and improve inference efficiency.
-- [ ] In-context generation benchmark: **OmniContext**.
+- [x] In-context generation benchmark: **OmniContext**.
 - [ ] Integration of diffusers.
 - [ ] Training datasets.
 - [ ] Training data construction pipeline.
@@ -138,9 +140,9 @@ bash example_in_context_generation.sh
 
 * **Online Demo**: [HF Spaces](https://huggingface.co/spaces/OmniGen2/OmniGen2). Beyond Hugging Face Spaces, we are *temporarily* allocating additional GPU resources to ensure smooth access to the online demos. If you notice a long queue for a particular link, please try other links:
 
-    [Demo1](https://f84f8cab923c024485.gradio.live), [Demo2](https://8e1158169364281b31.gradio.live), [Demo3](https://452f266355f13cc1fa.gradio.live), [Demo4](https://342f889b61a4b5e853.gradio.live)
+    [Demo1](https://9c4426d27c3b9ecbed.gradio.live), [Demo2](https://06574c5e62d815f799.gradio.live), [Demo3](https://e0a82fd380d2ff17ac.gradio.live), [Demo4](https://d9c4410ee48ce35051.gradio.live)
 
-    [Chat-Demo1](https://e842d62e0ffe2592c8.gradio.live), [Chat-Demo2](https://60dc68e9bee206924c.gradio.live), [Chat-Demo3](https://4452f78762c2099bf6.gradio.live), [Chat-Demo4](https://cbd2725135225f1f2b.gradio.live)
+    [Chat-Demo1](https://0351497834a4d7226c.gradio.live), [Chat-Demo2](https://032160099388d1d10c.gradio.live), [Chat-Demo3](https://cf9f2797e92cfa2767.gradio.live), [Chat-Demo4](https://b87b82fd14215affc2.gradio.live)
 
 <!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
@@ -200,6 +202,8 @@ When the generated image does not align well with the input image, you can try t
 5. For in-context edit (edit based multiple images), we recommend using the following prompt format: "Edit the first image: add/replace (the [object] with) the [object] from the second image. [descripton for your target image]." 
 For example: "Edit the first image: add the man from the second image. The man is talking with a woman in the kitchen". The descition for your target image should be as detailed as possible.
 
+## 🎨 Fine-tune
+See [fine-tuning](docs/FINETUNE.md) for details.
 
 ## ❌ Limitations and Suggestions
 The current model sometimes does not follow instructions. You can increase the "Number of images per prompt" to generate multiple images at once, so you can choose the result you are satisfied with, or try different prompts. In our own experience, being as detailed as possible tends to work better.
@@ -226,8 +230,11 @@ The following table details the inference performance of OmniGen2 on an **A800 G
 ## 🤝 Community Efforts
 We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community(**Currently, we have not confirmed whether there are no bugs. Please try to use the our official demo as much as possible.**):
 - ComfyUI:
+  - [ComfyUI Official](https://comfyanonymous.github.io/ComfyUI_examples/omnigen/)
   - [https://github.com/Yuan-ManX/ComfyUI-OmniGen2](https://github.com/Yuan-ManX/ComfyUI-OmniGen2)
   - [https://github.com/neverbiasu/ComfyUI-OmniGen2](https://github.com/neverbiasu/ComfyUI-OmniGen2)
+- Quantization:
+  - [DFloat11, a lossless compression using 11 bits](https://github.com/LeanModels/OmniGen2-DFloat11)
 
 ## ❤️ Citing Us
 If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated:

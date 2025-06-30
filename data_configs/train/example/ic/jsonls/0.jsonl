@@ -1,0 +1,2 @@
+{"task_type": "ic", "instruction": "A big tree is in the forest", "input_images": ["/path/to/your/data/ic/0.png", "/path/to/your/data/ic/1.png"], "output_image": "/path/to/your/data/ic/0.png"}
+{"task_type": "ic", "instruction": "a dog is running on grass", "input_images": ["/path/to/your/data/ic/2.png", "/path/to/your/data/ic/3.png"], "output_image": "/path/to/your/data/ic/1.png"}

@@ -4,8 +4,10 @@ dotenv.load_dotenv(override=True)
 
 import argparse
 import os
+import datasets
+from tqdm import tqdm
 from typing import List, Tuple
-
+from torch.utils.data import DataLoader
 from PIL import Image, ImageOps
 
 import torch
@@ -17,7 +19,6 @@ from diffusers.hooks import apply_group_offloading
 from omnigen2.pipelines.omnigen2.pipeline_omnigen2 import OmniGen2Pipeline
 from omnigen2.models.transformers.transformer_omnigen2 import OmniGen2Transformer2DModel
 
-
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="OmniGen2 image generation script.")
@@ -28,22 +29,16 @@ def parse_args() -> argparse.Namespace:
         help="Path to model checkpoint.",
     )
     parser.add_argument(
-        "--transformer_path",
+        "--model_name",
         type=str,
-        default=None,
-        help="Path to transformer checkpoint.",
-    )
-    parser.add_argument(
-        "--transformer_lora_path",
-        type=str,
-        default=None,
-        help="Path to transformer LoRA checkpoint.",
+        required=True,
+        help="Model name for output directory.",
     )
     parser.add_argument(
         "--scheduler",
         type=str,
         default="euler",
-        choices=["euler", "dpmsolver++"],
+        choices=["euler", "dpmsolver"],
         help="Scheduler to use.",
     )
     parser.add_argument(
@@ -108,29 +103,22 @@ def parse_args() -> argparse.Namespace:
         help="End of the CFG range."
     )
     parser.add_argument(
-        "--instruction",
-        type=str,
-        default="A dog running in the park",
-        help="Text prompt for generation."
-    )
-    parser.add_argument(
         "--negative_prompt",
         type=str,
         default="(((deformed))), blurry, over saturation, bad anatomy, disfigured, poorly drawn face, mutation, mutated, (extra_limb), (ugly), (poorly drawn hands), fused fingers, messy drawing, broken legs censor, censored, censor_bar",
         help="Negative prompt for generation."
     )
     parser.add_argument(
-        "--input_image_path",
+        "--test_data",
         type=str,
-        nargs='+',
         default=None,
-        help="Path(s) to input image(s)."
+        help="Path to test data."
     )
     parser.add_argument(
-        "--output_image_path",
+        "--result_dir",
         type=str,
-        default="output.png",
-        help="Path to save output image."
+        default="results",
+        help="Path to save the generated images."
     )
     parser.add_argument(
         "--num_images_per_prompt",
@@ -154,47 +142,35 @@ def parse_args() -> argparse.Namespace:
         help="Enable group offload."
     )
     parser.add_argument(
-        "--enable_teacache",
+        "--disable_align_res",
         action="store_true",
-        help="Enable teacache to speed up inference."
-    )
-    parser.add_argument(
-        "--rel_l1_thresh",
-        type=float,
-        default=0.05,
-        help="Relative L1 threshold for teacache."
+        help="Align resolution to the input image resolution."
     )
     return parser.parse_args()
 
+
+class Collator:
+    def __call__(self, features):
+        return features
+    
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2Pipeline:
+    from transformers import CLIPProcessor
     pipeline = OmniGen2Pipeline.from_pretrained(
         args.model_path,
+        processor=CLIPProcessor.from_pretrained(
+            args.model_path,
+            subfolder="processor",
+            use_fast=True
+        ),
         torch_dtype=weight_dtype,
         trust_remote_code=True,
     )
-
-    if args.transformer_path:
-        print(f"Transformer weights loaded from {args.transformer_path}")
-        pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
-            args.transformer_path,
-            torch_dtype=weight_dtype,
-        )
-    else:
-        pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
-            args.model_path,
-            subfolder="transformer",
-            torch_dtype=weight_dtype,
-        )
-
-    if args.transformer_lora_path:
-        print(f"LoRA weights loaded from {args.transformer_lora_path}")
-        pipeline.load_lora_weights(args.transformer_lora_path)
-
-    if args.enable_teacache:
-        pipeline.transformer.enable_teacache = True
-        pipeline.transformer.rel_l1_thresh = args.rel_l1_thresh
-
-    if args.scheduler == "dpmsolver++":
+    pipeline.transformer = OmniGen2Transformer2DModel.from_pretrained(
+        args.model_path,
+        subfolder="transformer",
+        torch_dtype=weight_dtype,
+    )
+    if args.scheduler == "dpmsolver":
         from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler
         scheduler = DPMSolverMultistepScheduler(
             algorithm_type="dpmsolver++",
@@ -250,6 +226,7 @@ def run(args: argparse.Namespace,
         input_images=input_images,
         width=args.width,
         height=args.height,
+        align_res=not args.disable_align_res,
         num_inference_steps=args.num_inference_step,
         max_sequence_length=1024,
         text_guidance_scale=args.text_guidance_scale,
@@ -259,6 +236,7 @@ def run(args: argparse.Namespace,
         num_images_per_prompt=args.num_images_per_prompt,
         generator=generator,
         output_type="pil",
+
     )
     return results
 
@@ -281,6 +259,20 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
     # Initialize accelerator
     accelerator = Accelerator(mixed_precision=args.dtype if args.dtype != 'fp32' else 'no')
 
+    test_dataset = datasets.load_dataset(args.test_data, split="train")
+    print('test_dataset', test_dataset)
+
+    loader = DataLoader(
+        test_dataset,
+        collate_fn=Collator(),
+        batch_size=1,
+        shuffle=True,
+        # shuffle=False,
+        pin_memory=False,
+        drop_last=False,
+    )
+    loader = accelerator.prepare(loader)
+
     # Set weight dtype
     weight_dtype = torch.float32
     if args.dtype == 'fp16':
@@ -290,22 +282,39 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
 
     # Load pipeline and process inputs
     pipeline = load_pipeline(args, accelerator, weight_dtype)
-    input_images = preprocess(args.input_image_path)
 
-    # Generate and save image
-    results = run(args, accelerator, pipeline, args.instruction, args.negative_prompt, input_images)
-    os.makedirs(os.path.dirname(args.output_image_path), exist_ok=True)
+    with tqdm(
+        total=len(loader),
+        desc="Generating images...",
+        unit="image",
+        disable=not accelerator.is_main_process,
+    ) as pbar:
+        for i, bacthed_data in tqdm(enumerate(loader), total=len(loader), disable=accelerator.process_index!=0):
+            for data in bacthed_data:
+                key = data['key']
+                task_type = data['task_type']
+                instruction = data['instruction']
+                input_images = data['input_images']
+                input_images = [ImageOps.exif_transpose(img) for img in input_images]
 
-    if len(results.images) > 1:
-        for i, image in enumerate(results.images):
-            image_name, ext = os.path.splitext(args.output_image_path)
-            image.save(f"{image_name}_{i}{ext}")
+                # Generate and save image
+                results = run(args, accelerator, pipeline, instruction, args.negative_prompt, input_images)
+                sub_dir = os.path.join(args.result_dir, args.model_name, "fullset", task_type)
+                os.makedirs(sub_dir, exist_ok=True)
+                output_image_path = os.path.join(sub_dir, f"{key}.png")
+                if os.path.exists(output_image_path):
+                    continue
 
-    vis_images = [to_tensor(image) * 2 - 1 for image in results.images]
-    output_image = create_collage(vis_images)
+                if len(results.images) > 1:
+                    for i, image in enumerate(results.images):
+                        image_name, ext = os.path.splitext(output_image_path)
+                        image.save(f"{image_name}_{i}{ext}")
 
-    output_image.save(args.output_image_path)
-    print(f"Image saved to {args.output_image_path}")
+                vis_images = [to_tensor(image) * 2 - 1 for image in results.images]
+                output_image = create_collage(vis_images)
+                output_image.save(output_image_path)
+
+            pbar.update(1)
 
 if __name__ == "__main__":
     root_dir = os.path.abspath(os.path.join(__file__, os.path.pardir))
