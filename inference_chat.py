@@ -134,6 +134,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Enable group offload."
     )
+    parser.add_argument(
+        "--scheduler",
+        type=str,
+        default=None,
+        help="Supported: dpmsolver."
+    )
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2ChatPipeline:
