@@ -16,6 +16,7 @@
     <p>
         <a href=#-news>News</a> |
         <a href=#-quick-start>Quick Start</a> |
+        <a href=#-docker-deployment>Docker</a> |
         <a href=#-usage-tips>Usage Tips</a> |
         <a href=#-limitations-and-suggestions>Limitations</a> |
         <a href=#-gradio-demo>Online Demos</a> |
@@ -27,7 +28,7 @@
 - **2025-06-30**: Training code is available, see [fine-tuning](docs/FINETUNE.md) for details.
 - **2025-06-28**: We release [OmniContext](https://huggingface.co/datasets/OmniGen2/OmniContext) benchmark. The evaluation code can be found in [omnicontext](https://github.com/VectorSpaceLab/OmniGen2/tree/main/omnicontext).
 - **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
-- **2025-06-23**: We’ve updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
+- **2025-06-23**: We've updated our code and HF model—OmniGen2 now runs *without* `flash-attn`. Users can still install it for optimal performance.
 - **2025-06-20**: Updated [resource requirements](#-resources-requirement), adding CPU offload support for devices with limited VRAM.
 - **2025-06-16**: [Gradio](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo) and [Jupyter](https://github.com/VectorSpaceLab/OmniGen2/blob/main/example.ipynb) is available. Online Gradio Demo: [Demo1](https://9c4426d27c3b9ecbed.gradio.live); [Chat-Demo1](https://0351497834a4d7226c.gradio.live); see more demo links in [gradio section](https://github.com/VectorSpaceLab/OmniGen2?tab=readme-ov-file#-gradio-demo)
 - **2025-06-16**: We release **OmniGen2**, a multimodal generation model, model weights can be accessed in [huggingface](https://huggingface.co/OmniGen2/OmniGen2) and [modelscope](https://www.modelscope.cn/models/OmniGen2/OmniGen2).
@@ -68,6 +69,7 @@ Some good cases of OmniGen2:
 - [x] Technical report.
 - [x] Support CPU offload and improve inference efficiency.
 - [x] In-context generation benchmark: **OmniContext**.
+- [x] Docker deployment support.
 - [ ] Integration of diffusers.
 - [ ] Training datasets.
 - [ ] Training data construction pipeline.
@@ -114,6 +116,132 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 # Feel free to use a newer version if you use CUDA 12.6 or they fixed this compatibility issue.
 # OmniGen2 runs even without flash-attn, though we recommend install it for best performance.
 pip install flash-attn==2.7.4.post1 --no-build-isolation -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+---
+
+## 🐳 Docker Deployment
+
+### Quick Start with Docker
+
+The easiest way to run OmniGen2 is using Docker:
+
+```bash
+# Build the Docker image
+docker build -t omnigen2 .
+
+# Run the container with GPU support
+docker run --gpus all -p 7860:7860 omnigen2
+```
+
+The application will be available at `http://localhost:7860`
+
+### Docker Compose (Recommended)
+
+For easier management, create a `docker-compose.yml` file:
+
+```yaml
+version: '3.8'
+services:
+  omnigen2:
+    build: .
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./models:/app/models  # Optional: persist downloaded models
+      - ./outputs:/app/outputs  # Optional: persist generated outputs
+    environment:
+      - CUDA_VISIBLE_DEVICES=0  # Optional: specify GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+```
+
+Run with:
+```bash
+docker-compose up
+```
+
+### Requirements & System Specs
+
+- **Docker** and **Docker Compose** installed on your system
+- **For GPU support**: NVIDIA Docker runtime (`nvidia-docker2`)
+- **Hardware Requirements**:
+  - At least 17GB VRAM (RTX 3090 or equivalent)
+  - 32GB+ RAM recommended
+  - 15GB+ free disk space for models and dependencies
+
+### Docker Build Options
+
+```bash
+# Build with specific tag
+docker build -t omnigen2:latest .
+
+# Build with no cache (clean build)
+docker build --no-cache -t omnigen2 .
+
+# Build for CPU-only deployment (slower but works without GPU)
+docker build --build-arg CUDA_VERSION=cpu -t omnigen2-cpu .
+
+# Build for specific platform
+docker build --platform linux/amd64 -t omnigen2 .
+```
+
+### Running Options
+
+```bash
+# Basic run (GPU required)
+docker run --gpus all -p 7860:7860 omnigen2
+
+# Run with custom port
+docker run --gpus all -p 8080:7860 omnigen2
+
+# Run with volume mounts for persistence
+docker run --gpus all -p 7860:7860 \
+  -v $(pwd)/models:/app/models \
+  -v $(pwd)/outputs:/app/outputs \
+  omnigen2
+
+# Run in background (detached mode)
+docker run -d --gpus all -p 7860:7860 --name omnigen2-app omnigen2
+
+# View logs
+docker logs omnigen2-app
+
+# Stop the container
+docker stop omnigen2-app
+```
+
+### Troubleshooting Docker
+
+| **Issue** | **Solution** |
+|-----------|-------------|
+| Port already in use | Change port mapping: `-p 8080:7860` |
+| Out of memory | Increase Docker memory limit or use CPU offload |
+| GPU not detected | Install `nvidia-docker2` and restart Docker daemon |
+| Slow first run | Models are being downloaded (15GB+) |
+| Permission denied | Use `sudo` or add user to docker group |
+| Build fails | Try `--no-cache` flag or check internet connection |
+
+### Docker Environment Variables
+
+You can customize the Docker deployment using environment variables:
+
+```bash
+# Enable CPU offload for lower VRAM usage
+docker run --gpus all -p 7860:7860 \
+  -e ENABLE_CPU_OFFLOAD=true \
+  omnigen2
+
+# Set custom model cache directory
+docker run --gpus all -p 7860:7860 \
+  -e HF_HOME=/app/hf_cache \
+  -v $(pwd)/hf_cache:/app/hf_cache \
+  omnigen2
 ```
 
 ---
@@ -228,7 +356,7 @@ The following table details the inference performance of OmniGen2 on an **A800 G
 </p>
 
 ## 🤝 Community Efforts
-We’re honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community(**Currently, we have not confirmed whether there are no bugs. Please try to use the our official demo as much as possible.**):
+We're honored and grateful for the support from the open source community. Here are some unofficial implementations contributed by the community(**Currently, we have not confirmed whether there are no bugs. Please try to use the our official demo as much as possible.**):
 - ComfyUI:
   - [ComfyUI Official](https://comfyanonymous.github.io/ComfyUI_examples/omnigen/)
   - [https://github.com/Yuan-ManX/ComfyUI-OmniGen2](https://github.com/Yuan-ManX/ComfyUI-OmniGen2)
