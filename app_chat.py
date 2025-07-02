@@ -932,7 +932,7 @@ description = """
 - Increase image_guidance_scale for better consistency with the reference image:
     - Image Editing: 1.3 - 2.0
     - In-context Generation: 2.0 - 3.0
-- For in-context edit (edit based multiple images), we recommend using the following prompt format: "Edit the first image: add/replace (the [object] with) the [object] from the second image. [descripton for your target image]."
+- For in-context edit (edit based multiple images), we recommend using the following prompt format: "Edit the first image: add/replace (the [object] with) the [object] from the second image. [description for your target image]."
 For example: "Edit the first image: add the man from the second image. The man is talking with a woman in the kitchen"
 
 Compared to OmniGen 1.0, although OmniGen2 has made some improvements, some issues still remain. It may take multiple attempts to achieve a satisfactory result.

@@ -161,9 +161,9 @@ def mllm_output_to_dict(input_string, give_up_parsing=False):
     if input_string == "rate_limit_exceeded":
         return "rate_limit_exceeded"
     
-    # find the json mannually
+    # find the json manually
     # some mllm tends not to output the delimiters, but it does output the json contents
-    # so we will find the json content mannually
+    # so we will find the json content manually
     start_index = input_string.find('{')
     end_index = input_string.rfind('}') + 1
     if start_index == -1 or end_index == 0:
@@ -224,9 +224,9 @@ def write_entry_to_json_file(input_string, uid, prompt_input, vision_input, outp
         start_index = input_string.find(delimiter) + len(delimiter)
         end_index = input_string.rfind(delimiter)
     else:
-        # find the json mannually
+        # find the json manually
         # some mllm tends not to output the delimiters, but it does output the json contents
-        # so we will find the json content mannually
+        # so we will find the json content manually
         start_index = input_string.find('{')
         end_index = input_string.rfind('}') + 1
         if start_index == -1 or end_index == 0:
