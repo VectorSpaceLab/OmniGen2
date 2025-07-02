@@ -624,8 +624,6 @@ class OmniGen2Pipeline(DiffusionPipeline, OmniGen2LoraLoaderMixin):
         verbose,
         step_func=None
     ):
-        self.transformer.num_inference_step = num_inference_steps
-
         batch_size = latents.shape[0]
 
         timesteps, num_inference_steps = retrieve_timesteps(
