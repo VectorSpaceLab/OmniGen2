@@ -24,6 +24,7 @@
 </h4>
 
 ## 🔥 News
+- **2025-07-03**: OmniGen2 now supports [teacache](https://github.com/ali-vilab/TeaCache) for faster inference, thanks @legitnull for great (PR)[https://github.com/VectorSpaceLab/OmniGen2/pull/52].
 - **2025-06-30**: Training code is available, see [fine-tuning](docs/FINETUNE.md) for details.
 - **2025-06-28**: We release [OmniContext](https://huggingface.co/datasets/OmniGen2/OmniContext) benchmark. The evaluation code can be found in [omnicontext](https://github.com/VectorSpaceLab/OmniGen2/tree/main/omnicontext).
 - **2025-06-24**: [Technical Report](https://arxiv.org/abs/2506.18871) is available.
