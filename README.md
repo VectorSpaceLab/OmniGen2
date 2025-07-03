@@ -182,6 +182,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `scheduler`: Choose between `[euler, dpmsolver++]`. Default is `euler`. For potentially better performance with fewer steps, try `dpmsolver++`.
 - `num_inference_step`: Number of discretization steps for the ODE solver. Default is `50`.
 - `enable_teacache`: whether or not enable [teacache](https://github.com/ali-vilab/TeaCache) for faster inference.
+- `rel_l1_thresh`: TBD.
 
 **Some suggestions for improving generation quality:**
 1. Use High-Quality Images
