@@ -181,6 +181,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `cfg_range_start`, `cfg_range_end`: Define the timestep range where CFG is applied. Per this [paper](https://arxiv.org/abs/2404.07724), reducing `cfg_range_end` can significantly decrease inference time with a negligible impact on quality.
 - `scheduler`: Choose between `[euler, dpmsolver++]`. Default is `euler`. For potentially better performance with fewer steps, try `dpmsolver++`.
 - `num_inference_step`: Number of discretization steps for the ODE solver. Default is `50`.
+- `enable_teacache`: whether or not enable [teacache](https://github.com/ali-vilab/TeaCache) for faster inference.
 
 **Some suggestions for improving generation quality:**
 1. Use High-Quality Images
