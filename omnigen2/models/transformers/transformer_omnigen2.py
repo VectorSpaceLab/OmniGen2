@@ -2,6 +2,8 @@ import warnings
 import itertools
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+import numpy as np
+
 import torch
 import torch.nn as nn
 
@@ -20,6 +22,7 @@ from .repo import OmniGen2RotaryPosEmbed
 from .block_lumina2 import LuminaLayerNormContinuous, LuminaRMSNormZero, LuminaFeedForward, Lumina2CombinedTimestepCaptionEmbedding
 
 from ...utils.import_utils import is_triton_available, is_flash_attn_available
+from ...utils.teacache_util import TeaCacheParams
 
 if is_triton_available():
     from ...ops.triton.layer_norm import RMSNorm
@@ -27,7 +30,6 @@ else:
     from torch.nn import RMSNorm
 
 logger = logging.get_logger(__name__)
-
 
 class OmniGen2TransformerBlock(nn.Module):
     """
@@ -342,6 +344,14 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
 
         self.initialize_weights()
 
+        # TeaCache settings
+        self.enable_teacache = False
+        self.rel_l1_thresh = 0.05
+        self.teacache_params = TeaCacheParams()
+
+        coefficients = [-5.48259225, 11.48772289, -4.47407401, 2.47730926, -0.03316487]
+        self.rescale_func = np.poly1d(coefficients)
+
     def initialize_weights(self) -> None:
         """
         Initialize the weights of the model.
@@ -589,13 +599,46 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
 
         hidden_states = joint_hidden_states
 
-        for layer_idx, layer in enumerate(self.layers):
-            if torch.is_grad_enabled() and self.gradient_checkpointing:
-                hidden_states = self._gradient_checkpointing_func(
-                    layer, hidden_states, attention_mask, rotary_emb, temb
-                )
+        if self.enable_teacache:
+            teacache_hidden_states = hidden_states.clone()
+            teacache_temb = temb.clone()
+            modulated_inp, _, _, _ = self.layers[0].norm1(teacache_hidden_states, teacache_temb)
+            if self.teacache_params.is_first_or_last_step:
+                should_calc = True
+                self.teacache_params.accumulated_rel_l1_distance = 0
             else:
-                hidden_states = layer(hidden_states, attention_mask, rotary_emb, temb)
+                self.teacache_params.accumulated_rel_l1_distance += self.rescale_func(
+                    ((modulated_inp - self.teacache_params.previous_modulated_inp).abs().mean() \
+                        / self.teacache_params.previous_modulated_inp.abs().mean()).cpu().item()
+                )
+                if self.teacache_params.accumulated_rel_l1_distance < self.rel_l1_thresh:
+                    should_calc = False
+                else:
+                    should_calc = True
+                    self.teacache_params.accumulated_rel_l1_distance = 0
+            self.teacache_params.previous_modulated_inp = modulated_inp
+
+        if self.enable_teacache:
+            if not should_calc:
+                hidden_states += self.teacache_params.previous_residual
+            else:
+                ori_hidden_states = hidden_states.clone()
+                for layer_idx, layer in enumerate(self.layers):
+                    if torch.is_grad_enabled() and self.gradient_checkpointing:
+                        hidden_states = self._gradient_checkpointing_func(
+                            layer, hidden_states, attention_mask, rotary_emb, temb
+                        )
+                    else:
+                        hidden_states = layer(hidden_states, attention_mask, rotary_emb, temb)
+                self.teacache_params.previous_residual = hidden_states - ori_hidden_states
+        else:
+            for layer_idx, layer in enumerate(self.layers):
+                if torch.is_grad_enabled() and self.gradient_checkpointing:
+                    hidden_states = self._gradient_checkpointing_func(
+                        layer, hidden_states, attention_mask, rotary_emb, temb
+                    )
+                else:
+                    hidden_states = layer(hidden_states, attention_mask, rotary_emb, temb)
 
         # 4. Output norm & projection
         hidden_states = self.norm_out(hidden_states, temb)
