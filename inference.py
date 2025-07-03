@@ -164,6 +164,11 @@ def parse_args() -> argparse.Namespace:
         default=0.05,
         help="Relative L1 threshold for teacache."
     )
+    parser.add_argument(
+        "--enable_taylorseer",
+        action="store_true",
+        help="Enable TaylorSeer Caching."
+    )
     return parser.parse_args()
 
 def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dtype: torch.dtype) -> OmniGen2Pipeline:
@@ -190,7 +195,12 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         print(f"LoRA weights loaded from {args.transformer_lora_path}")
         pipeline.load_lora_weights(args.transformer_lora_path)
 
-    if args.enable_teacache:
+    if args.enable_teacache and args.enable_taylorseer:
+        print("WARNING: enable_teacache and enable_taylorseer are mutually exclusive. enable_teacache will be ignored.")
+
+    if args.enable_taylorseer:
+        pipeline.enable_taylorseer = True
+    elif args.enable_teacache:
         pipeline.transformer.enable_teacache = True
         pipeline.transformer.teacache_rel_l1_thresh = args.teacache_rel_l1_thresh
 
@@ -214,6 +224,7 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
         apply_group_offloading(pipeline.vae, onload_device=accelerator.device, offload_type="block_level", num_blocks_per_group=2, use_stream=True)
     else:
         pipeline = pipeline.to(accelerator.device)
+
     return pipeline
 
 def preprocess(input_image_path: List[str] = []) -> Tuple[str, str, List[Image.Image]]:

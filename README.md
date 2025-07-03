@@ -184,6 +184,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `num_inference_step`: Number of discretization steps for the ODE solver. Default is `50`.
 - `enable_teacache`: Whether or not enable [teacache](https://github.com/ali-vilab/TeaCache) for faster inference.
 - `teacache_rel_l1_thresh`: The threshold for accumulated L1 distance for the timestep embedding-modulated noisy input. It serves as an indicator of whether to cache the model output. You can modify the `teacache_rel_l1_thresh` parameter to achieve your desired trade-off between latency and visual quality. The default value of 0.05 provides approximately a **30% speedup** compared to the baseline. Increasing this value can further reduce latency, but may result in some loss of detail.
+- `enable_taylorseer`: Whether or not enable [taylorseer](https://github.com/Shenyi-Z/TaylorSeer) for faster inference. When enabled, inference speed can improve by up to 2X, with negligible quality loss compared to the baseline.
 
 **Some suggestions for improving generation quality:**
 1. Use High-Quality Images
