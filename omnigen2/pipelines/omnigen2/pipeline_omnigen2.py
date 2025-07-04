@@ -732,6 +732,10 @@ class OmniGen2Pipeline(DiffusionPipeline, OmniGen2LoraLoaderMixin):
                 if step_func is not None:
                     step_func(i, self._num_timesteps)
 
+        if enable_taylorseer:
+            del model_pred_cache_dic, model_pred_ref_cache_dic, model_pred_uncond_cache_dic
+            del model_pred_current, model_pred_ref_current, model_pred_uncond_current
+
         latents = latents.to(dtype=dtype)
         if self.vae.config.scaling_factor is not None:
             latents = latents / self.vae.config.scaling_factor
