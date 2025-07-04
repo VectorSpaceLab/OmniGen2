@@ -159,7 +159,7 @@ def parse_args() -> argparse.Namespace:
         help="Enable teacache to speed up inference."
     )
     parser.add_argument(
-        "--rel_l1_thresh",
+        "--teacache_rel_l1_thresh",
         type=float,
         default=0.05,
         help="Relative L1 threshold for teacache."
@@ -192,7 +192,7 @@ def load_pipeline(args: argparse.Namespace, accelerator: Accelerator, weight_dty
 
     if args.enable_teacache:
         pipeline.transformer.enable_teacache = True
-        pipeline.transformer.rel_l1_thresh = args.rel_l1_thresh
+        pipeline.transformer.teacache_rel_l1_thresh = args.teacache_rel_l1_thresh
 
     if args.scheduler == "dpmsolver++":
         from omnigen2.schedulers.scheduling_dpmsolver_multistep import DPMSolverMultistepScheduler

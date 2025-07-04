@@ -346,7 +346,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
 
         # TeaCache settings
         self.enable_teacache = False
-        self.rel_l1_thresh = 0.05
+        self.teacache_rel_l1_thresh = 0.05
         self.teacache_params = TeaCacheParams()
 
         coefficients = [-5.48259225, 11.48772289, -4.47407401, 2.47730926, -0.03316487]
@@ -611,7 +611,7 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
                     ((modulated_inp - self.teacache_params.previous_modulated_inp).abs().mean() \
                         / self.teacache_params.previous_modulated_inp.abs().mean()).cpu().item()
                 )
-                if self.teacache_params.accumulated_rel_l1_distance < self.rel_l1_thresh:
+                if self.teacache_params.accumulated_rel_l1_distance < self.teacache_rel_l1_thresh:
                     should_calc = False
                 else:
                     should_calc = True
