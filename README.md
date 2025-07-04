@@ -73,7 +73,7 @@ Some good cases of OmniGen2:
 - [ ] Integration of diffusers.
 - [ ] Training datasets.
 - [ ] Training data construction pipeline.
-- [ ] ComfyUI Demo (**commuity support will be greatly appreciated!**).
+- [ ] ComfyUI Demo (**community support will be greatly appreciated!**).
 
 ## 🚀 Quick Start
 
@@ -166,7 +166,7 @@ To achieve optimal results with OmniGen2, you can adjust the following key hyper
 - `text_guidance_scale`: Controls how strictly the output adheres to the text prompt (Classifier-Free Guidance).
 - `image_guidance_scale`: This controls how much the final image should resemble the input reference image.
     - **The Trade-off**: A higher value makes the output more faithful to the reference image's structure and style, but it might ignore parts of your text prompt. A lower value (~1.5) gives the text prompt more influence.
-    - **Tip**: For image editing task, we recommend to set it between 1.2 and 2.0; for in-context generateion task, a higher image_guidance_scale will maintian more details in input images, and we recommend to set it between 2.5 and 3.0.
+    - **Tip**: For image editing task, we recommend to set it between 1.2 and 2.0; for in-context generation task, a higher image_guidance_scale will maintain more details in input images, and we recommend to set it between 2.5 and 3.0.
 - `max_pixels`: Automatically resizes images when their total pixel count (width × height) exceeds this limit, while maintaining its aspect ratio. This helps manage performance and memory usage.
   - **Tip**: Default value is 1024*1024. You can reduce this value if you encounter memory issues.
 - `max_input_image_side_length`: Maximum side length for input images.

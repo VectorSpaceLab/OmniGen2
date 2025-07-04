@@ -91,10 +91,10 @@ class OmniGen2TrainDataset(torch.utils.data.Dataset):
     
     def clean_data_item(self, data_item):
         task_type = data_item['task_type']
-        prefixs = ["The image portrays ", "The image depicts ", "The image captures ", "The image highlights ", "The image shows ", "这张图片展示了"]
+        prefixes = ["The image portrays ", "The image depicts ", "The image captures ", "The image highlights ", "The image shows ", "这张图片展示了"]
         if "text_to_image" in task_type or "t2i" in task_type:
             if random.random() < 0.5:
-                for p in prefixs:
+                for p in prefixes:
                     if p in data_item['instruction']:
                         data_item['instruction'] = data_item['instruction'].replace(p, "")
                         break

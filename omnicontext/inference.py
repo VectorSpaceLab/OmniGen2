@@ -289,8 +289,8 @@ def main(args: argparse.Namespace, root_dir: str) -> None:
         unit="image",
         disable=not accelerator.is_main_process,
     ) as pbar:
-        for i, bacthed_data in tqdm(enumerate(loader), total=len(loader), disable=accelerator.process_index!=0):
-            for data in bacthed_data:
+        for i, batched_data in tqdm(enumerate(loader), total=len(loader), disable=accelerator.process_index!=0):
+            for data in batched_data:
                 key = data['key']
                 task_type = data['task_type']
                 instruction = data['instruction']

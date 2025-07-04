@@ -38,10 +38,10 @@ else:
 
 # try:
 #     from flash_attn.ops.activations import swiglu as fused_swiglu
-#     FUSEDSWIGLU_AVALIBLE = True
+#     FUSEDSWIGLU_AVAILABLE = True
 # except ImportError:
     
-#     FUSEDSWIGLU_AVALIBLE = False
+#     FUSEDSWIGLU_AVAILABLE = False
 #     warnings.warn("Cannot import apex RMSNorm, switch to vanilla implementation")
         
 class LuminaRMSNormZero(nn.Module):

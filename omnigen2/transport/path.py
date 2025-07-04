@@ -70,7 +70,7 @@ class ICPlan:
         return diffusion
 
     def get_score_from_velocity(self, velocity, x, t):
-        """Wrapper function: transfrom velocity prediction model to score
+        """Wrapper function: transform velocity prediction model to score
         Args:
             velocity: [batch_dim, ...] shaped tensor; velocity model output
             x: [batch_dim, ...] shaped tensor; x_t data point
@@ -86,7 +86,7 @@ class ICPlan:
         return score
 
     def get_noise_from_velocity(self, velocity, x, t):
-        """Wrapper function: transfrom velocity prediction model to denoiser
+        """Wrapper function: transform velocity prediction model to denoiser
         Args:
             velocity: [batch_dim, ...] shaped tensor; velocity model output
             x: [batch_dim, ...] shaped tensor; x_t data point
@@ -102,7 +102,7 @@ class ICPlan:
         return noise
 
     def get_velocity_from_score(self, score, x, t):
-        """Wrapper function: transfrom score prediction model to velocity
+        """Wrapper function: transform score prediction model to velocity
         Args:
             score: [batch_dim, ...] shaped tensor; score model output
             x: [batch_dim, ...] shaped tensor; x_t data point
