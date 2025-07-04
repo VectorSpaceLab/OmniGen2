@@ -277,7 +277,7 @@ def create_collage(images: List[torch.Tensor]) -> Image.Image:
     """Create a horizontal collage from a list of images."""
     max_height = max(img.shape[-2] for img in images)
     total_width = sum(img.shape[-1] for img in images)
-    canvas = torch.zeros((3, max_height, total_width), device=images[0].device)
+    canvas = torch.full((3, max_height, total_width), 0.5, device=images[0].device)
     
     current_x = 0
     for img in images:
