@@ -29,6 +29,9 @@ if is_triton_available():
 else:
     from torch.nn import RMSNorm
 
+from ...taylorseer_utils import derivative_approximation, taylor_formula, taylor_cache_init
+from ...cache_functions import cache_init, cal_type
+
 logger = logging.get_logger(__name__)
 
 class OmniGen2TransformerBlock(nn.Module):
@@ -149,32 +152,69 @@ class OmniGen2TransformerBlock(nn.Module):
         Returns:
             torch.Tensor: Output hidden states after transformer block processing
         """
-        import time
-        if self.modulation:
-            if temb is None:
-                raise ValueError("temb must be provided when modulation is enabled")
-                
-            norm_hidden_states, gate_msa, scale_mlp, gate_mlp = self.norm1(hidden_states, temb)
-            attn_output = self.attn(
-                hidden_states=norm_hidden_states,
-                encoder_hidden_states=norm_hidden_states,
-                attention_mask=attention_mask,
-                image_rotary_emb=image_rotary_emb,
-            )
-            hidden_states = hidden_states + gate_msa.unsqueeze(1).tanh() * self.norm2(attn_output)
-            mlp_output = self.feed_forward(self.ffn_norm1(hidden_states) * (1 + scale_mlp.unsqueeze(1)))
-            hidden_states = hidden_states + gate_mlp.unsqueeze(1).tanh() * self.ffn_norm2(mlp_output)
+        enable_taylorseer = getattr(self, 'enable_taylorseer', False)
+        if enable_taylorseer:
+            if self.modulation:
+                if temb is None:
+                    raise ValueError("temb must be provided when modulation is enabled")
+                    
+                if self.current['type'] == 'full':
+                    self.current['module'] = 'total'
+                    taylor_cache_init(cache_dic=self.cache_dic, current=self.current)
+
+                    norm_hidden_states, gate_msa, scale_mlp, gate_mlp = self.norm1(hidden_states, temb)
+                    attn_output = self.attn(
+                        hidden_states=norm_hidden_states,
+                        encoder_hidden_states=norm_hidden_states,
+                        attention_mask=attention_mask,
+                        image_rotary_emb=image_rotary_emb,
+                    )
+                    hidden_states = hidden_states + gate_msa.unsqueeze(1).tanh() * self.norm2(attn_output)
+                    mlp_output = self.feed_forward(self.ffn_norm1(hidden_states) * (1 + scale_mlp.unsqueeze(1)))
+                    hidden_states = hidden_states + gate_mlp.unsqueeze(1).tanh() * self.ffn_norm2(mlp_output)
+
+                    derivative_approximation(cache_dic=self.cache_dic, current=self.current, feature=hidden_states)
+
+                elif self.current['type'] == 'Taylor': 
+                    self.current['module'] = 'total'
+                    hidden_states = taylor_formula(cache_dic=self.cache_dic, current=self.current)
+            else:
+                norm_hidden_states = self.norm1(hidden_states)
+                attn_output = self.attn(
+                    hidden_states=norm_hidden_states,
+                    encoder_hidden_states=norm_hidden_states,
+                    attention_mask=attention_mask,
+                    image_rotary_emb=image_rotary_emb,
+                )
+                hidden_states = hidden_states + self.norm2(attn_output)
+                mlp_output = self.feed_forward(self.ffn_norm1(hidden_states))
+                hidden_states = hidden_states + self.ffn_norm2(mlp_output)
         else:
-            norm_hidden_states = self.norm1(hidden_states)
-            attn_output = self.attn(
-                hidden_states=norm_hidden_states,
-                encoder_hidden_states=norm_hidden_states,
-                attention_mask=attention_mask,
-                image_rotary_emb=image_rotary_emb,
-            )
-            hidden_states = hidden_states + self.norm2(attn_output)
-            mlp_output = self.feed_forward(self.ffn_norm1(hidden_states))
-            hidden_states = hidden_states + self.ffn_norm2(mlp_output)
+            if self.modulation:
+                if temb is None:
+                    raise ValueError("temb must be provided when modulation is enabled")
+                    
+                norm_hidden_states, gate_msa, scale_mlp, gate_mlp = self.norm1(hidden_states, temb)
+                attn_output = self.attn(
+                    hidden_states=norm_hidden_states,
+                    encoder_hidden_states=norm_hidden_states,
+                    attention_mask=attention_mask,
+                    image_rotary_emb=image_rotary_emb,
+                )
+                hidden_states = hidden_states + gate_msa.unsqueeze(1).tanh() * self.norm2(attn_output)
+                mlp_output = self.feed_forward(self.ffn_norm1(hidden_states) * (1 + scale_mlp.unsqueeze(1)))
+                hidden_states = hidden_states + gate_mlp.unsqueeze(1).tanh() * self.ffn_norm2(mlp_output)
+            else:
+                norm_hidden_states = self.norm1(hidden_states)
+                attn_output = self.attn(
+                    hidden_states=norm_hidden_states,
+                    encoder_hidden_states=norm_hidden_states,
+                    attention_mask=attention_mask,
+                    image_rotary_emb=image_rotary_emb,
+                )
+                hidden_states = hidden_states + self.norm2(attn_output)
+                mlp_output = self.feed_forward(self.ffn_norm1(hidden_states))
+                hidden_states = hidden_states + self.ffn_norm2(mlp_output)
 
         return hidden_states
 
@@ -516,6 +556,10 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
         attention_kwargs: Optional[Dict[str, Any]] = None,
         return_dict: bool = False,
     ) -> Union[torch.Tensor, Transformer2DModelOutput]:
+        enable_taylorseer = getattr(self, 'enable_taylorseer', False)
+        if enable_taylorseer:
+            cal_type(self.cache_dic, self.current)
+        
         if attention_kwargs is not None:
             attention_kwargs = attention_kwargs.copy()
             lora_scale = attention_kwargs.pop("scale", 1.0)
@@ -632,7 +676,16 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
                         hidden_states = layer(hidden_states, attention_mask, rotary_emb, temb)
                 self.teacache_params.previous_residual = hidden_states - ori_hidden_states
         else:
+            if enable_taylorseer:
+                self.current['stream'] = 'layers_stream'
+
             for layer_idx, layer in enumerate(self.layers):
+                if enable_taylorseer:
+                    layer.current = self.current
+                    layer.cache_dic = self.cache_dic
+                    layer.enable_taylorseer = True
+                    self.current['layer'] = layer_idx
+
                 if torch.is_grad_enabled() and self.gradient_checkpointing:
                     hidden_states = self._gradient_checkpointing_func(
                         layer, hidden_states, attention_mask, rotary_emb, temb
@@ -654,6 +707,9 @@ class OmniGen2Transformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin, From
         if USE_PEFT_BACKEND:
             # remove `lora_scale` from each PEFT layer
             unscale_lora_layers(self, lora_scale)
+            
+        if enable_taylorseer:
+            self.current['step'] += 1
 
         if not return_dict:
             return output
