@@ -27,7 +27,7 @@ def cache_init(self, num_steps: int):
     cache_dic['fresh_threshold'] = 3
     cache_dic['soft_fresh_weight'] = 0.0
     cache_dic['taylor_cache'] = True
-    cache_dic['max_order'] = 6
+    cache_dic['max_order'] = 4
     cache_dic['first_enhance'] = 5
 
     current = {}
