@@ -150,7 +150,7 @@ bash example_in_context_generation.sh
 
 * **Web Application**: You can also try the self-hosted OmniGen2 web application by visiting [this link](https://genai.baai.ac.cn/) or scanning the QR code below:
 <p align="center">
-  <img src="assets/qr-code.PNG" width="95%">
+  <img src="assets/qr-code.PNG" width="45%">
   <br>
   <em> OmniGen2 web.</em>
 </p>
