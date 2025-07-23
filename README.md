@@ -24,6 +24,7 @@
 </h4>
 
 ## 🔥 News
+- **2025-07-23**: Users can access OmniGen2 through [web app](https://genai.baai.ac.cn/).
 - **2025-07-05**: Training datasets [X2I2](https://huggingface.co/datasets/OmniGen2/X2I2) are available.
 - **2025-07-03**: OmniGen2 now supports [TeaCache](https://github.com/ali-vilab/TeaCache) and [TaylorSeer](https://github.com/Shenyi-Z/TaylorSeer) for faster inference, see [Usage Tips](#-usage-tips) for details. Thanks @legitnull for great [TeaCache-PR](https://github.com/VectorSpaceLab/OmniGen2/pull/52) and [TaylorSeer-PR](https://github.com/VectorSpaceLab/OmniGen2/pull/76).
 - **2025-07-01**: OmniGen2 is supported by [ComfyUI official](https://comfyanonymous.github.io/ComfyUI_examples/omnigen), thanks !!
@@ -146,6 +147,14 @@ bash example_in_context_generation.sh
     [Demo1](https://9c4426d27c3b9ecbed.gradio.live), [Demo2](https://06574c5e62d815f799.gradio.live), [Demo3](https://e0a82fd380d2ff17ac.gradio.live), [Demo4](https://d9c4410ee48ce35051.gradio.live)
 
     [Chat-Demo1](https://0351497834a4d7226c.gradio.live), [Chat-Demo2](https://032160099388d1d10c.gradio.live), [Chat-Demo3](https://cf9f2797e92cfa2767.gradio.live), [Chat-Demo4](https://b87b82fd14215affc2.gradio.live)
+
+* **Web Application**: You can also try the self-hosted OmniGen2 web application by visiting [this link](https://genai.baai.ac.cn/) or scanning the QR code below:
+<p align="center">
+  <img src="assets/qr-code.PNG" width="95%">
+  <br>
+  <em> OmniGen2 web.</em>
+</p>
+
 
 <!-- [Available on Hugging Face Spaces 🚀](https://huggingface.co/spaces/Shitao/OmniGen2) -->
 
