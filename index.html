@@ -1,0 +1,531 @@
+-----
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>OmniGen2: Exploration to Advanced Multimodal Generation</title>
+        <link rel="icon" type="image/x-icon" href="static/img/omnigen/icon.png">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="OmniGen2: Exploration to Advanced Multimodal Generation">
+        <meta name="keywords" content="image generation, AI, machine learning, multimodal generation">
+
+        <!-- math -->
+        <script src="./static/js/distill_template.v2.js"></script>
+        <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+        <!-- <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="https://d3js.org/d3-collection.v1.min.js"></script>
+        <script src="https://rawgit.com/nstrayer/slid3r/master/dist/slid3r.js"></script> -->
+
+        <script defer="" src="./static/js/hider.js"></script>
+        <script src="./static/js/image_interact.js"></script>
+        <script src="./static/js/switch_videos.js"></script>
+
+        <link rel="stylesheet" href="./static/css/style.css">
+        <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+        <!-- katex -->
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script> -->
+
+        <!-- medium zoom https://github.com/francoischalifour/medium-zoom -->
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>  <!-- jquery -->
+        <script defer src="./static/js/medium-zoom.min.js"></script>
+        <script defer src="./static/js/zoom.js"></script>
+        <script defer src="./static/js/gallery.js"></script>
+    </head>
+
+    <body>
+        <div class="header-wrapper">
+            <div class="header-container" id="header-container">
+                <div class="header-content">
+                    <h1 style="margin-top: 0px"><i>OmniGen2: Exploration to Advanced Multimodal Generation</i></h1>
+
+                    <div class="button-container">
+                        <a href="https://arxiv.org/pdf/2409.11340" class="button paper-link" target="_blank">
+                            <span class="external-link button is-normal is-rounded is-dark">
+                                <i class="ai ai-arxiv"></i>
+                            </span>
+                            arXiv
+                        </a>
+                        <!-- <a href="https://arxiv.org/pdf/2409.11340" class="button paper-link" target="_blank">
+                            <span class="icon is-small">
+                                <i class="fas fa-file-pdf"></i>
+                            </span>
+                            <span>PDF</span>
+                        </a> -->
+                        <a href="https://github.com/VectorSpaceLab/OmniGen2" target="_blank"
+                            class="external-link button is-normal is-rounded is-dark">
+                            <span class="icon">
+                                <i class="fab fa-github"></i>
+                            </span>
+                            <span>Code</span>
+                        </a>
+                        <a href="https://huggingface.co/OmniGen2/OmniGen2" target="_blank"
+                            class="external-link button is-normal is-rounded is-dark">
+                            <span class="icon">
+                                <i class="fas fa-image"></i>
+                            </span>
+                            <span>HF Demo</span>
+                        </a>
+                        <a href="https://huggingface.co/OmniGen2/OmniGen2" target="_blank"
+                            class="external-link button is-normal is-rounded is-dark">
+                            <span class="icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </span>
+                            <span>Model Weight</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="header-image">
+                    <img draggable="false" src="static/img/omnigen/omnigen2_overview_new.jpg" alt="Teaser Image" class="teaser-image">
+                </div>
+                <!-- <div class="teaser-video">
+                    <video src="static/img/omnigen/video_1.mp4" autoplay loop muted playsinline></video>
+                </div> -->
+            </div>
+        </div>
+
+        
+    <d-article>
+        
+        <!-- Demo Showcase Section -->
+
+        <p class="text abstract">
+            <h1 class="text">Overview</h1>
+            <!-- <p class="text">
+            OmniGen2 is a powerful and efficient unified multimodal model. Its architecture is composed of two key components: a 3B Vision-Language Model (VLM) and a 4B diffusion model. In this design, the frozen 3B VLM (Qwen-VL-2.5) is responsible for interpreting both visual signals and user instructions, while the 4B diffusion model leverages this understanding to perform high-quality image generation.
+
+            This dual-component architecture enables strong performance across four primary capabilities:
+            </p>
+
+            <li><strong>Visual Understanding</strong>: Inherits the robust ability to interpret and analyze image content from its Qwen-VL-2.5 foundation.</li>
+            <li><strong>Text-to-Image Generation</strong>: Creates high-fidelity and aesthetically pleasing images from textual prompts.</li>
+            <li><strong>Instruction-guided Image Editing</strong>: Executes complex, instruction-based image modifications with high precision, achieving state-of-the-art performance among open-source models.</li>
+            <li><strong>In-context Generation</strong>: A versatile capability to process and flexibly combine diverse inputs—including tasks, reference objects, and scenes—to produce novel and coherent visual outputs.</li> -->
+            <p class="text">
+                OmniGen2 is a unified multimodal generation model that combines strong <strong class="highlight">visual understanding</strong>, <strong class="highlight">text-to-image synthesis</strong>, <strong class="highlight">instruction-based image editing</strong>, and <strong class="highlight">subject-driven in-context generation</strong> within a single framework. Built on a decoupled architecture, it preserves high-quality language modeling while enabling fine-grained and consistent visual outputs. Beyond generation, OmniGen2 incorporates a multimodal <strong class="highlight">reflection mechanism</strong> that allows it to analyze, critique, and iteratively refine its outputs—bringing reasoning and self-correction into the image generation process. With competitive performance across both generation and understanding tasks, it sets a new benchmark among lightweight open-source models.
+            </p>
+
+        </p>
+
+        <centering>
+            <div style="text-align: center;">
+                <video width="100%" height="100%" controls>
+                    <source src="static/img/omnigen/video_2.mp4" type="video/mp4">
+                </video>
+            </div>
+        </centering>
+        <!-- <hr> -->
+        
+        <div class="demo-showcase">
+            <!-- <h1 class="text" style="text-align: center;">Demo Showcase</h1> -->
+            <div class="gallery-container">
+                <div class="gallery-controls">
+                    <button class="gallery-btn prev-btn" onclick="prevGallery()">← Previous</button>
+                    <div class="gallery-title">Text-to-Image Generation</div>
+                    <button class="gallery-btn next-btn" onclick="nextGallery()">Next →</button>
+                </div>
+                
+                <div class="gallery-content">
+                    <!-- Text-to-Image Gallery -->
+                    <div class="gallery active" id="text-to-image">
+                        <div class="gallery-grid">
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/1.png" alt="Text-to-Image Example 1">
+                                <p class="caption">A cat with a crown lounging on a velvet throne</p>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/2.png" alt="Text-to-Image Example 2">
+                                <p class="caption"> A dark wizard conjuring spells in an ancient cave</p>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/3.png" alt="Text-to-Image Example 3">
+                                <p class="caption">The sun rises slightly, the dew on the rose petals in the garden is clear, a crystal ladybug is crawling to the dew, the background is the early morning garden, macro lens</p>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/4.png" alt="Text-to-Image Example 4">
+                                <p class="caption">A fierce wolf walks in a broadleaf forest, next to a stream, detail true, photography</p>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/5.png" alt="Text-to-Image Example 5">
+                                <p class="caption">A cat holds a white board writing text "OmniGen2" and a red heart</p>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/6.png" alt="Text-to-Image Example 6">
+                                <p class="caption">A rabbit made out of vegetables</p>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/7.png" alt="Text-to-Image Example 4">
+                                <p class="caption">This dreamlike digital art captures a vibrant, kaleidoscopic bird in a lush rainforest</p>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/8.png" alt="Text-to-Image Example 5">
+                                <p class="caption">Colorful and extremely beautiful aurora shines on the ice sheet</p>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="static/img/omnigen/demo/t2i/9.png" alt="Text-to-Image Example 6">
+                                <p class="caption">A snow maiden with pale translucent skin, frosty white lashes, and a soft expression of longing</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Editing Gallery -->
+                    <div class="gallery" id="image-editing">
+                        <div class="gallery-grid">
+                            <div class="gallery-item">
+                                <div class="image-comparison">
+                                    <img src="static/img/omnigen/demo/edit/1-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/1-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Change the dress to blue</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-comparison">
+                                    <img src="static/img/omnigen/demo/edit/2-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/2-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Raise the hand</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-comparison">
+                                    <img src="static/img/omnigen/demo/edit/3-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/3-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Change the background to classroom</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-comparison">
+                                    <img src="static/img/omnigen/demo/edit/4-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/4-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Add a fisherman hat to the woman's head</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-comparison">  
+                                    <img src="static/img/omnigen/demo/edit/5-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/5-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Replace the sword with a hammer</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-comparison">
+                                    <img src="static/img/omnigen/demo/edit/6-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/6-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Remove the cat</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-comparison">
+                                    <img src="static/img/omnigen/demo/edit/7-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/7-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Generate an anime-style figurine based on the original image</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-comparison">  
+                                    <img src="static/img/omnigen/demo/edit/8-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/8-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Make he smile</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-comparison">
+                                    <img src="static/img/omnigen/demo/edit/9-2.png" alt="Edited Image" class="modified-image">
+                                    <img src="static/img/omnigen/demo/edit/9-1.png" alt="Original Image" class="original-image">
+                                    <div class="slider"></div>
+                                </div>
+                                <p class="caption">Extract the character from the picture and fill the rest of the background with white</p>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Subject-Driven Generation Gallery -->
+                    <div class="gallery" id="subject-driven-generation">
+                        <div class="gallery-grid">
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/1-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/1-2.jpg" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Let the girl and the boy get married in the church</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/2-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/2-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Add the bird from image 1 to the desk in image 2</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/3-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/3-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">In a cozy café, the anime figure is sitting in front of a laptop, smiling confidently.</p>
+                            </div>
+                            <!-- <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/4-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/4-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Replace the apple in the first image with the cat from the second image</p>
+                            </div> -->
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/5-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/5-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Let the man appear in front of the White House delivering a speech</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/6-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/6-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Please let the person in image 2 hold the toy from the first image in a parking lot</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/7-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/7-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Let the man form image1 and the woman from image2 kiss and hug</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/8-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/8-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Replace the woman in the second image with the woman from the first image</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/9-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/9-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Create a wedding figure based on the girl in the first image and the man in the second image. Set the background as a wedding hall, with the man dressed in a suit and the girl in a white wedding dress. The man should adopt a realistic style, whereas the girl should maintain their classic anime style.</p>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="image-switch-container">
+                                    <img src="static/img/omnigen/demo/subject/10-1.png" alt="Original Image" class="base-image">
+                                    <img src="static/img/omnigen/demo/subject/10-2.png" alt="Generated Image" class="generated-image">
+                                    <button class="generate-btn">Generate</button>
+                                </div>
+                                <p class="caption">Make the girl pray in the second image</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+
+                </div>
+            </div>
+        </div>
+
+        <!-- <hr> -->
+        <div id='OmniGen2' class="vision-block">
+            <div id="sec:model_arch" class="sub-section">
+                <h1 class="text">Model Architecture</h1>
+                    <p class="text">
+                        OmniGen2 adopts a dual-path architecture with separate autoregressive and diffusion Transformers for text and image generation, respectively. It leverages a decoupled design where a ViT encoder feeds visual information into the multimodal large language model (MLLM) for understanding tasks, while a VAE encoder supplies fine-grained visual features exclusively to the diffusion decoder. This separation preserves the strong language modeling capabilities of the MLLM while enabling high-fidelity and consistent image generation, making the architecture both efficient and versatile across tasks like text-to-image synthesis, image editing, and in-context generation.
+
+                    </p>
+                    <d-figure style="width: 80%; margin: 0 auto; text-align: center;">
+                        <figure>
+                            <img data-zoomable="" draggable="false" src="static/img/omnigen/modelarch.png" alt="modelarch" style="width: 60%; margin: 0 auto; display: block;">
+                            <figcaption style="text-align: center;">
+                                <strong>Figure 1:</strong> Architecture of OmniGen2. 
+                            </figcaption>
+                        </figure>
+                    </d-figure>
+
+                    <p class="text">
+                        <strong>Multimodal Rotary Position Embedding: </strong> We introduce a novel <strong>Omni-RoPE</strong> specifically designed to meet the demands of our diverse and complex tasks, particularly image editing and in-context generation as illustrated in Figure 2.
+                        
+                    </p>
+
+                    <d-figure style="width: 80%; margin: 0 auto; text-align: center;">
+                        <figure>
+                            <img data-zoomable="" draggable="false" src="static/img/omnigen/omni_repo.png" alt="modelarch" style="width: 60%; margin: 0 auto; display: block;">
+                            <figcaption style="text-align: center;">
+                                <strong>Figure 2:</strong> An illustration of our proposed <strong>Omni-RoPE</strong>. 
+                            </figcaption>
+                        </figure>
+                    </d-figure>
+
+                    <p class="text">
+                        It decomposes position information into three components: 
+                        <br>
+                        <ol>
+                        <li> <strong>Sequence and Modality Identifier \(id_{seq}\)</strong> that is constant for all tokens within a single image (treating it as a semantic unit) but unique across different images.
+                        </li>
+                        <li> <strong>A 2D Spatial Height Coordinate \(h\)</strong> that represents the normalized vertical position for image tokens.
+                        </li>
+                        <li> <strong>A 2D Spatial Width Coordinate \(w\)</strong> that represents the normalized horizontal position for image tokens. For all non-image tokens, both spatial coordinates \(h,w\) are set to zero.
+                        </li>
+                        </ol>
+                        
+                    </p>
+                    <p class="text">
+                        This dual mechanism enables the model to unambiguously distinguish different images via their unique \(id_{seq}\), while the shared local spatial coordinates enhance consistency for tasks like image editing.
+                    </p>
+
+            </div>
+
+
+            <div id="sec:what_can_omnigen2_do" class="sub-section">
+                <h1 class="text">Model Capabilities</h1>
+
+                  
+                      <!-- Visual Understanding -->
+                      <div style="margin-bottom: 40px;">
+                        <h3 class="text">🧠 Visual Understanding</h3>
+                        <p class="text">
+                          OmniGen2 leverages a powerful multimodal large language model (MLLM) to perform robust visual understanding across diverse image types. 
+                          By using a ViT encoder for image representation and keeping the MLLM largely frozen, it achieves strong performance on standard benchmarks 
+                          while preserving semantic alignment, object recognition, and reasoning capabilities across text and vision inputs.
+                        </p>
+                      </div>
+                  
+                      <!-- Text-to-Image -->
+                      <div style="margin-bottom: 40px;">
+                        <h3 class="text">🎨 Text-to-Image Generation</h3>
+                        <p class="text">
+                          OmniGen2 supports high-quality text-to-image generation with strong compositional reasoning and long prompt following. 
+                          By conditioning a diffusion-based image decoder on hidden states from the language model and fine-grained visual features from a VAE, 
+                          it generates faithful and coherent images that align closely with complex natural language descriptions.
+                        </p>
+                        <d-figure style="width: 80%; margin: 0 auto; text-align: center;">
+                            <figure>
+                                <img data-zoomable="" draggable="false" src="static/img/omnigen/capability/t2i.png" alt="modelarch" style="width: 60%; margin: 0 auto; display: block;">
+                                <figcaption style="text-align: center;">
+                                    <strong>Figure 3:</strong> Text-to-image generation results.
+                                </figcaption>
+                            </figure>
+                        </d-figure>
+
+                      </div>
+                  
+                      <!-- Image Editing -->
+                      <div style="margin-bottom: 40px;">
+                        <h3 class="text">✏️ Instruction-Based Image Editing</h3>
+                        <p class="text">
+                          The model enables precise and localized image editing based on natural language instructions. 
+                          With dedicated editing datasets and a dual-path architecture, OmniGen2 can make fine-grained modifications—such as object manipulation, 
+                          style changes, or motion edits—while preserving unedited regions and maintaining visual realism and consistency.
+                        </p>
+
+                        <d-figure style="width: 80%; margin: 0 auto; text-align: center;">
+                            <figure>
+                                <img data-zoomable="" draggable="false" src="static/img/omnigen/capability/edit.png" alt="modelarch" style="width: 60%; margin: 0 auto; display: block;">
+                                <figcaption style="text-align: center;">
+                                    <strong>Figure 4:</strong> Instruction-based image editing results.
+                                </figcaption>
+                            </figure>
+                        </d-figure>
+                      </div>
+                  
+                      <!-- In-context Generation -->
+                      <div style="margin-bottom: 40px;">
+                        <h3 class="text">🧍 In-Context Generation (Subject-Driven)</h3>
+                        <p class="text">
+                          OmniGen2 excels at subject-driven generation, where it extracts subjects from reference images and re-renders them in new scenes as guided by text prompts. 
+                          Through a specially designed training pipeline based on video data, the model demonstrates superior subject consistency and contextual integration, 
+                          outperforming prior open-source models in this emerging domain.
+                        </p>
+
+                        <d-figure style="width: 80%; margin: 0 auto; text-align: center;">
+                            <figure>
+                                <img data-zoomable="" draggable="false" src="static/img/omnigen/capability/in_context.png" alt="modelarch" style="width: 60%; margin: 0 auto; display: block;">
+                                <figcaption style="text-align: center;">
+                                    <strong>Figure 5:</strong> In-context generation results.
+                                </figcaption>
+                            </figure>
+                        </d-figure>
+
+
+                      </div>
+                  
+                      <!-- Reflection -->
+                      <div>
+                        <h3 class="text">🔁 Multimodal Reflection</h3>
+                        <p class="text">
+                          A distinctive feature of OmniGen2 is its built-in reflection mechanism, allowing it to evaluate its own outputs, identify shortcomings, 
+                          and generate improved results through iterative refinement. This capability, powered by a combination of image-text analysis and self-correction training, 
+                          brings a form of multimodal reasoning to generation—enhancing controllability, reliability, and output quality over time.
+                        </p>
+
+                        <d-figure style="width: 80%; margin: 0 auto; text-align: center;">
+                            <figure>
+                                <img data-zoomable="" draggable="false" src="static/img/omnigen/capability/reflection.png" alt="modelarch" style="width: 60%; margin: 0 auto; display: block;">
+                                <figcaption style="text-align: center;">
+                                    <strong>Figure 6:</strong> Multimodal reflection results.
+                                </figcaption>
+                            </figure>
+                        </d-figure>
+
+                      </div>
+
+            </div> 
+        </div>
+
+        </d-article>
+
+        <d-appendix>
+            <h1 class="text">⭐ Citation</h1>
+            <p class="text">    
+                If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖, which would be greatly appreciated:
+            </p>
+
+            <pre style="width: 100%; overflow-x: auto; background-color: #f5f5f5; padding: 15px; border-radius: 5px;"><code>@misc{omnigen2024, 
+    author={Shitao Xiao, Yueze Wang, Junjie Zhou, Huaying Yuan, Xingrun Xing, Ruiran Yan, Shuting Wang, Tiejun Huang, Zheng Liu},
+    title={OmniGen: Unified Image Generation}, 
+    publisher={arXiv:2409.11340v1}, 
+    year={2024}, 
+}
+
+@article{wu2025omnigen2,
+    title={OmniGen2: Exploration to Advanced Multimodal Generation},
+    author={Chenyuan Wu and Pengfei Zheng and Ruiran Yan and Shitao Xiao and Xin Luo and Yueze Wang and Wanli Li and Xiyan Jiang and Yexin Liu and Junjie Zhou and Ze Liu and Ziyi Xia and Chaofan Li and Haoge Deng and Jiahao Wang and Kun Luo and Bo Zhang and Defu Lian and Xinlong Wang and Zhongyuan Wang and Tiejun Huang and Zheng Liu},
+    journal={arXiv preprint arXiv:2506.18871},
+    year={2025}
+}</code></pre>
+            <h1 class="text">❤️ Acknowledgments</h1>
+            <p class="text">    
+                This project's frontend page structure draws reference from the <a href="https://xichenpan.com/metaquery/">MetaQueries</a>. Special thanks to the original project.
+            </p>
+
+
+            <d-footnote-list></d-footnote-list>
+            <d-citation-list></d-citation-list>
+        </d-appendix>
+        <!-- bibliography will be inlined during Distill pipeline's pre-rendering -->
+        <d-bibliography src="bibliography.bib"></d-bibliography>
+        <script src="./static/js/nav-bar.js"></script>
+    </body>
+</html>

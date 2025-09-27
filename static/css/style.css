@@ -1,0 +1,1777 @@
+body {
+  margin: 0;         /* 移除body的默认外边距 */
+  padding: 0;        /* 移除body的默认内边距 */
+  font-family: Charter;
+}
+
+.header-wrapper {
+    /* background: #88c2fa; */
+    /* background: 	#cbdff8; */
+    /* background: linear-gradient(135deg, #0b0f19, #1a1a2e); */
+    background-image: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+    min-height: 100vh;  /* 最小高度设为100%视口高度 */
+    display: flex;      /* 使用flex布局 */
+    align-items: center;/* 垂直居中 */
+    margin: 0;         /* 移除外边距 */
+    padding: 0;        /* 移除内边距 */
+}
+
+.header-container {
+    width: 100%;       /* 容器宽度100% */
+    max-width: 1600px; /* 保持最大宽度限制 */
+    margin: 0 auto;    /* 水平居中 */
+    padding: 20px;     /* 保持内边距 */
+    color: #ffffff;    /* 保持文字颜色 */
+    text-align: center;
+    opacity: 1.0;
+    z-index: 1000;
+    position: relative;
+}
+
+.icon {
+    height: 1.8em; /* Set a fixed height for all icons */
+    width: auto; /* Adjust width to maintain aspect ratio */
+    margin-bottom: 5px; /* Space between icon and text */
+}
+
+.icon-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping to the next line */
+    width: 100%;
+    padding: 20px; /* Padding around the images */
+    line-height: 1rem;
+}
+
+.icon-link {
+    display: flex;
+    flex-direction: column; /* Stack image and text vertically */
+    align-items: center; /* Center the image and text */
+    text-align: center; /* Center text below the image */
+    color: inherit; /* Inherit color from parent */
+    padding: 10px; /* Add padding around the link */
+    margin: 10px; /* Add margin around each link for spacing */
+    border: 3px solid #508af6;
+    border-radius: 10px;
+    background-color: #d6eefb;
+    flex: 1 1 100px; /* Allow flex items to grow and shrink */
+}
+
+.icon-link:hover {
+    background-color: #88c2fa;
+}
+
+@media (max-width: 600px) {
+    .icon-link {
+        flex: 1 1 45%; /* Allow each icon link to take up about half the width */
+    }
+}
+
+.icon-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.icon-item {
+    align-items: center;
+    display: flex;
+}
+
+.icon-item img {
+    width: 30px;
+    height: 30px;
+    margin-right: 1em;
+    filter: invert(87%) sepia(11%) saturate(748%) hue-rotate(340deg) brightness(110%) contrast(100%);
+}
+
+@media (max-width: 768px) {
+  .icon-item img {
+    margin-bottom: 1em;
+  }
+}
+
+.header-content strong {
+    color: #000000;    /* 黑色强调文字 */
+}
+
+.header-content {
+    color: #333333;    /* 深灰色文字 */
+    text-align: left;
+}
+
+.header-content h1 {
+    font-size: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.2;
+    color: #000000;    /* 黑色标题 */
+}
+
+.header-content h2 {
+    margin-bottom: 0.5em;
+    line-height: 1.2;
+    color: #000000;    /* 黑色标题 */
+}
+
+.header-container p {
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    padding: 16px;
+    padding-top: 32px;
+  }
+
+  .header-content h1 {
+    font-size: 3em;
+    margin-bottom: 0.125em;
+  }
+  .header-content h2 {
+    font-size: 1.7em;
+    /* text no wrap */
+    white-space: nowrap;
+    margin-top: 0;
+  }
+
+  .header-container p {
+    font-size: 1.04rem;
+  }
+
+  .header-image {
+    /* 80% */
+    max-width: 100%;
+    /* center */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.teaser-video video {
+  height: auto; /* Maintain the aspect ratio of the image */
+  display: block; /* Prevent inline spacing issues */
+  max-width: 100%;
+}
+
+.header-image img {
+  max-width: 100%; /* Ensure the image is never more than 100% of its container */
+  height: auto; /* Maintain the aspect ratio of the image */
+  display: block; /* Prevent inline spacing issues */
+  margin: 0 auto 20px; /* Center the image horizontally and add margin below */
+}
+
+.button-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;           /* 使用flex布局 */
+    justify-content: center; /* 水平居中 */
+    align-items: center;     /* 垂直居中 */
+    flex-wrap: wrap;        /* 允许按钮换行 */
+    gap: 10px;             /* 按钮之间的间距 */
+}
+
+.button-container a.button {
+    align-items: center;
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.2);  /* 半透明白色背景 */
+    color: #333333;                              /* 白色文字 */
+    border: 2px solid rgba(255, 255, 255, 0.2);  /* 半透明白色边框 */
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);                  /* 毛玻璃效果 */
+    -webkit-backdrop-filter: blur(5px);          /* Safari支持 */
+}
+
+.button-container a.button:hover {
+    background-color: rgba(255, 255, 255, 0.3);  /* 悬停时略微增加透明度 */
+    border-color: rgba(255, 255, 255, 0.5);      /* 悬停时边框更明显 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);  /* 白色阴影效果 */
+}
+
+/* 调整图标颜色为白色 */
+.button-container a.button .icon i {
+    color: #000000;
+}
+
+/* Styles for larger screens using a media query */
+@media (min-width: 600px) {
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 50px 50px;
+  }
+
+  .header-content {
+    max-width: 50%;  /* 增加文字部分的宽度从50%到60% */
+    text-align: left;
+    margin-right: 20px;  /* 增加右侧间距 */
+  }
+
+  .header-content h1 {
+    font-size: 3.3em; /* Increase font size for larger screens */
+    text-align: center;
+  }
+
+  .header-content h2 {
+    margin-top: -0.75em; /* Reduce space between headers */
+    font-size: 2em; /* Increase font size for larger screens */
+  }
+
+  .teaser-video {
+    width: 40%;  /* 减少视频部分的宽度到40% */
+    margin-bottom: 2em;
+  }
+
+  .teaser-video video {
+    width: 100%;
+    height: auto;
+  }
+
+  .header-image {
+    max-width: calc(50% - 5px); /* Adjust width to include margin */
+  }
+
+  .header-image img {
+    max-width: 100%; /* Image should be responsive within the container */
+    height: auto; /* Maintain the aspect ratio */
+  }
+}
+
+.byline {
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
+    padding: 0 5px 10px;
+    margin-bottom: 20px;
+}
+
+.byline-container {
+    padding-top: 2rem;
+    padding-bottom: 0.5rem;
+    text-align: center;  /* Center align the text */
+}
+
+.author-link, .affiliation-link {
+    font-size: larger;
+    color: black; /* Set the color to match the other text */
+    text-decoration: none; /* Removes the underline */
+    border-bottom: none;
+    cursor: pointer; /* Changes cursor to pointer to indicate link */
+    white-space: nowrap;  /* Prevent breaking names across lines */
+    /* Increase vertical spacing */
+    line-height: 2.3rem; /* Increase line height for better readability */
+}
+
+.author-note {
+    font-size: 0.9rem;
+    color: #000000; /* Light grey color for the text */
+    margin-top: 0.25em; /* Space above the note */
+    margin-bottom: 0.25em; /* Space below the note */
+}
+
+#affiliation {
+    font-size: 1.6em;
+    /* bold */
+    font-weight: bolder;
+}
+
+.author-link:hover, .affiliation-link:hover {
+  text-decoration: underline; /* Adds underline on hover for visual feedback */
+  border-bottom: none;
+  color: #007bff;
+}
+
+d-article {
+  contain: none;
+  position: relative;
+}
+
+d-article d-contents {
+  max-width: 100%; /* Or the maximum width you want it to have */
+  box-sizing: border-box; /* Include padding in the width calculation */
+  align-self: start;
+  grid-column: 1 / 4;
+  grid-row: auto / span 4;
+  justify-self: end;
+  margin-top: 5em;
+  padding-right: 3em;
+  padding-left: 2em;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+d-article d-contents nav {
+  display: block;
+}
+
+d-article d-contents nav h4 {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+d-article d-contents nav div {
+  color: rgba(91, 184, 73, 0.8);
+  font-weight: bold;
+}
+
+d-article d-contents nav a {
+  color: rgba(0, 0, 0, 0.8);
+  border-bottom: none;
+  text-decoration: none;
+}
+
+d-article d-contents li {
+  list-style-type: none;
+}
+
+d-article d-contents ul {
+  padding-left: 1em;
+}
+
+d-article d-contents nav ul li {
+  margin-bottom: 0.25em;
+}
+
+d-article d-contents nav a:hover {
+  text-decoration: underline solid rgba(0, 0, 0, 0.6);
+}
+
+d-article d-contents nav ul {
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+d-article d-contents nav > div {
+  display: block;
+  outline: none;
+  margin-bottom: 0.5em;
+}
+
+d-article d-contents nav > div > a {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+d-article d-contents nav > div > a:hover,
+d-article d-contents nav > ul > li > a:hover {
+  text-decoration: none;
+}
+
+.active-nav-item {
+  color: #0d6efd; /* Change as per your preference */
+}
+
+.shaded-figure {
+  background-color: hsl(0, 0%, 97%);
+  border-top: 1px solid hsla(0, 0%, 0%, 0.1);
+  border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
+  padding: 30px 0;
+}
+
+.pointer {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  top: 26px;
+  left: -48px;
+}
+
+.sidebar {
+  position: sticky;
+}
+
+d-article section{
+  margin: 0 !important;
+}
+
+.video-container {
+  position: relative;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0; /* Collapse the container to the aspect ratio */
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-container {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.preview {
+  cursor: pointer;
+  transition: opacity 0.2s, box-shadow 0.2s;
+  opacity: 0.5; /* 50% transparent */
+  height: 50px; /* Fixed height */
+  width: auto; /* Auto width to maintain aspect ratio */
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+div .preview-video-active,
+.preview:hover {
+  opacity: 1.0; /* Fully opaque on hover */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Shadow effect on hover */
+}
+
+blockquote.storytext {
+  border-left: 6px solid #4a90e2; /* Brighter border color */
+  background-color: #f9f9f9;      /* Subtle background */
+  margin: 0px auto;
+  padding: 1em 10px;
+  color: #333;                    /* Darker font color */
+  font-style: italic;
+  font-weight: bold;              /* Bolder font */
+  width: 85%;
+  box-shadow: 2px 2px 8px #ccc;   /* Box shadow */
+  padding-left: 2em;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 15px;
+}
+
+blockquote.storytext:before {
+  color: #4a90e2;                 /* Matching the border color */
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+
+.fancybreak {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #333, transparent);
+  margin: 0.8em auto;
+}
+
+#image-text-container {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+}
+
+.image-review-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.text-box {
+  width: 50%; /* Adjust the width as needed */
+  margin-left: 0%; /* Space between image and text box */
+  height: 100%; /* Make the text box the same height as the image */
+}
+
+.button-bar button {
+  background-color: #88AB8E; /* Green background */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 11px;
+  margin-top: 0px;  /* Keeps the original top margin */
+  margin-bottom: 2em;
+  margin-left: 5px;  /* Increases the left margin */
+  margin-right: 5px;  /* Increases the right margin */
+  cursor: pointer;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px #999; /* Subtle shadow */
+  transition: all 0.3s ease; /* Smooth transition for hover effect */
+}
+
+div .active-button,
+.button-bar button:hover {
+  background-color: #45a049; /* Slightly darker shade on hover */
+  box-shadow: 0 6px #666; /* Change in shadow */
+  transform: translateY(-2px); /* Slight raise */
+}
+
+.interactive-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+.llmul {
+  text-decoration-color: royalblue;
+}
+
+.geoul {
+  text-decoration-color: ForestGreen;
+}
+
+.cvul {
+  text-decoration-color: #FF43A4;  
+}
+
+.colul {
+  text-decoration-color: #FFAE42;
+}
+
+.character-card-img {
+  width: 85%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* collapsible code */
+.collapsible {
+  background-color: hsla(206, 95%, 20%, 0.2);
+  cursor: pointer;
+  padding: 1em;
+  border: none;
+  text-align: left;
+  outline: none;
+}
+
+.active, .collapsible:hover {
+  transition: max-height 0.2s ease-out;
+  /* background-color: #acc2c2; */
+}
+
+.collapsible {
+  background-color: hsla(206, 95%, 20%, 0.2);
+  cursor: pointer;
+  padding: 1em;
+  border: none;
+  text-align: left;
+  outline: none;
+}
+
+.active, .collapsible:hover {
+  transition: max-height 0.2s ease-out;
+}
+
+.collapsible {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  border-radius: 4px;
+}
+
+.collapsible.active {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.collapsible .collapsible-indicator::after {
+  content: "+"
+}
+
+.collapsible.active .collapsible-indicator::after {
+  content: "-"
+}
+
+.collapsible h4 {
+  margin: 0;
+  line-height: inherit;
+}
+
+d-article .content {
+  padding: .3em 1em;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  border-color: hsla(206, 95%, 20%, 0.2);
+  margin-bottom: 20px;
+}
+
+/* assign the final paragraph of an aside no bottom margin */
+aside p:last-child {
+  margin-bottom: 0;
+}
+
+aside.counting-table {
+  position: absolute;
+  top: 42%;
+  left: 105%;
+}
+
+aside figure {
+  margin: 0;
+  display: block; /* Ensures that figure behaves as a block-level element */
+}
+
+aside figure table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Use fixed table layout for consistent column sizing */
+}
+
+aside th, aside td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #dee2e6;
+  white-space: nowrap;
+  text-overflow: ellipsis; /* Add ellipsis to clipped content */
+}
+
+aside th {
+  background-color: #e9ecef;
+  color: #495057;
+}
+aside tr:hover {
+  background-color: #f2f2f2;
+}
+aside th:first-child, aside td:first-child {
+  border-right: 1px solid #dee2e6;
+}
+
+figcaption .table-caption {
+  text-align: center;
+  padding: 8px;
+  font-style: italic;
+  color: #6c757d;
+  margin-top: 0; /* Ensures there is no additional space between table and caption */
+  font-size: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.img-magnifier-container {
+  position:relative;
+  margin-bottom: 20px;
+}
+
+.img-magnifier-glass {
+  position: absolute;
+  border: 3px solid #000;
+  border-radius: 50%;
+  cursor: none;
+  /*Set the size of the magnifier glass:*/
+  width: 100px;
+  height: 100px;
+}
+
+img {
+  vertical-align: middle;
+}
+
+/* Position the image container (needed to position the left and right arrows) */
+.slider-img-container {
+  position: relative;
+}
+
+/* Hide the images by default */
+.my-slides {
+  display: none;
+}
+
+#slider-img-tourist .my-slides img {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 75%;
+}
+
+#slider-img-photographer .my-slides img {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 90%;
+}
+
+.my-slides:hover .overlay {
+  opacity: 1;
+}
+
+/* Add a pointer when hovering over the thumbnail images */
+.cursor {
+  cursor: pointer;
+}
+
+/* Next & previous buttons */
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 45%;
+  width: auto;
+  padding: 10px;
+  margin-top: -50px;
+  color: rgb(148, 143, 143, 0.8);
+  font-weight: bold;
+  font-size: 30px;
+  border-radius: 3px 3px 3px 3px;
+  user-select: none;
+  -webkit-user-select: none;
+  border-bottom: none;
+}
+
+.prev {
+  left: -5%;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: -5%;
+  border-radius: 3px 3px 3px 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: rgb(255, 255, 255);
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f8f9fa; /* Light color for better visibility */
+  font-family: 'Arial', sans-serif; /* A more modern font */
+  font-size: 16px; /* Slightly larger for readability */
+  font-weight: bold; /* Make it bold */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  padding: 5px 15px; /* Increased padding for better spacing */
+  position: absolute;
+  top: 10px; /* Adjusted to not be too close to the edge */
+  left: 50%;
+  transform: translateX(-50%); /* Center it horizontally */
+  text-shadow: 1px 1px 2px black; /* Text shadow for better readability */
+  border-radius: 5px; /* Rounded corners for a softer look */
+}
+
+.row {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Six columns side by side */
+.column {
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* Add a transparency effect for thumnbail images */
+.demo {
+  opacity: 0.5;
+  height: 50px; /* Fixed height */
+  width: auto; /* Auto width to maintain aspect ratio */
+}
+
+.active-slide-img,
+.demo:hover {
+  opacity: 1;
+}
+
+.overlay {
+  display: block;
+  margin-left: 5%;
+  margin-right: 5%;
+  position: absolute; 
+  top: 0; 
+  background: rgba(0, 0, 0, 0.5); /* Black see-through */
+  color: #f1f1f1; 
+  width: 90%;
+  transition: .5s ease;
+  opacity:0;
+  color: white;
+  font-size: 20px;
+  padding: 20px;
+  text-align: center;
+}
+
+.system-fundamental-aside {
+  display: none;
+  background-color: #F3F8FF;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 100;
+  width: 300px;
+  color: rgb(0, 0, 0);
+  font-size: 14px;
+  height: fit-content;
+  position: absolute;
+  top: 39.5%;
+  left: 105%;
+}
+
+.clickable-region {
+  position: absolute;
+  /* border: 2px solid rgba(255, 255, 255, 0.5); */
+  /* background: rgba(255, 255, 0, 0.5);  */
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s; /* Smooth transition */
+}
+
+.clickable-region:hover {
+  background: rgba(255, 255, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.75); /* Brighter border on hover */
+}
+
+.clickable-image-container {
+  position: relative;
+  width: 100%;
+}
+.clickable-image-container img {
+  width: 100%;
+  height: auto;
+}
+
+.resscolor {
+  background-color: rgb(194,255,191);
+}
+
+.sizescolor {
+  background-color: rgb(194,215,255);
+}
+
+.inline-tag {
+  height: 18px;
+  width: auto;
+}
+
+blockquote.place-review {
+  border-left: 2px solid #FFAE42; /* Brighter border color */
+  padding-left: 5px !important;
+  color: #333;                    /* Darker font color */
+  font-style: italic;
+  box-shadow: 2px 2px 8px #ccc;   /* Box shadow */
+  padding-left: 2em;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  text-overflow: ellipsis; /* Add ellipsis to clipped content */
+  margin-bottom: 0px;
+}
+
+aside blockquote {
+  padding-left: 10px;
+  color: #505050;                   
+}
+
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)} 
+  to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.avatar-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2%;
+  margin: 20px;
+}
+
+.avatar {
+  text-align: center;
+}
+
+.avatar img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar img:hover {
+  transform: scale(1.1);
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.avatar figcaption {
+  /* display: inline-block; */
+  /* margin-top: 8px; */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px 10px;
+  font-size: 1.05em;
+  color: #333;
+  /* background-color: #f8f8f8; */
+  /* border: 1px solid #ddd; */
+  /* border-radius: 5px; */
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  text-align: center;
+  width: 80px; /* Adjust as needed */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.left-aside-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.left-side-bar {
+  position: absolute;
+  top: 91.5%;
+  left: -35%;
+}
+.right-side-bar {
+  position: absolute;
+  top: 91.5%;
+  right: -35%;
+}
+
+.click-hint{
+  display: block;
+  margin: auto;
+  width: 60%;
+  font-size: 15px; /* Adjust the font size */
+  color: #333333; /* Set text color */
+  /* background-color: #f2f2f2; */
+  border: 2px solid #cccccc; /* Add border */
+  padding: 10px; /* Add padding around text */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  text-align: center; /* Center the text */
+  margin-bottom: 20px; /* Add some margin at the bottom */
+}
+
+.click-hint strong {
+  color: #007bff; /* Highlight the 'strong' element with a different color */
+  /* text-decoration: underline; Underline the 'strong' text */
+}
+
+.grey-overlay {
+  position: absolute; /* Change to absolute positioning */
+  top: 0;
+  left: 0;
+  width: 1000%; /* Full container width */
+  height: 100%; /* Full container height */
+  background-color: rgba(245, 237, 220, 0.5);
+  z-index: -1; /* Ensure it's above other content */
+  margin-left: -500%;
+}
+
+d-article h3 {
+  margin-top: 20px;
+}
+
+d-article > div > h3 {
+  width: 150%;
+  margin-left: -10%;
+}
+
+.text {
+  /* width: 150%; */
+  width: 150%;
+  margin: 1em 0 1em -20%;
+  font-size: 1.2rem;
+}
+
+h1.text {
+    font-size: 2em;
+}
+h2.text {
+    font-size: 1.8em;
+}
+
+.abstract {
+    font-size: 1.35rem;
+}
+
+.auto-video {
+  width: 130%;
+  margin-left: -15%;
+}
+
+#diego-plan-video, #diego-plan-video-cap {
+  width: 150%; 
+  margin-left: -20%;
+}
+
+.nav-bar {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  width: 70px;
+  height: fit-content;
+  max-height: 100%;  /* Gives navbar a scrollbar if it's too long */
+  background-color: #dbdbdb39;
+  overflow-x: hidden;
+  padding-top: 10px;
+  z-index: 101;
+  display: none;
+}
+
+.figure-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.figure {
+    /* width: 150%; */
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+figure {
+    width: 150%;
+    margin-left: -20%;
+}
+
+#fig-vision_connector figure {
+    width: 120%;
+    margin-left: -10%;
+}
+#fig-narrowgap figure {
+    width: 130%;
+    margin-left: -15%;
+}
+
+#fig-dataengine figure {
+    width: 120%;
+    margin-left: -10%;
+}
+
+#fig-filter_k figure {
+    width: 110%;
+    margin-left: -7.5%;
+}
+
+#fig-data_ratio figure {
+    width: 120%;
+    margin-left: 0%;
+}
+
+figcaption {
+    font-size: 1.125em;
+    margin-top: 0.25em;
+    text-align: center;
+}
+
+/* Default: show iframe, hide image */
+.responsive-content iframe {
+    display: block;
+    justify-content: center;
+    width: 150%;
+    margin-left: -5%;
+    margin-top: -2em;
+    margin-bottom: -2em;
+}
+
+.responsive-content img {
+    display: none;
+}
+
+#mllm_interface_click_hint {
+    display: block;
+}
+
+@media (max-width: 720px) {
+    .figure {
+        width: 100%;
+        margin-left: -1%;
+    }
+    figure {
+        width: 100% !important;
+        margin-left: 0% !important;
+    }
+    figure > iframe {
+        max-width: 100%;
+    }
+
+    /* For mobile devices: hide iframe, show image */
+    .responsive-content iframe {
+        display: none;
+    }
+
+    #mllm_interface_click_hint {
+        display: none !important;
+    }
+
+    .responsive-content img {
+        display: block;
+    }
+}
+
+#nav-bar > div {
+    padding-left: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  /* background-color: #fae7f378; */
+  /* background-color: #ac87c52a; */
+}
+.nav-link > img {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width: 40px;
+    height: auto;
+}
+.geo-color {
+    background-color: rgba(227, 242, 233, 0.5);
+}
+.llm-color {
+    background-color: rgba(227, 237, 248, 0.5);
+}
+.cv-color {
+    background-color: rgba(254, 237, 237, 0.5);
+}
+.col-color {
+    background-color: rgba(255, 255, 204, 0.5);
+}
+.geo-color:hover {
+    background-color: rgba(227, 242, 233, 0.9);
+}
+.llm-color:hover {
+    background-color: rgba(227, 237, 248, 0.9);
+}
+.cv-color:hover {
+    background-color: rgba(254, 237, 237, 0.9);
+}
+.col-color:hover {
+    background-color: rgba(255, 255, 204, 0.9);
+}
+
+div.nav-bar a {
+  border: none;
+  opacity: 0.5;
+}
+
+div.nav-bar a:hover {
+  color: black;
+  opacity: 1.0;
+}
+
+div.nav-bar img:hover {
+  transform: scale(1.3);
+}
+
+a.active-link {
+  color: #007bff; /* Change to your preferred color */
+    /* If you're using images inside <a>, you might want to apply a filter instead */
+  /* filter: brightness(1.2); */
+  opacity: 1.0 !important;
+}
+
+/* a.active-link img {
+  border: 2px solid #007bff;
+  border-radius: 4px;
+} */
+
+.takeaway-card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  text-align: left;
+  padding: 0px;
+  margin: 1em;
+  border-radius: 15px;
+  line-height: 1.6;
+}
+
+.takeaway-head {
+  display: flex;
+  justify-content: space-between; /* Aligns items in a row with space between them */
+  text-align: left;
+  padding: 10px;
+  padding-left: 15px;
+  background-color: rgb(113, 115, 148);
+  border-radius: 15px 15px 0px 0px;
+  line-height: 1.6;
+  color: white;
+  font-size: 20px;
+}
+
+.takeaway-tags {
+  display: flex; /* Ensures the images are lined up horizontally */
+  align-items: center; /* Vertically centers the tags within the div */
+  /* Additional styling, if necessary, can go here */
+}
+
+.exemplar-takeaways > .takeaway-card {
+    display: none;
+}
+
+div.takeaway-tags img {
+  height: 28px;
+  margin-right: 5px;
+}
+
+.takeaway-content {
+  font-size: 17px; /* Adjusts the font size */
+  color: #333; /* Sets the text color; choose a color that fits your design */
+  margin: 0px; /* Adds space around the paragraph */
+  padding: 10px 10px 15px 15px;
+  background-color: #f9f9f9; /* Optional background color */
+  border-radius: 5px; /* Rounds the corners if there's a background color */
+  line-height: 1.4; /* Adjusts the line height for better readability */
+  /* Additional styling like text-align, letter-spacing, etc., can be added as per your preference */
+  border-radius: 0px 0px 15px 15px;
+}
+
+.diego-revise-img {
+  width: 130%;
+  margin-left: -15%;
+}
+
+#prev-diego-revise-1, #prev-diego-revise-2 {
+  top: 75%;
+  left: -20%
+}
+
+#next-diego-revise-1, #next-diego-revise-2 {
+  top: 75%;
+  right: -20%
+}
+
+.img-grid-row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px;
+  width: 120%;
+  margin-left: -10%;
+}
+
+.img-grid-column {
+  flex: 16%;
+  padding: 0 4px;
+}
+
+.img-grid-column img {
+  margin-top: 8px;
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  d-article > div > h3 {
+    width: 100%;
+    margin-left: 0%;
+  }
+
+  .text {
+    width: 100%;
+    margin: 1em 0 1em 0;
+  }
+
+  div.takeaway-tags img {
+    height: 22px;
+    margin-right: 2px;
+  }
+
+  #prev-diego-revise-1, #prev-diego-revise-2 {
+    top: 115%;
+    left: -7%
+  }
+  
+  #next-diego-revise-1, #next-diego-revise-2 {
+    top: 115%;
+    right: -7%
+  }
+
+  aside {
+    display: none;
+  }
+}
+
+/* tables */
+.table-container {
+    overflow: auto;
+    overflow-y: hidden;
+    max-width: 90vw;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; /* for smoother scrolling on iOS */
+}
+
+.data-table {
+    border-collapse: separate;
+    border-spacing: 2.5px;
+    margin: 0 auto;
+    font-size: 12px;
+    min-width: 100%;
+    /* width: max-content; */
+    width: 100%;
+    line-height: 1.25;
+    border-collapse: separate;
+}
+
+.data-table td {
+    font-feature-settings: 'tnum';
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+.data-table td, .data-table th {
+    padding: 0.25em 0.25em;
+}
+
+.data-table th:first-child, .data-table td:first-child {
+    text-align: right;
+    font-weight: bold;
+}
+
+.tb-hdr {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: center !important;
+}
+
+.highlight {
+    background-color: #e6ffe6;
+    font-weight: bold;
+}
+
+.highlight-green {
+    background-color: #e6ffe6;
+}
+
+.highlight-orange {
+    background-color: #fff2e6;
+}
+
+.highlight-gray td {
+    background-color: #f2f2f2;
+    text-align: left !important;
+}
+
+.highlight-blue {
+    background-color: #e6f2ff;
+}
+
+caption {
+    padding: 10px;
+    caption-side: bottom;
+    font-weight: 500;
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 600px) {
+    .data-table {
+        font-size: 0.8em;
+    }
+    
+    .data-table td, .data-table th {
+        padding: 0.2em 0.4em;
+        font-size: 0.8em;
+    }
+    
+    iframe {
+        width: 99%;
+    }
+}
+
+iframe {
+    width: 1250px;
+    height: 650px;
+    border: none;
+}
+
+.bibtex {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #f9f9f9;
+    padding: 2em;
+    color: #222;
+    font-size: 1em;
+}
+
+/* Demo Showcase Styles */
+.demo-showcase {
+    margin: 2rem 0;
+    padding: 2rem 0;
+    width: 150%;
+    margin-left: -20%;
+}
+
+@media (max-width: 768px) {
+    .demo-showcase {
+        width: 100%;
+        margin-left: 0;
+        padding: 1rem 0;
+    }
+}
+
+.gallery-container {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.gallery-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
+}
+
+@media (max-width: 480px) {
+    .gallery-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+.gallery-btn {
+    background: linear-gradient(45deg, #6a11cb, #2575fc);  /* 渐变背景 */
+    border: none;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    border-radius: 25px;  /* 圆角 */
+    min-width: 120px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 117, 252, 0.2);  /* 添加阴影 */
+    position: relative;
+    overflow: hidden;  /* 为发光效果准备 */
+}
+
+.gallery-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 117, 252, 0.3);
+    background: linear-gradient(45deg, #2575fc, #6a11cb);  /* 悬停时反转渐变 */
+}
+
+.gallery-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.gallery-btn:hover::before {
+    opacity: 1;
+    transform: rotate(45deg) translateY(-50%);
+}
+
+.gallery-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .gallery-title {
+        font-size: 1.2rem;
+        order: -1;
+    }
+}
+
+.gallery-content {
+    position: relative;
+    min-height: 400px;
+}
+
+@media (max-width: 768px) {
+    .gallery-content {
+        min-height: 300px;
+    }
+}
+
+.gallery {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.gallery.active {
+    display: block;
+    opacity: 1;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    aspect-ratio: 1;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-item .caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 0.8rem;
+    margin: 0;
+    font-size: 0.9rem;
+    text-align: center;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .gallery-item .caption {
+        transform: none;
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+}
+
+.gallery-item:hover .caption {
+    transform: translateY(0);
+}
+
+/* Image Comparison Slider Styles */
+.image-comparison {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: none;
+    margin-bottom: 30px; /* Add margin to make room for caption */
+}
+
+.image-comparison img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-comparison .modified-image {
+    z-index: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.image-comparison .original-image {
+    z-index: 2;
+    clip-path: polygon(0 0, 0% 0, 0% 100%, 0 100%);
+}
+
+.slider {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: white;
+    cursor: ew-resize;
+    z-index: 3;
+    touch-action: none;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .slider::before {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+.slider::after {
+    content: "↔";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .slider::after {
+        font-size: 16px;
+    }
+}
+
+/* Ensure caption appears below the comparison slider */
+.gallery-item .image-comparison + .caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 0.8rem;
+    margin: 0;
+    font-size: 0.9rem;
+    text-align: center;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 4;
+}
+
+.gallery-item:hover .image-comparison + .caption {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .gallery-item .image-comparison + .caption {
+        transform: none;
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+    
+    .gallery-item:hover .image-comparison + .caption {
+        transform: none;
+    }
+}
+
+d-byline {
+    border-top: none !important;  /* 移除上边框 */
+    border-bottom: none !important;  /* 移除下边框 */
+}
+
+.image-switch-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.base-image, .generated-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+}
+
+.generated-image {
+    opacity: 0;
+}
+
+.generate-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.image-switch-container:hover .generate-btn {
+    opacity: 1;
+}
+
+.generate-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.image-switch-container.generated .generated-image {
+    opacity: 1;
+}
+
+.image-switch-container.generated .generate-btn {
+    background: rgba(255, 255, 255, 0.9);
+}
