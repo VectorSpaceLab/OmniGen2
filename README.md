@@ -24,6 +24,10 @@
 </h4>
 
 ## 🔥 News
+- **2025-09-30**: Introducing **EditScore** — a family of state-of-the-art open-source reward models (7B–72B) for instruction-guided image editing.  
+  - **Model Release**: As part of this, We release **OmniGen2-EditScore7B**, unlocking online RL For Image Editing via high-fidelity EditScore. LoRA weights are now available on [Hugging Face](https://huggingface.co/OmniGen2/OmniGen2-EditScore7B) and [ModelScope](https://www.modelscope.cn/models/OmniGen2/OmniGen2-EditScore7B).
+  - **Benchmark**: We are also launching **EditReward-Bench** to provide a systematic way to evaluate and compare reward models.
+  - Check out the [project repository](https://github.com/VectorSpaceLab/EditScore) to get started!
 - **2025-07-23**: Users can access OmniGen2 through [web app](https://genai.baai.ac.cn/).
 - **2025-07-05**: Training datasets [X2I2](https://huggingface.co/datasets/OmniGen2/X2I2) are available.
 - **2025-07-03**: OmniGen2 now supports [TeaCache](https://github.com/ali-vilab/TeaCache) and [TaylorSeer](https://github.com/Shenyi-Z/TaylorSeer) for faster inference, see [Usage Tips](#-usage-tips) for details. Thanks @legitnull for great [TeaCache-PR](https://github.com/VectorSpaceLab/OmniGen2/pull/52) and [TaylorSeer-PR](https://github.com/VectorSpaceLab/OmniGen2/pull/76).
