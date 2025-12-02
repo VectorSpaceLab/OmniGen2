@@ -1,0 +1,14 @@
+editscore
+datasets
+tqdm
+python-dotenv
+wheel
+omegaconf
+diffusers
+pandas
+wandb
+ninja
+triton-windows; sys_platform == "win32"
+matplotlib
+flash_attn
+flask

@@ -1,0 +1,7 @@
+ratio_type: inside_ratio
+
+data:
+  - 
+    path: '/path/to/EditScore-RL-Data/rl_abs_9tasks.jsonl'
+    type: 'edit'
+    ratio: !!float 1

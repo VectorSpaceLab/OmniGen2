@@ -1,0 +1,27 @@
+server:
+  hosts:
+  # Your machine IPs, here we use 4 machines for example
+    - 127.0.0.1
+    - 127.0.0.2
+    - 127.0.0.3
+    - 127.0.0.4
+    - 127.0.0.5
+    - 127.0.0.6
+    - 127.0.0.7
+    - 127.0.0.8
+    
+  worker_base_port: 18888
+  proxy_port: 23456
+
+reward:
+  backbone: qwen25vl_vllm
+  model_name_or_path: Qwen/Qwen2.5-VL-72B-Instruct
+  lora_path: EditScore/EditScore-72B
+  score_range: 25
+  tensor_parallel_size: 4
+  max_num_seqs: 64
+  max_model_len: 1536
+  max_num_batched_tokens: 98304
+  num_pass: 1
+  seed: 42
+  temperature: 0.7

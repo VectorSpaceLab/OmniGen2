@@ -1,0 +1,5 @@
+data:
+  - 
+    path: 'data_configs/train/example/edit/all.yml'
+    type: 'edit'
+    ratio: !!float 1
