@@ -4,7 +4,6 @@ dotenv.load_dotenv(override=True)
 
 from typing import List, Optional
 import argparse
-import pickle
 import json
 import os
 import warnings
@@ -16,6 +15,7 @@ import time
 
 from flask import Flask, request, jsonify
 from PIL import Image
+from safe_serialization import safe_dumps, safe_loads
 
 from editscore import EditScore
 import yaml
@@ -99,14 +99,14 @@ def vlm_worker(scorer: VLMScorer):
                         "group_strict_reward": {_meta_data.get("tag", "vlm"): reward},
                     }
                 )
-            results[task_id] = pickle.dumps(result_payload)
+            results[task_id] = safe_dumps(result_payload)
 
         except Exception as e:
             print(f"❌ Worker thread error while processing task {task_id[:8]}: {e}")
             import traceback
             traceback.print_exc()
             error_result = {"error": f"Internal server error: {e}"}
-            results[task_id] = pickle.dumps(error_result)
+            results[task_id] = safe_dumps(error_result)
         finally:
             request_queue.task_done()
 
@@ -115,7 +115,7 @@ def vlm_worker(scorer: VLMScorer):
 def parse_and_validate_request(raw_data: bytes) -> Tuple[List[Image.Image], Image.Image, Dict, str]:
     """Parse request data, validate and convert to required format."""
     try:
-        data = pickle.loads(raw_data)
+        data = safe_loads(raw_data)
         input_images_datas = data['input_images']
         output_image_datas = data['output_image']
         meta_data = data['meta_data']

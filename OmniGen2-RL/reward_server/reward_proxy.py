@@ -2,13 +2,13 @@
 
 from typing import List, Dict, Any, Tuple
 import argparse
-import pickle
 import requests
 import json
 import time
 import logging
 from flask import Flask, request, jsonify
 from concurrent.futures import ThreadPoolExecutor
+from safe_serialization import safe_dumps, safe_loads
 from collections import defaultdict
 import math
 import yaml
@@ -122,15 +122,15 @@ class RewardProxy:
         try:
             response = requests.post(
                 server_url,
-                data=pickle.dumps(batch_data),
-                headers={"Content-Type": "application/octet-stream"},
+                data=safe_dumps(batch_data),
+                headers={"Content-Type": "application/json"},
                 timeout=600,  # 300 seconds timeout
             )
             response.raise_for_status()  # Raise exception for 4xx or 5xx status codes
-            return pickle.loads(response.content)
+            return safe_loads(response.content)
         except requests.exceptions.RequestException as e:
             logger.error(f"Request to server {server_url} failed: {e}")
-        except pickle.PickleError as e:
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
             logger.error(f"Failed to parse response from {server_url}: {e}")
         return None  # Return None to indicate failure
     
@@ -205,7 +205,7 @@ class RewardProxy:
 
 def prepare_request_data(request_body: bytes) -> Tuple[List, List, str, Dict]:
     """Parse request body and add original index to meta data."""
-    data = pickle.loads(request_body)
+    data = safe_loads(request_body)
     input_images = data["input_images"]
     output_image = data["output_image"]
     meta_datas = data["meta_datas"]
@@ -254,7 +254,7 @@ def evaluate():
         f"Evaluation complete! Total time: {total_time:.3f}s ({total_time / original_batch_size * 1000:.1f} ms/image)"
     )
 
-    return pickle.dumps(ordered_result)
+    return safe_dumps(ordered_result), 200, {"Content-Type": "application/json"}
 
 
 def main():
