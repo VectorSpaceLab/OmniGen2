@@ -1,8 +1,7 @@
 """
 Safe serialization utilities for reward server communication.
 
-Replaces pickle-based serialization with JSON + base64-encoded images
-to prevent arbitrary code execution via deserialization attacks (CWE-502).
+Uses JSON with base64-encoded images for structured, portable data exchange.
 """
 
 import io
