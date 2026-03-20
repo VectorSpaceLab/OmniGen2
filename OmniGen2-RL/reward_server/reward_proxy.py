@@ -2,7 +2,6 @@
 
 from typing import List, Dict, Any, Tuple
 import argparse
-import pickle
 import requests
 import json
 import time
@@ -122,15 +121,14 @@ class RewardProxy:
         try:
             response = requests.post(
                 server_url,
-                data=pickle.dumps(batch_data),
-                headers={"Content-Type": "application/octet-stream"},
+                json=batch_data,
                 timeout=600,  # 300 seconds timeout
             )
             response.raise_for_status()  # Raise exception for 4xx or 5xx status codes
-            return pickle.loads(response.content)
+            return response.json()
         except requests.exceptions.RequestException as e:
             logger.error(f"Request to server {server_url} failed: {e}")
-        except pickle.PickleError as e:
+        except ValueError as e:
             logger.error(f"Failed to parse response from {server_url}: {e}")
         return None  # Return None to indicate failure
     
@@ -195,7 +193,15 @@ class RewardProxy:
         merged_results = []
         for future in futures:
             result = future.result()
-            merged_results.extend(result)
+            if result is None:
+                continue
+            if isinstance(result, dict) and result.get("error"):
+                logger.error(f"Worker returned error: {result['error']}")
+                continue
+            if isinstance(result, list):
+                merged_results.extend(result)
+                continue
+            logger.error(f"Unexpected worker response type: {type(result)}")
 
         # reorder results by original index
         merged_results = [merged_results[inverse_original_index[i]] for i in range(len(original_index))]
@@ -205,12 +211,28 @@ class RewardProxy:
 
 def prepare_request_data(request_body: bytes) -> Tuple[List, List, str, Dict]:
     """Parse request body and add original index to meta data."""
-    data = pickle.loads(request_body)
+    data = json.loads(request_body)
+    if not isinstance(data, dict):
+        raise ValueError("Request body must be a JSON object")
+
     input_images = data["input_images"]
     output_image = data["output_image"]
     meta_datas = data["meta_datas"]
 
-    meta_datas = [json.loads(meta) for meta in meta_datas]
+    if not isinstance(input_images, list) or not isinstance(output_image, list):
+        raise ValueError("'input_images' and 'output_image' must be lists")
+    if not isinstance(meta_datas, list):
+        raise ValueError("'meta_datas' must be a list")
+
+    normalized_meta_datas = []
+    for meta in meta_datas:
+        if isinstance(meta, str):
+            normalized_meta_datas.append(json.loads(meta))
+        elif isinstance(meta, dict):
+            normalized_meta_datas.append(meta)
+        else:
+            raise ValueError("Each meta_data item must be a dict or JSON string")
+    meta_datas = normalized_meta_datas
 
     # Add original index to each meta_data for later sorting
     for i, meta in enumerate(meta_datas):
@@ -254,7 +276,7 @@ def evaluate():
         f"Evaluation complete! Total time: {total_time:.3f}s ({total_time / original_batch_size * 1000:.1f} ms/image)"
     )
 
-    return pickle.dumps(ordered_result)
+    return jsonify(ordered_result)
 
 
 def main():

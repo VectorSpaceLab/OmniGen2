@@ -4,7 +4,6 @@ dotenv.load_dotenv(override=True)
 
 from typing import List, Optional
 import argparse
-import pickle
 import json
 import os
 import warnings
@@ -13,6 +12,8 @@ from queue import Queue
 from typing import Dict, Tuple
 import uuid
 import time
+import base64
+from io import BytesIO
 
 from flask import Flask, request, jsonify
 from PIL import Image
@@ -99,39 +100,66 @@ def vlm_worker(scorer: VLMScorer):
                         "group_strict_reward": {_meta_data.get("tag", "vlm"): reward},
                     }
                 )
-            results[task_id] = pickle.dumps(result_payload)
+            results[task_id] = result_payload
 
         except Exception as e:
             print(f"❌ Worker thread error while processing task {task_id[:8]}: {e}")
             import traceback
             traceback.print_exc()
             error_result = {"error": f"Internal server error: {e}"}
-            results[task_id] = pickle.dumps(error_result)
+            results[task_id] = error_result
         finally:
             request_queue.task_done()
 
 # --- Web layer (Flask App) ---
 
+def decode_base64_image(image_data: str) -> Image.Image:
+    """Decode base64 image bytes into a PIL image."""
+    try:
+        raw_bytes = base64.b64decode(image_data, validate=True)
+        image = Image.open(BytesIO(raw_bytes))
+        image.load()
+        return image
+    except Exception as e:
+        raise ValueError(f"Invalid base64 image data: {e}") from e
+
+
 def parse_and_validate_request(raw_data: bytes) -> Tuple[List[Image.Image], Image.Image, Dict, str]:
     """Parse request data, validate and convert to required format."""
     try:
-        data = pickle.loads(raw_data)
+        data = json.loads(raw_data)
+        if not isinstance(data, dict):
+            raise ValueError("Request body must be a JSON object")
         input_images_datas = data['input_images']
         output_image_datas = data['output_image']
         meta_data = data['meta_data']
     except Exception as e:
         print(f"Failed to parse request data: {e}")
         return None, None, None, f"Failed to parse request data: {e}"
-    
-    batch_output_image = []
-    for output_image_data in output_image_datas:
-        batch_output_image.append(output_image_data.convert('RGB'))
 
-    batch_input_images = []
-    for input_image_data in input_images_datas:
-        batch_input_images.append([])
-        for _input_image_data in input_image_data:
-            batch_input_images[-1].append(_input_image_data.convert('RGB'))
+    if not isinstance(input_images_datas, list) or not isinstance(output_image_datas, list):
+        return None, None, None, "'input_images' and 'output_image' must be lists"
+    if not isinstance(meta_data, list):
+        return None, None, None, "'meta_data' must be a list"
+    
+    try:
+        batch_output_image = []
+        for output_image_data in output_image_datas:
+            if not isinstance(output_image_data, str):
+                return None, None, None, "Each output image must be a base64 string"
+            batch_output_image.append(decode_base64_image(output_image_data).convert('RGB'))
+
+        batch_input_images = []
+        for input_image_data in input_images_datas:
+            if not isinstance(input_image_data, list):
+                return None, None, None, "Each input_images item must be a list"
+            batch_input_images.append([])
+            for _input_image_data in input_image_data:
+                if not isinstance(_input_image_data, str):
+                    return None, None, None, "Each input image must be a base64 string"
+                batch_input_images[-1].append(decode_base64_image(_input_image_data).convert('RGB'))
+    except Exception as e:
+        return None, None, None, f"Invalid image payload: {e}"
     
     batch_meta_data = []
     for _meta_data in meta_data:
@@ -166,7 +194,9 @@ def evaluate_batch_samples():
         if task_id in results:
             result_data = results.pop(task_id)
             print(f"📤 Task {task_id[:8]} result returned. Time elapsed: {time.time() - start_time:.2f}s")
-            return result_data, 200, {'Content-Type': 'application/octet-stream'}
+            if isinstance(result_data, dict) and "error" in result_data:
+                return jsonify(result_data), 500
+            return jsonify(result_data), 200
         
         if time.time() - start_time > timeout_seconds:
             print(f"⌛️ Task {task_id[:8]} timed out waiting.")

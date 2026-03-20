@@ -3,11 +3,13 @@
 Pure Reward Client - Only responsible for data transmission
 """
 
-import pickle
+import base64
+from io import BytesIO
 import requests
 import time
 import logging
 from typing import List, Dict, Any, Optional, Tuple
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +34,41 @@ class RewardClient:
         self.max_retries = max_retries
         
         logger.info(f"Initialize Reward client: {self.proxy_url}")
+
+    @staticmethod
+    def _encode_image(image_obj: Any) -> str:
+        """Encode PIL image/bytes to base64 PNG string for safe transport."""
+        if isinstance(image_obj, str):
+            return image_obj
+        if isinstance(image_obj, (bytes, bytearray)):
+            return base64.b64encode(image_obj).decode("ascii")
+        if not isinstance(image_obj, Image.Image):
+            raise TypeError(f"Unsupported image type: {type(image_obj)}")
+
+        buffer = BytesIO()
+        image_obj.save(buffer, format="PNG")
+        return base64.b64encode(buffer.getvalue()).decode("ascii")
+
+    def _build_safe_request_payload(
+        self,
+        input_images: List[Any],
+        output_image: List[Any],
+        meta_datas: List[Dict[str, Any]],
+        server_type: str,
+    ) -> Dict[str, Any]:
+        encoded_input_images = []
+        for sample in input_images:
+            if not isinstance(sample, list):
+                raise TypeError(f"Each input_images item must be a list, got: {type(sample)}")
+            encoded_input_images.append([self._encode_image(img) for img in sample])
+
+        encoded_output_images = [self._encode_image(img) for img in output_image]
+        return {
+            "input_images": encoded_input_images,
+            "output_image": encoded_output_images,
+            "meta_datas": meta_datas,
+            "server_type": server_type,
+        }
     
     def evaluate(self, input_images: List[bytes], output_image: List[bytes], meta_datas: List[Dict[str, Any]], 
                  server_type: str = 'geneval') -> Optional[Tuple[List[float], List[float], List[str], List[Dict]]]:
@@ -55,29 +92,26 @@ class RewardClient:
             return [], [], [], []
         
         # Prepare request data
-        request_data = {
-            'input_images': input_images,
-            'output_image': output_image,
-            'meta_datas': meta_datas,
-            'server_type': server_type  
-        }
+        request_data = self._build_safe_request_payload(
+            input_images=input_images,
+            output_image=output_image,
+            meta_datas=meta_datas,
+            server_type=server_type,
+        )
         
         # Retry logic
         last_exception = None
         for attempt in range(self.max_retries):
             try:
-                # Serialize and send
-                pickled_data = pickle.dumps(request_data)
                 response = requests.post(
                     self.proxy_url,
-                    data=pickled_data,
-                    headers={'Content-Type': 'application/octet-stream'},
+                    json=request_data,
                     timeout=self.timeout
                 )
                 
                 if response.status_code == 200:
                     # Parse results
-                    result = pickle.loads(response.content)
+                    result = response.json()
                     scores = result.get('scores', [])
                     rewards = result.get('rewards', [])
                     reasoning = result.get('reasoning', [])
